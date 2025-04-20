@@ -1,0 +1,6 @@
+fer
+opencv-contrib-python
+ffmpeg
+moviepy==1.0.3
+tensorflow>=1.7
+matplotlib
