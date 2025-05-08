@@ -4,3 +4,7 @@ ffmpeg
 moviepy==1.0.3
 tensorflow>=1.7
 matplotlib
+webrtcvad
+pyaudio
+numpy
+SpeechRecognition
