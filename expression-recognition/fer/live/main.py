@@ -56,19 +56,28 @@ async def main_loop():
             results = detector.detect_emotions(frame_rgb)
 
             if results:
-                top_result = results[0]
-                emotion, score = detector.top_emotion(frame_rgb)
-                x, y, w, h = top_result["box"]
-                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                cv2.putText(
-                    frame,
-                    f"{emotion}: {score:.2f}",
-                    (x, y - 10),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.9,
-                    (0, 255, 0),
-                    2,
-                )
+                for result in results:
+                    emotions = result["emotions"]
+                    x, y, w, h = result["box"]
+
+                    # Draw face rectangle
+                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+                    # Display all emotion scores
+                    for idx, (emotion, score) in enumerate(emotions.items()):
+                        text = f"{emotion}: {score:.2f}"
+                        cv2.putText(
+                            frame,
+                            text,
+                            (
+                                x,
+                                y + h + 20 + idx * 20,
+                            ),  # offset each emotion vertically
+                            cv2.FONT_HERSHEY_SIMPLEX,
+                            0.6,
+                            (255, 255, 255),
+                            1,
+                        )
 
         cv2.imshow('Emotion Recognition (Press "q" to quit)', frame)
 
