@@ -1,0 +1,1 @@
+add video recordings into this dir, update main.py to use the correct path and transcribe

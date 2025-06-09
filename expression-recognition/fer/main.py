@@ -22,7 +22,7 @@ def detect_speech_sync():
         print("Listening for speech...")
         try:
             audio = recognizer.listen(source, timeout=5)
-            recognizer.recognize_google(audio)
+            print(recognizer.recognize_google(audio))
             print("Speech detected!")
             speech_detected = True
         except sr.WaitTimeoutError:
