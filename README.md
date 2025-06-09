@@ -13,5 +13,5 @@ p4p/
 │   └── fer/                  # Fer library
 │       └── live              # Example app with live recording
 ├── transcriber               # Transcribing app using OpenAI Whisper
-└── 
+└── agent-prompts             # Initial agent prompts for each Azure model
 ```
