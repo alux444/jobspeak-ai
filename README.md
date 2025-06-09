@@ -13,5 +13,6 @@ p4p/
 │   └── fer/                  # Fer library
 │       └── live              # Example app with live recording
 ├── transcriber               # Transcribing app using OpenAI Whisper
+├── backend                   # Simple backend for connecting to our cloud models
 └── agent-prompts             # Initial agent prompts for each Azure model
 ```
