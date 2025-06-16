@@ -2,10 +2,10 @@ import type { MessageTextContent } from "@azure/ai-agents";
 import { AgentsClient, isOutputOfType } from "@azure/ai-agents";
 import { DefaultAzureCredential } from "@azure/identity";
 
-import "dotenv/config";
 import { getAgentId } from "./types/agents";
 import { getInputString } from "./util";
 import { tenValues } from "./mocks/10";
+import "dotenv/config";
 
 const projectEndpoint = process.env.AZURE_AI_FOUNDRY_ENDPOINT || "test";
 const agentId = getAgentId("response-content-analysis");
