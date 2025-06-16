@@ -1,5 +1,5 @@
 # Engineering Honours Research Project
-## AI Behavioural Interview Prep Application
+## AI-driven Job Interview Feedback System
 
 This project is designed to give users personalised detailed feedback on their behaviouralinterview performance. It uses a combination of multimodal AI models to analyse user responses, including audio, video, and text transcription analysis.
 
@@ -17,7 +17,7 @@ More information can be found in the [project proposal](https://part4project.foe
 ## File structure
 ```
 p4p/
-├── README.md                 # This readme file
+├── README.md                 # This README file
 └── agent-prompts             # Initial agent prompts for each Azure model
 ├── audio-analysis            # Audio analysis with fluency, confidence and emotion detection
 ├── backend                   # Simple backend for connecting to our cloud models
