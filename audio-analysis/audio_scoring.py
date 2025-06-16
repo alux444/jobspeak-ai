@@ -8,7 +8,6 @@ LONG_PAUSE_THRESHOLD = 3.0
 WPM_LOWER_THRESHOLD = 90
 WPM_UPPER_THRESHOLD = 160
 # FILLER_WORDS = ["um", "uh", "ah", "er", "hmm"]
-KEYWORDS = ["AI", "artificial intelligence", "machine learning", "deep learning", "neural network"]
 EMOTION_SCORES = {
     "ang": 2.0,
     "sad": 3.0,
@@ -78,18 +77,6 @@ def get_confidence_score(y, sr, transcription):
     confidence_score = round(max(0.0, min(10.0, confidence_score)), 1)
     return confidence_score, feedback
 
-def get_keyword_score(transcription):
-    transcription = transcription.lower()
-    keyword_count = sum(transcription.count(keyword.lower()) for keyword in KEYWORDS)
-    
-    if keyword_count == 0:
-        return 0.0, "No keywords detected"
-    
-    # Simple scoring: 1 point per keyword found
-    score = min(10.0, keyword_count)  # Cap at 10
-    feedback = f"Detected {keyword_count} keyword(s)"
-    return score, feedback
-
 def get_emotion_score(audio_path):
     processor = Wav2Vec2FeatureExtractor.from_pretrained("superb/hubert-base-superb-er")
     model = HubertForSequenceClassification.from_pretrained("superb/hubert-base-superb-er")
@@ -118,12 +105,10 @@ def analyze_audio(audio_path):
 
     fluency, fluency_feedback = get_fluency_score(y, sr, transcription)
     confidence, confidence_feedback = get_confidence_score(y, sr, transcription)
-    keyword_score, keyword_feedback = get_keyword_score(transcription)
     emotion, emotion_feedback = get_emotion_score(audio_path)
 
     return {
         "Fluency": {"Score": fluency, "Feedback": fluency_feedback},
         "Confidence": {"Score": confidence, "Feedback": confidence_feedback},
-        "Keywords": {"Score": keyword_score, "Feedback": keyword_feedback},
         "Emotion": {"Score": emotion, "Feedback": emotion_feedback}
     }
