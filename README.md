@@ -18,15 +18,21 @@ More information can be found in the [project proposal](https://part4project.foe
 ```
 p4p/
 ├── README.md                 # This README file
-└── agent-prompts             # Initial agent prompts for each Azure model
+│       
 ├── audio-analysis            # Audio analysis with fluency, confidence and emotion detection
-├── backend                   # Simple backend for connecting to our cloud models
+│       
 ├── expression-recognition/   # Attempts with expression recognition libraries
 │   ├── deepface/             # Deepface library
 │   │   ├── live              # Example app with live recording
 │   │   └── recording         # Example app with video file parsing
 │   └── fer/                  # Fer library
 │       └── live              # Example app with live recording
-├── prompt-recorder           # React webapp for prompting questions + recording responses
+│       
+├── agent-prompts             # Initial agent prompts for each Azure model
+├── frontend                  # React webapp for prompting questions + recording responses
+├── backend                   # Simple backend for connecting to our cloud models
+│       
 ├── transcriber               # Transcribing app using OpenAI Whisper
+│       
+└── media                     # Relevant media files
 ```
