@@ -3,16 +3,17 @@ import { AgentsClient, isOutputOfType } from "@azure/ai-agents";
 import { DefaultAzureCredential } from "@azure/identity";
 
 import "dotenv/config";
-import { getAgentId } from "../types/agents";
-import { getJobDescriptionString } from "../util";
-import { internJobDescriptions } from "../mocks/job-descriptions/intern";
+import { AgentId, getAgentId } from "../types/agents";
 
-const projectEndpoint = process.env.AZURE_AI_FOUNDRY_ENDPOINT || "test";
-const agentId = getAgentId("job-description-keywords-generation");
-const inputString = getJobDescriptionString(internJobDescriptions[0]);
+const projectEndpoint = process.env.AZURE_AI_FOUNDRY_ENDPOINT || "";
 
-export async function callKeywordGeneration(): Promise<void> {
+if (!projectEndpoint) {
+  throw new Error("AZURE_AI_FOUNDRY_ENDPOINT environment variable is not set.");
+}
+
+export async function callAgent(agentId: AgentId, userString: string): Promise<string> {
   // Create an Azure AI Client
+  const azureAgentId = getAgentId(agentId);
   const client = new AgentsClient(projectEndpoint, new DefaultAzureCredential());
 
   // Create a thread
@@ -20,12 +21,11 @@ export async function callKeywordGeneration(): Promise<void> {
   console.log(`Created thread, thread ID: ${thread.id}`);
 
   // Create a message
-  const message = await client.messages.create(thread.id, "user", inputString);
-
+  const message = await client.messages.create(thread.id, "user", userString);
   console.log(`Created message, message ID: ${message.id}`);
 
   // Create and execute a run
-  const streamEventMessages = await client.runs.create(thread.id, agentId).stream();
+  const streamEventMessages = await client.runs.create(thread.id, azureAgentId).stream();
 
   // for await (const eventMessage of streamEventMessages) {
   //   switch (eventMessage.event) {
@@ -65,16 +65,21 @@ export async function callKeywordGeneration(): Promise<void> {
   console.log("Messages:", messagesArray);
 
   // Iterate through messages and print details for each annotation
+  let response = "";
+
+  console.log(`File Paths:`);
   console.log(`Message Details:`);
   messagesArray.forEach((m) => {
-    console.log(`File Paths:`);
     console.log(`Type: ${m.content[0].type}`);
     if (isOutputOfType<MessageTextContent>(m.content[0], "text")) {
       const textContent = m.content[0] as MessageTextContent;
-      console.log(`Text: ${textContent.text.value}`);
+      // console.log(`Text: ${textContent.text.value}`);
+      response += textContent.text.value;
     }
-    console.log(`File ID: ${m.id}`);
+    // console.log(`File ID: ${m.id}`);
     // firstId and lastId are properties of the paginator, not the messages array
     // Removing these references as they don't exist in this context
   });
+
+  return response;
 }

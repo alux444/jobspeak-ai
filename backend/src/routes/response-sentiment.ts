@@ -1,80 +1,21 @@
-import type { MessageTextContent } from "@azure/ai-agents";
-import { AgentsClient, isOutputOfType } from "@azure/ai-agents";
-import { DefaultAzureCredential } from "@azure/identity";
+import express from "express";
+import { callAgent } from "../utils/call-agent";
+import { AgentId } from "../types/agents";
+import { getInputString } from "../utils/util";
+import { QuestionAndAnswer } from "../types/mocks";
+import { tenValues } from "../mocks/responses/10";
 
-import "dotenv/config";
-import { getAgentId } from "../types/agents";
-import { getInputString } from "../util";
-import { zeroValues } from "../mocks/responses/0";
+export const responseSentimentRouter = express.Router();
 
-const projectEndpoint = process.env.AZURE_AI_FOUNDRY_ENDPOINT || "test";
-const agentId = getAgentId("response-sentiment-analysis");
-const inputString = getInputString(zeroValues[2]);
-
-export async function callSentimentAnalysis(): Promise<void> {
-  // Create an Azure AI Client
-  const client = new AgentsClient(projectEndpoint, new DefaultAzureCredential());
-
-  // Create a thread
-  const thread = await client.threads.create();
-  console.log(`Created thread, thread ID: ${thread.id}`);
-
-  // Create a message
-  const message = await client.messages.create(thread.id, "user", inputString);
-
-  console.log(`Created message, message ID: ${message.id}`);
-
-  // Create and execute a run
-  const streamEventMessages = await client.runs.create(thread.id, agentId).stream();
-
-  // for await (const eventMessage of streamEventMessages) {
-  //   switch (eventMessage.event) {
-  //     case RunStreamEvent.ThreadRunCreated:
-  //       console.log(`ThreadRun status: ${(eventMessage.data as ThreadRun).status}`);
-  //       break;
-  //     case MessageStreamEvent.ThreadMessageDelta:
-  //       {
-  //         const messageDelta = eventMessage.data as MessageDeltaChunk;
-  //         messageDelta.delta.content.forEach((contentPart) => {
-  //           if (contentPart.type === "text") {
-  //             const textContent = contentPart as MessageDeltaTextContent;
-  //             const textValue = textContent.text?.value || "No text";
-  //             console.log(`Text delta received:: ${textValue}`);
-  //           }
-  //         });
-  //       }
-  //       break;
-
-  //     case RunStreamEvent.ThreadRunCompleted:
-  //       console.log("Thread Run Completed");
-  //       break;
-  //     case ErrorEvent.Error:
-  //       console.log(`An error occurred. Data ${eventMessage.data}`);
-  //       break;
-  //     case DoneEvent.Done:
-  //       console.log("Stream completed.");
-  //       break;
-  //   }
-  // }
-
-  const messagesIterator = client.messages.list(thread.id);
-  const messagesArray = [];
-  for await (const m of messagesIterator) {
-    messagesArray.push(m);
+responseSentimentRouter.post("/", async (req, res) => {
+  try {
+    const agentId: AgentId = "response-sentiment-analysis";
+    const qAndA: QuestionAndAnswer = tenValues[2];
+    const inputString = getInputString(qAndA);
+    await callAgent(agentId, inputString);
+    res.status(200).send("Response sentiment analysis initiated successfully.");
+  } catch (error) {
+    console.error("Error in response content analysis:", error);
+    res.status(500).send("Failed to initiate response sentiment analysis.");
   }
-  console.log("Messages:", messagesArray);
-
-  // Iterate through messages and print details for each annotation
-  console.log(`Message Details:`);
-  messagesArray.forEach((m) => {
-    console.log(`File Paths:`);
-    console.log(`Type: ${m.content[0].type}`);
-    if (isOutputOfType<MessageTextContent>(m.content[0], "text")) {
-      const textContent = m.content[0] as MessageTextContent;
-      console.log(`Text: ${textContent.text.value}`);
-    }
-    console.log(`File ID: ${m.id}`);
-    // firstId and lastId are properties of the paginator, not the messages array
-    // Removing these references as they don't exist in this context
-  });
-}
+});
