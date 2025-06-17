@@ -2,16 +2,16 @@ import type { MessageTextContent } from "@azure/ai-agents";
 import { AgentsClient, isOutputOfType } from "@azure/ai-agents";
 import { DefaultAzureCredential } from "@azure/identity";
 
-import { getAgentId } from "./types/agents";
-import { getInputString } from "./util";
-import { tenValues } from "./mocks/10";
 import "dotenv/config";
+import { getAgentId } from "../types/agents";
+import { getJobDescriptionString } from "../util";
+import { internJobDescriptions } from "../mocks/job-descriptions/intern";
 
 const projectEndpoint = process.env.AZURE_AI_FOUNDRY_ENDPOINT || "test";
-const agentId = getAgentId("response-content-analysis");
-const inputString = getInputString(tenValues[2]);
+const agentId = getAgentId("job-description-keywords-generation");
+const inputString = getJobDescriptionString(internJobDescriptions[0]);
 
-export async function test(): Promise<void> {
+export async function callKeywordGeneration(): Promise<void> {
   // Create an Azure AI Client
   const client = new AgentsClient(projectEndpoint, new DefaultAzureCredential());
 

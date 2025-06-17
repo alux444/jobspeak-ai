@@ -1,4 +1,4 @@
-import { QuestionAndAnswer } from "../types/mocks";
+import { QuestionAndAnswer } from "../../types/mocks";
 
 export const fiveValues: QuestionAndAnswer[] = [
   {
