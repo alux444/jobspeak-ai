@@ -29,6 +29,6 @@ p4p/
 ├── agent-prompts             # Initial agent prompts for each Azure model
 ├── frontend                  # React webapp for prompting questions + recording responses
 ├── media                     # Relevant media files
-├── sentient-analysis         # Sentiment analysis models   
+├── sentiment-analysis        # Sentiment analysis models 
 └── transcriber               # Transcribing app using OpenAI Whisper   
 ```
