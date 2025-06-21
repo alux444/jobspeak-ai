@@ -1,29 +1,45 @@
+from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.responses import JSONResponse
+from audio_scoring import analyse_audio
 import time
-from audio_scoring import analyze_audio
 import os
 
-def main():
-    file = "3_pauses.wav"
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    audio_path = os.path.join(current_dir, f"data/{file}")
-    
-    if not os.path.isfile(audio_path):
-        raise FileNotFoundError(f"Audio file not found at path: {audio_path}")
+AUDIO_DIR = "audio"
+ALLOWED_EXTENSIONS = (".wav", ".mp3", ".flac", ".ogg")
 
-    print(f"📥 Starting audio analysis for {file}. Please wait...")
-    start_time = time.time()
+app = FastAPI()
 
-    results = analyze_audio(audio_path)
+@app.post("/analyse-audio/")
+async def analyse_audio_endpoint(file: UploadFile = File(...)):
+    if not file.filename.lower().endswith(ALLOWED_EXTENSIONS):
+        raise HTTPException(
+            status_code=400,
+            detail="Unsupported file type. Accepted: WAV, MP3, FLAC, OGG."
+        )
 
-    end_time = time.time()
-    duration = end_time - start_time
+    file_bytes = await file.read()
+    if not file_bytes:
+        raise HTTPException(status_code=400, detail="Empty file uploaded.")
 
-    print("===== Audio Analysis Results =====\n")
-    for feature, data in results.items():
-        print(f"{feature}: {data['Score']}/10.0")
-        print(f"Feedback: {data['Feedback']}\n")
+    os.makedirs(AUDIO_DIR, exist_ok=True)
+    file_path = os.path.join(AUDIO_DIR, file.filename)
+    with open(file_path, "wb") as f:
+        f.write(file_bytes)
 
-    print(f"Analysis completed in {duration:.2f} seconds.")
+    try:
+        start_time = time.time()
+        results = analyse_audio(file_path)
+        duration = time.time() - start_time
 
-if __name__ == "__main__":
-    main()
+        response = {
+            "results": {
+                feature: {
+                    "Score": data.get("Score"),
+                    "Feedback": data.get("Feedback")
+                } for feature, data in results.items()
+            },
+            "duration_seconds": round(duration, 2)
+        }
+        return JSONResponse(content=response)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
