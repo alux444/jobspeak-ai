@@ -1,0 +1,1 @@
+main.py adds transcripts to this dir

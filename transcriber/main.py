@@ -1,24 +1,33 @@
-import whisper
+from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.responses import FileResponse
 from pathlib import Path
+import whisper
+import shutil
+import tempfile
 
-def transcribe_video(video_path: Path):
-    if not video_path.exists():
-        print(f"❌ File not found: {video_path}")
-        return
+app = FastAPI()
+model = whisper.load_model("base")
 
-    print("📥 Loading Whisper model...")
-    model = whisper.load_model("base")
+@app.post("/transcribe/")
+async def transcribe_video(file: UploadFile = File(...)):
+    if not file.filename.endswith(('.mp4', '.mkv', '.mov', '.avi')):
+        raise HTTPException(status_code=400, detail="Invalid file type.")
 
-    print(f"🔁 Transcribing '{video_path}'...")
-    result = model.transcribe(str(video_path))
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmp_video_path = Path(tmpdir) / file.filename
+        with tmp_video_path.open("wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
 
-    transcript = result["text"]
+        result = model.transcribe(str(tmp_video_path))
+        transcript = result["text"]
 
-    output_path = video_path.with_name(video_path.stem + "_transcript.txt")
-    output_path.write_text(transcript, encoding="utf-8")
+        transcripts_dir = Path("transcripts")
+        transcripts_dir.mkdir(exist_ok=True)
+        transcript_path = transcripts_dir / (tmp_video_path.stem + "_transcript.txt")
+        transcript_path.write_text(transcript, encoding="utf-8")
 
-    print(f"✅ Transcription saved to: {output_path}")
-
-if __name__ == "__main__":
-    video_file_path = Path("videos") / "video.mp4"
-    transcribe_video(video_file_path)
+        return FileResponse(
+            transcript_path,
+            media_type="text/plain",
+            filename=transcript_path.name
+        )
