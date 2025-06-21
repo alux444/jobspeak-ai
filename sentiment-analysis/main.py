@@ -3,9 +3,6 @@ from transformers import pipeline
 from models.SentimentRequest import SentimentRequest
 from utils.get_input_string import get_input_string
 
-# RUN: uvicorn main:app --reload --port 8001
-
-# Define FastAPI app
 app = FastAPI()
 
 # === MODEL SETUP ===
