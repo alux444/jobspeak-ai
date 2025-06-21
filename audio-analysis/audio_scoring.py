@@ -95,7 +95,7 @@ def get_emotion_score(audio_path):
     emotion_full = EMOTION_FULL.get(emotion, "Unknown")
     return round(emotion_score, 1), f"Detected Emotion: {emotion_full}"
 
-def analyze_audio(audio_path):
+def analyse_audio(audio_path):
     y, sr = librosa.load(audio_path)
     transcription = transcribe(audio_path)
     
