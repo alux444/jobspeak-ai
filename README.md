@@ -1,7 +1,7 @@
 # Engineering Honours Research Project
 ## AI-driven Job Interview Feedback System
 
-This project is designed to give users personalised detailed feedback on their behaviouralinterview performance. It uses a combination of multimodal AI models to analyse user responses, including audio, video, and text transcription analysis.
+This project is designed to give users personalised detailed feedback on their behavioural interview performance. It uses a combination of multimodal AI models to analyse user responses, including audio, video, and text transcription analysis.
 
 More information can be found in the [project proposal](https://part4project.foe.auckland.ac.nz/home/project/detail/5673/).
 
@@ -29,6 +29,6 @@ p4p/
 ├── agent-prompts             # Initial agent prompts for each Azure model
 ├── frontend                  # React webapp for prompting questions + recording responses
 ├── media                     # Relevant media files
-├── sentient-analysis         # Sentiment analysis models   
+├── sentiment-analysis        # Sentiment analysis models 
 └── transcriber               # Transcribing app using OpenAI Whisper   
 ```
