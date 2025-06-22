@@ -1,0 +1,42 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+     - ./frontend:/app
+     - /app/node_modules
+    stdin_open: true
+    tty: true
+
+  backend:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - audio
+      - sentiment
+      - transcriber
+
+  # audio:
+  #   build: ./audio-analysis
+  #   ports:
+  #     - "8000:8000"
+  #   volumes:
+  #     - ./audio-analysis:/app
+  
+  sentiment:
+    build: ./sentiment-analysis
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./sentiment-analysis:/app
+
+  # transcriber:
+  #   build: ./transcriber
+  #   ports:
+  #     - "8002:8002"
+  #   volumes:
+  #     - ./transcriber:/app
