@@ -46,10 +46,18 @@ To run the project, you will need to set up a Python virtual environment and ins
 
 3. Make sure to download the local PyTorch wheel file from [here](https://download.pytorch.org/whl/cpu/torch-2.3.0%2Bcpu-cp311-cp311-linux_x86_64.whl) and place it in the root directory of the project. Do not change the filename.
 
-4. From the root directory, run the Docker container:
+4. In `backend`, create a `.env` file with the required environment variables. You can use the provided `.env.example` as a template.
+
    ```bash
-   docker compose up --build
+   cp backend/.env.example backend/.env
    ```
+
+   Fill in the `.env` file with your Azure Cognitive Services keys and endpoints.
+
+5. From the root directory, run the Docker container:
+```bash
+docker compose up --build
+````
 
 ## File structure
 
