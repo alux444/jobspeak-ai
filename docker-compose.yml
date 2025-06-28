@@ -17,12 +17,12 @@ services:
       - sentiment
       - transcriber
 
-  # audio:
-  #   build:
-  #     context: .
-  #     dockerfile: audio-analysis/Dockerfile
-  #   ports:
-  #     - "8000:8000"
+  audio:
+    build:
+      context: .
+      dockerfile: audio-analysis/Dockerfile
+    ports:
+      - "8000:8000"
 
   sentiment:
     build:
