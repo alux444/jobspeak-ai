@@ -1,37 +1,39 @@
 services:
-  frontend:
-    build: ./frontend
-    ports:
-      - "5173:5173"
-    volumes:
-     - /app/node_modules
-    stdin_open: true
-    tty: true
+  # frontend:
+  #   build: ./frontend
+  #   ports:
+  #     - "5173:5173"
+  #   volumes:
+  #    - /app/node_modules
+  #   stdin_open: true
+  #   tty: true
 
-  backend:
-    build: ./backend
-    ports:
-      - "3000:3000"
-    depends_on:
-      - audio
-      - sentiment
-      - transcriber
+  # backend:
+  #   build: ./backend
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - audio
+  #     - sentiment
+  #     - transcriber
 
   # audio:
-  #   build: ./audio-analysis
+  #   build:
+  #     context: .
+  #     dockerfile: audio-analysis/Dockerfile
   #   ports:
   #     - "8000:8000"
 
-  sentiment:
+  # sentiment:
+  #   build:
+  #     context: .
+  #     dockerfile: sentiment-analysis/Dockerfile
+  #   ports:
+  #     - "8001:8001"
+
+  transcriber:
     build:
       context: .
-      dockerfile: sentiment-analysis/Dockerfile
+      dockerfile: transcriber/Dockerfile
     ports:
-      - "8001:8001"
-
-# transcriber:
-#   build:
-#     context: ./transcriber
-#     dockerfile: Dockerfile
-#   ports:
-#     - "8002:8002"
+      - "8002:8002"
