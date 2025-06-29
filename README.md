@@ -55,9 +55,9 @@ To run the project, you will need to set up a Python virtual environment and ins
    Fill in the `.env` file with your Azure Cognitive Services keys and endpoints.
 
 5. From the root directory, run the Docker container:
-```bash
-docker compose up --build
-````
+   ```bash
+   docker compose up --build
+   ```
 
 ## File structure
 
