@@ -2,6 +2,7 @@ fastapi
 uvicorn
 librosa
 numpy
-torch
+# install PyTorch
+# See https://pytorch.org/get-started/locally/ for install instructions
 transformers
-openai-whisper
+python-multipart
