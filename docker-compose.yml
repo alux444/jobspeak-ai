@@ -1,11 +1,13 @@
 services:
   base:
+    platform: linux/amd64
     build:
       context: .
       dockerfile: Dockerfile.base
     image: base-image:latest
 
   frontend:
+    platform: linux/amd64
     build: ./frontend
     ports:
       - "5173:5173"
@@ -15,6 +17,7 @@ services:
       - backend
 
   backend:
+    platform: linux/amd64
     build: ./backend
     ports:
       - "3000:3000"
@@ -24,6 +27,7 @@ services:
       - transcriber
 
   audio:
+    platform: linux/amd64
     build:
       context: ./audio-analysis
       dockerfile: Dockerfile
@@ -34,6 +38,7 @@ services:
       - base
 
   sentiment:
+    platform: linux/amd64
     build:
       context: ./sentiment-analysis
       dockerfile: Dockerfile
@@ -44,6 +49,7 @@ services:
       - base
 
   transcriber:
+    platform: linux/amd64
     build:
       context: ./transcriber
       dockerfile: Dockerfile
@@ -52,4 +58,3 @@ services:
       - "8002:8002"
     depends_on:
       - base
-
