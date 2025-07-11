@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useRecorder } from "../hooks/useRecorder";
 import Controls from "./Controls";
 import VideoPreview from "./VideoPreview";
@@ -29,15 +29,54 @@ const Recorder: React.FC = () => {
     handleTranscriptionCancel,
   } = useRecorder();
 
+  // Memoize the playback URL so it doesn't get recreated on every render
+  const playbackUrl = useMemo(() => {
+    if (recordedChunks.length > 0) {
+      return URL.createObjectURL(new Blob(recordedChunks, { type: "video/webm" }));
+    }
+    return null;
+  }, [recordedChunks]);
+
   return (
     <div className="recorder-container">
-      <Controls recording={recording} recordedChunks={recordedChunks} isProcessing={isProcessing} isTranscribing={isTranscribing} showTranscription={showTranscription} onStartRecording={startRecording} onStopRecording={stopRecording} onSaveRecording={saveRecording} onTranscribeRecording={transcribeRecording} />
+      <Controls
+        recording={recording}
+        recordedChunks={recordedChunks}
+        isProcessing={isProcessing}
+        isTranscribing={isTranscribing}
+        showTranscription={showTranscription}
+        onStartRecording={startRecording}
+        onStopRecording={stopRecording}
+        onSaveRecording={saveRecording}
+        onTranscribeRecording={transcribeRecording}
+      />
 
+      {/* Always show the live video preview */}
       <VideoPreview stream={stream} />
 
-      <StatusMessages isTranscribing={isTranscribing} isProcessing={isProcessing} error={error} />
+      {/* Show playback video if a recording exists and not currently recording */}
+      {playbackUrl && !recording && (
+        <div className="playback-video" style={{ margin: '20px 0' }}>
+          <h4>Playback</h4>
+          <video src={playbackUrl} controls style={{ width: 400 }} />
+        </div>
+      )}
 
-      {showTranscription && <TranscriptionEditor transcription={transcription} isProcessing={isProcessing} onTranscriptionEdit={handleTranscriptionEdit} onTranscriptionSubmit={handleTranscriptionSubmit} onTranscriptionCancel={handleTranscriptionCancel} />}
+      <StatusMessages
+        isTranscribing={isTranscribing}
+        isProcessing={isProcessing}
+        error={error}
+      />
+
+      {showTranscription && (
+        <TranscriptionEditor
+          transcription={transcription}
+          isProcessing={isProcessing}
+          onTranscriptionEdit={handleTranscriptionEdit}
+          onTranscriptionSubmit={handleTranscriptionSubmit}
+          onTranscriptionCancel={handleTranscriptionCancel}
+        />
+      )}
 
       <AnalysisResults analysisResults={analysisResults} />
     </div>
