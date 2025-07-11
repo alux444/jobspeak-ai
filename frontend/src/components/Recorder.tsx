@@ -1,74 +1,84 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useMemo } from "react";
+import { useRecorder } from "../hooks/useRecorder";
+import Controls from "./Controls";
+import VideoPreview from "./VideoPreview";
+import TranscriptionEditor from "./TranscriptionEditor";
+import AnalysisResults from "./AnalysisResults";
+import StatusMessages from "./StatusMessages";
 
 const Recorder: React.FC = () => {
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const [recording, setRecording] = useState(false);
-  const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
-  const [stream, setStream] = useState<MediaStream | null>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const {
+    // State
+    recording,
+    recordedChunks,
+    stream,
+    isProcessing,
+    isTranscribing,
+    transcription,
+    showTranscription,
+    analysisResults,
+    error,
 
-  const stopRecording = () => {
-    mediaRecorderRef.current?.stop();
-    setRecording(false);
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
-      setStream(null);
+    // Actions
+    startRecording,
+    stopRecording,
+    saveRecording,
+    transcribeRecording,
+    handleTranscriptionEdit,
+    handleTranscriptionSubmit,
+    handleTranscriptionCancel,
+  } = useRecorder();
+
+  // Memoize the playback URL so it doesn't get recreated on every render
+  const playbackUrl = useMemo(() => {
+    if (recordedChunks.length > 0) {
+      return URL.createObjectURL(new Blob(recordedChunks, { type: "video/webm" }));
     }
-    if (videoRef.current) {
-      videoRef.current.srcObject = null;
-    }
-  };
-
-  const saveRecording = () => {
-    const blob = new Blob(recordedChunks, { type: "video/webm" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "recording.webm";
-    a.click();
-    URL.revokeObjectURL(url);
-    setRecordedChunks([]);
-  };
-
-  useEffect(() => {
-    if (videoRef.current && stream) {
-      videoRef.current.srcObject = stream;
-    }
-  }, [stream]);
-
-  const startRecording = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-    setStream(stream);
-    mediaRecorderRef.current = new MediaRecorder(stream);
-
-    mediaRecorderRef.current.ondataavailable = (event) => {
-      if (event.data.size > 0) {
-        setRecordedChunks((prev) => [...prev, event.data]);
-      }
-    };
-
-    mediaRecorderRef.current.start();
-    setRecording(true);
-  };
+    return null;
+  }, [recordedChunks]);
 
   return (
-    <div>
-      <button onClick={recording ? stopRecording : startRecording}>
-        {recording ? "Stop Recording" : "Start Recording"}
-      </button>
-      {stream && (
-        <div>
-          <video
-            ref={videoRef}
-            autoPlay
-            muted
-            style={{ width: 400, marginTop: 16 }}
-          />
+    <div className="recorder-container">
+      <Controls
+        recording={recording}
+        recordedChunks={recordedChunks}
+        isProcessing={isProcessing}
+        isTranscribing={isTranscribing}
+        showTranscription={showTranscription}
+        onStartRecording={startRecording}
+        onStopRecording={stopRecording}
+        onSaveRecording={saveRecording}
+        onTranscribeRecording={transcribeRecording}
+      />
+
+      {/* Always show the live video preview */}
+      <VideoPreview stream={stream} />
+
+      {/* Show playback video if a recording exists and not currently recording */}
+      {playbackUrl && !recording && (
+        <div className="playback-video" style={{ margin: '20px 0' }}>
+          <h4>Playback</h4>
+          <video src={playbackUrl} controls style={{ width: 400 }} />
         </div>
       )}
-      {recordedChunks.length > 0 && (
-        <button onClick={saveRecording}>Save Recording</button>
+
+      <StatusMessages
+        isTranscribing={isTranscribing}
+        isProcessing={isProcessing}
+        error={error}
+      />
+
+      {showTranscription && (
+        <TranscriptionEditor
+          transcription={transcription}
+          isProcessing={isProcessing}
+          onTranscriptionEdit={handleTranscriptionEdit}
+          onTranscriptionSubmit={handleTranscriptionSubmit}
+          onTranscriptionCancel={handleTranscriptionCancel}
+        />
       )}
+
+      <AnalysisResults analysisResults={analysisResults} />
     </div>
   );
 };

@@ -12,19 +12,27 @@ services:
     ports:
       - "5173:5173"
     volumes:
+      - ./frontend:/app
       - /app/node_modules
     depends_on:
       - backend
+    environment:
+      - CHOKIDAR_USEPOLLING=true # Helps with file watching in Docker
 
   backend:
     platform: linux/amd64
     build: ./backend
     ports:
       - "3000:3000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
     depends_on:
       - audio
       - sentiment
       - transcriber
+    environment:
+      - NODE_ENV=development
 
   audio:
     platform: linux/amd64
@@ -34,6 +42,8 @@ services:
     image: audio-service
     ports:
       - "8000:8000"
+    volumes:
+      - ./audio-analysis:/app
     depends_on:
       - base
 
@@ -45,6 +55,8 @@ services:
     image: sentiment-service
     ports:
       - "8001:8001"
+    volumes:
+      - ./sentiment-analysis:/app
     depends_on:
       - base
 
@@ -56,5 +68,7 @@ services:
     image: transcriber-service
     ports:
       - "8002:8002"
+    volumes:
+      - ./transcriber:/app
     depends_on:
       - base

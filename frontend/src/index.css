@@ -66,3 +66,78 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.App-header {
+  margin-bottom: 2rem;
+}
+
+.recorder-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.video-preview {
+  margin-bottom: 2rem;
+}
+
+.processing {
+  margin: 1rem;
+  font-style: italic;
+  color: #888;
+}
+
+.error {
+  margin: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: rgba(255, 0, 0, 0.1);
+  border-left: 3px solid red;
+  color: red;
+  text-align: left;
+}
+
+.analysis-results {
+  width: 100%;
+  max-width: 800px;
+  text-align: left;
+  margin-top: 2rem;
+}
+
+.feature {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+}
+
+.feature h5 {
+  margin-top: 0;
+}
+
+.transcription {
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 1rem;
+  border-radius: 4px;
+  margin-top: 1rem;
+}
+
+pre {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  max-width: 100%;
+}

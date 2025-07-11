@@ -40,3 +40,190 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Recorder Component Styles */
+.recorder-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.controls {
+  margin-bottom: 20px;
+}
+
+.controls button {
+  margin: 0 10px 10px 0;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.controls button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.controls button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.video-preview {
+  margin: 20px 0;
+}
+
+.processing {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #e3f2fd;
+  border-radius: 5px;
+  color: #1976d2;
+  font-weight: 500;
+}
+
+.error {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #ffebee;
+  border-radius: 5px;
+  color: #c62828;
+  font-weight: 500;
+}
+
+/* Transcription Editor Styles */
+.transcription-editor {
+  margin: 20px 0;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.transcription-editor h3 {
+  margin-top: 0;
+  color: #495057;
+}
+
+.transcription-editor p {
+  color: #6c757d;
+  margin-bottom: 15px;
+}
+
+.transcription-editor textarea {
+  width: 100%;
+  max-width: 600px;
+  padding: 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.transcription-editor textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.transcription-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.transcription-actions button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.transcription-actions button:first-child {
+  background-color: #28a745;
+  color: white;
+}
+
+.transcription-actions button:first-child:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.transcription-actions button:last-child {
+  background-color: #6c757d;
+  color: white;
+}
+
+.transcription-actions button:last-child:hover:not(:disabled) {
+  background-color: #545b62;
+}
+
+.transcription-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Analysis Results Styles */
+.analysis-results {
+  margin: 20px 0;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.analysis-results h3 {
+  margin-top: 0;
+  color: #495057;
+}
+
+.analysis-results h4 {
+  color: #6c757d;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.feature {
+  margin: 15px 0;
+  padding: 15px;
+  background-color: white;
+  border-radius: 5px;
+  border-left: 4px solid #007bff;
+}
+
+.feature h5 {
+  margin-top: 0;
+  color: #495057;
+}
+
+.feature p {
+  margin: 5px 0;
+  color: #6c757d;
+}
+
+.sentiment-analysis pre {
+  background-color: white;
+  padding: 15px;
+  border-radius: 5px;
+  overflow-x: auto;
+  font-size: 12px;
+}
+
+.transcription {
+  margin-top: 20px;
+}
+
+.transcription p {
+  background-color: white;
+  padding: 15px;
+  border-radius: 5px;
+  border-left: 4px solid #28a745;
+  margin: 0;
+}
