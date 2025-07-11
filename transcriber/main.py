@@ -1,5 +1,5 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import PlainTextResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 import whisper
@@ -20,22 +20,24 @@ app.add_middleware(
 
 @app.post("/transcribe/")
 async def transcribe_video(file: UploadFile = File(...)):
-    if not file.filename.endswith((".mp4", ".mkv", ".mov", ".webm")):
-        raise HTTPException(status_code=400, detail="Invalid file type.")
+    try:
+        if not file.filename.endswith((".mp4", ".mkv", ".mov", ".webm")):
+            raise HTTPException(status_code=400, detail="Invalid file type.")
 
-    with tempfile.TemporaryDirectory() as tmpdir:
-        tmp_video_path = Path(tmpdir) / file.filename
-        with tmp_video_path.open("wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_video_path = Path(tmpdir) / file.filename
+            with tmp_video_path.open("wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
 
-        result = model.transcribe(str(tmp_video_path))
-        transcript = result["text"]
+            result = model.transcribe(str(tmp_video_path))
+            transcript = result["text"]
 
-        transcripts_dir = Path("transcripts")
-        transcripts_dir.mkdir(exist_ok=True)
-        transcript_path = transcripts_dir / (tmp_video_path.stem + "_transcript.txt")
-        transcript_path.write_text(transcript, encoding="utf-8")
+            # Return plain text instead of file
+            return PlainTextResponse(content=transcript)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Transcription failed: {str(e)}")
 
-        return FileResponse(
-            transcript_path, media_type="text/plain", filename=transcript_path.name
-        )
+
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy"}

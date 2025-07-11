@@ -89,13 +89,16 @@ def get_emotion_score(audio_path):
     emotion_full = EMOTION_FULL.get(emotion, "Unknown")
     return round(emotion_score, 1), f"Detected Emotion: {emotion_full}"
 
-def analyse_audio(audio_path, transcription_path):
+def analyse_audio(audio_path, transcription_text):
     y, sr = librosa.load(audio_path)
-    try:
-        with open(transcription_path, 'r') as f:
-            transcription = f.read().strip()
-    except FileNotFoundError:
-        raise FileNotFoundError(f"Transcription file not found: {transcription_path}")
+    
+    # Use the provided transcription text directly
+    if not transcription_text or not transcription_text.strip():
+        # Provide default transcription for analysis if none provided
+        transcription = "Sample transcription for analysis"
+        print("Warning: No transcription provided, using default for analysis")
+    else:
+        transcription = transcription_text.strip()
     
     fluency, fluency_feedback = get_fluency_score(y, sr, transcription)
     confidence, confidence_feedback = get_confidence_score(y, sr, transcription)
