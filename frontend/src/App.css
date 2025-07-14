@@ -170,6 +170,78 @@
   cursor: not-allowed;
 }
 
+/* Question Prompt Styles */
+.question-prompt {
+  margin: 20px 0;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.question-prompt.loading {
+  text-align: center;
+  padding: 40px;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.question-header h3 {
+  margin: 0;
+  font-size: 1.4em;
+  font-weight: 600;
+}
+
+.refresh-button {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.refresh-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.question-content {
+  text-align: left;
+}
+
+.question-text {
+  font-size: 1.1em;
+  line-height: 1.6;
+  margin-bottom: 15px;
+  font-weight: 500;
+}
+
+.question-meta {
+  display: flex;
+  gap: 10px;
+  font-size: 0.9em;
+  opacity: 0.9;
+}
+
+.question-category,
+.question-difficulty {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-transform: capitalize;
+}
+
 /* Analysis Results Styles */
 .analysis-results {
   margin: 20px 0;

@@ -1,12 +1,16 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useRecorder } from "../hooks/useRecorder";
 import Controls from "./Controls";
 import VideoPreview from "./VideoPreview";
 import TranscriptionEditor from "./TranscriptionEditor";
 import AnalysisResults from "./AnalysisResults";
 import StatusMessages from "./StatusMessages";
+import QuestionPrompt from "./QuestionPrompt";
+import type { Question } from "../data/questions";
 
 const Recorder: React.FC = () => {
+  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
+  
   const {
     // State
     recording,
@@ -39,6 +43,8 @@ const Recorder: React.FC = () => {
 
   return (
     <div className="recorder-container">
+      <QuestionPrompt onQuestionChange={setCurrentQuestion} />
+      
       <Controls
         recording={recording}
         recordedChunks={recordedChunks}
