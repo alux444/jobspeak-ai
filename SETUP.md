@@ -94,20 +94,24 @@ Frontend (React) → Backend Services
 ## API Endpoints
 
 ### Transcriber Service (Port 8002)
+
 - `POST /transcribe/` - Transcribe video/audio files
 - `GET /health` - Health check
 
 ### Audio Analysis Service (Port 8000)
+
 - `POST /analyse-audio/` - Analyze audio features (requires file + transcription text)
   - Form data: `file` (audio/video file) + `transcription` (text)
 - `GET /health` - Health check
 
 ### Sentiment Analysis Service (Port 8001)
+
 - `POST /sentiment-analysis` - Analyze sentiment
   - JSON body: `{"question": "...", "answer": "..."}`
 - `GET /health` - Health check
 
 ### Backend API (Port 3000)
+
 - `GET /` - Health check
 - Various Azure AI analysis endpoints
 
@@ -116,23 +120,27 @@ Frontend (React) → Backend Services
 ### Common Issues
 
 1. **Services not starting**
+
    ```bash
    # Check logs
    docker-compose logs [service-name]
-   
+
    # Restart specific service
    docker-compose restart [service-name]
    ```
 
 2. **Port conflicts**
+
    - Ensure ports 3000, 5173, 8000, 8001, 8002 are available
    - Stop any existing services using these ports
 
 3. **CORS issues**
+
    - All services have CORS enabled for development
    - Check browser console for CORS errors
 
 4. **Model loading issues**
+
    - First run may take longer as models are downloaded
    - Check service logs for model download progress
 
@@ -145,20 +153,24 @@ Frontend (React) → Backend Services
 ### Service-Specific Issues
 
 #### Transcriber Service
+
 - Requires Whisper model download on first run
 - Supports: .mp4, .mkv, .mov, .webm files
 
 #### Audio Analysis Service
+
 - Requires audio processing libraries
 - Supports: .wav, .mp3, .flac, .ogg, .webm files
 
 #### Sentiment Analysis Service
+
 - Requires Transformers models download on first run
 - Uses emotion detection model
 
 ## Development
 
 ### Frontend Development
+
 ```bash
 cd frontend
 npm install
@@ -166,6 +178,7 @@ npm run dev
 ```
 
 ### Backend Development
+
 ```bash
 cd backend
 npm install
@@ -173,6 +186,7 @@ npm run dev
 ```
 
 ### Individual Service Development
+
 Each service can be run independently for development:
 
 ```bash
@@ -192,12 +206,14 @@ python -m uvicorn main:app --reload --port 8001
 ## Testing
 
 ### Manual Testing
+
 1. Open http://localhost:5173
 2. Allow camera/microphone access
 3. Record a video
 4. Test transcription and analysis flow
 
 ### Automated Testing
+
 ```bash
 # Run all service tests
 python test-services.py
@@ -232,6 +248,7 @@ The test script now uses the real `test-recording.webm` file from the `media/` f
 **Test File**: `media/test-recording.webm`
 
 This provides:
+
 - ✅ **Real audio content** for transcription testing
 - ✅ **Actual speech patterns** for audio analysis
 - ✅ **Genuine sentiment data** for emotion detection
@@ -256,4 +273,4 @@ If you encounter issues:
 1. Check the service logs: `docker-compose logs [service-name]`
 2. Verify all services are running: `docker-compose ps`
 3. Test individual endpoints using the test script
-4. Check browser console for frontend errors 
+4. Check browser console for frontend errors
