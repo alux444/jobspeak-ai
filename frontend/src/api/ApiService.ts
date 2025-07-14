@@ -127,7 +127,7 @@ export async function analyzeRecording(blob: Blob, transcriptionText: string, qu
             throw new Error(`Keyword analysis failed: ${response.status} ${response.statusText} - ${errorText}`);
           });
         }
-        return response.text();
+        return response.json();
       }),
 
       // Response content analysis agent
@@ -143,7 +143,7 @@ export async function analyzeRecording(blob: Blob, transcriptionText: string, qu
             throw new Error(`Response content analysis failed: ${response.status} ${response.statusText} - ${errorText}`);
           });
         }
-        return response.text();
+        return response.json();
       }),
 
       // Response sentiment analysis agent
@@ -159,7 +159,7 @@ export async function analyzeRecording(blob: Blob, transcriptionText: string, qu
             throw new Error(`Response sentiment analysis failed: ${response.status} ${response.statusText} - ${errorText}`);
           });
         }
-        return response.text();
+        return response.json();
       }),
     ]);
 
@@ -192,8 +192,8 @@ export async function analyzeRecording(blob: Blob, transcriptionText: string, qu
     }
 
     if (keywordAnalysisResult.status === "fulfilled") {
-      agentResults.keywordAnalysis = keywordAnalysisResult.value;
-      console.log("Keyword analysis successful:", keywordAnalysisResult.value);
+      agentResults.keywordAnalysis = keywordAnalysisResult.value.result;
+      console.log("Keyword analysis successful:", keywordAnalysisResult.value.result);
     } else {
       const errorMsg = keywordAnalysisResult.reason.message;
       errors.push(`Keyword analysis failed: ${errorMsg}`);
@@ -201,8 +201,8 @@ export async function analyzeRecording(blob: Blob, transcriptionText: string, qu
     }
 
     if (responseContentResult.status === "fulfilled") {
-      agentResults.responseContent = responseContentResult.value;
-      console.log("Response content analysis successful:", responseContentResult.value);
+      agentResults.responseContent = responseContentResult.value.result;
+      console.log("Response content analysis successful:", responseContentResult.value.result);
     } else {
       const errorMsg = responseContentResult.reason.message;
       errors.push(`Response content analysis failed: ${errorMsg}`);
@@ -210,8 +210,8 @@ export async function analyzeRecording(blob: Blob, transcriptionText: string, qu
     }
 
     if (responseSentimentResult.status === "fulfilled") {
-      agentResults.responseSentiment = responseSentimentResult.value;
-      console.log("Response sentiment analysis successful:", responseSentimentResult.value);
+      agentResults.responseSentiment = responseSentimentResult.value.result;
+      console.log("Response sentiment analysis successful:", responseSentimentResult.value.result);
     } else {
       const errorMsg = responseSentimentResult.reason.message;
       errors.push(`Response sentiment analysis failed: ${errorMsg}`);

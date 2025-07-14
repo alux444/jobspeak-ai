@@ -14,12 +14,13 @@ const getKeywords = async (jobDescription: JobDescription): Promise<string> => {
   return response;
 };
 
-const callKeywordAnalysisAgent = async (keywords: string, qAndA: QuestionAndAnswer): Promise<void> => {
+const callKeywordAnalysisAgent = async (keywords: string, qAndA: QuestionAndAnswer): Promise<string> => {
   const agentId: AgentId = "keyword-analysis";
   const inputString = getKeywordAnalysisString(keywords + getBehaviouralKeywords(), qAndA);
 
   const result = await callAgent(agentId, inputString);
   console.log("Keyword Analysis Result:", result);
+  return result;
 };
 
 keywordAnalysisRouter.post("/", express.json(), async (req, res) => {
@@ -33,8 +34,8 @@ keywordAnalysisRouter.post("/", express.json(), async (req, res) => {
 
     const jobDescription: JobDescription = internJobDescriptions[0];
     const keywords = await getKeywords(jobDescription);
-    await callKeywordAnalysisAgent(keywords, questionAndAnswer);
-    res.status(200).send("Keyword analysis initiated successfully.");
+    const result = await callKeywordAnalysisAgent(keywords, questionAndAnswer);
+    res.status(200).json({ result });
   } catch (error) {
     console.error("Error in keyword analysis:", error);
     res.status(500).send("Failed to initiate keyword analysis.");
