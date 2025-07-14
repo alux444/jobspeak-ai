@@ -299,3 +299,28 @@
   border-left: 4px solid #28a745;
   margin: 0;
 }
+
+.agent-analysis {
+  margin-top: 20px;
+}
+
+.agent-result {
+  margin: 15px 0;
+  padding: 15px;
+  background-color: #e8f5e8;
+  border-radius: 5px;
+  border-left: 4px solid #28a745;
+}
+
+.agent-result h5 {
+  color: #155724;
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.1em;
+}
+
+.agent-result p {
+  color: #155724;
+  margin: 0;
+  line-height: 1.5;
+}

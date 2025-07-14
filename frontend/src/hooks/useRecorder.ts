@@ -1,7 +1,8 @@
 import { useRef, useState } from "react";
 import { transcribeRecording as transcribeRecordingApi, analyzeRecording, type AnalysisResponse } from "../api/ApiService";
+import type { Question } from "../data/questions";
 
-export const useRecorder = () => {
+export const useRecorder = (currentQuestion: Question | null) => {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const [recording, setRecording] = useState(false);
   const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
@@ -52,14 +53,14 @@ export const useRecorder = () => {
   };
 
   const processAnalysis = async () => {
-    if (recordedChunks.length === 0 || !transcription) return;
+    if (recordedChunks.length === 0 || !transcription || !currentQuestion) return;
 
     try {
       setIsProcessing(true);
       setError(null);
 
       const blob = new Blob(recordedChunks, { type: "video/webm" });
-      const results = await analyzeRecording(blob, transcription);
+      const results = await analyzeRecording(blob, transcription, currentQuestion.text);
 
       if (results.error) {
         setError(results.error);

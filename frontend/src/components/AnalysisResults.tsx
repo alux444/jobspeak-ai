@@ -32,6 +32,33 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({ analysisResults }) =>
         </div>
       )}
 
+      {analysisResults?.agentResults && (
+        <div className="agent-analysis">
+          <h4>AI Agent Analysis</h4>
+          
+          {analysisResults.agentResults.keywordAnalysis && (
+            <div className="agent-result">
+              <h5>Keyword Analysis</h5>
+              <p>{analysisResults.agentResults.keywordAnalysis}</p>
+            </div>
+          )}
+
+          {analysisResults.agentResults.responseContent && (
+            <div className="agent-result">
+              <h5>Response Content Analysis</h5>
+              <p>{analysisResults.agentResults.responseContent}</p>
+            </div>
+          )}
+
+          {analysisResults.agentResults.responseSentiment && (
+            <div className="agent-result">
+              <h5>Response Sentiment Analysis</h5>
+              <p>{analysisResults.agentResults.responseSentiment}</p>
+            </div>
+          )}
+        </div>
+      )}
+
       {analysisResults?.transcription && (
         <div className="transcription">
           <h4>Final Transcription</h4>
