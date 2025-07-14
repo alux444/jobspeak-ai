@@ -215,6 +215,8 @@ python -m uvicorn main:app --reload --port 8001
 ### Automated Testing
 
 ```bash
+# Change directory to tests
+cd tests
 # Run all service tests
 python test-services.py
 

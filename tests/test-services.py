@@ -8,6 +8,7 @@ import json
 import time
 import argparse
 import sys
+import os
 
 # Service URLs
 SERVICES = {
@@ -18,13 +19,34 @@ SERVICES = {
 }
 
 
-def load_test_video():
-    """Load the real test video file from media folder"""
+def load_test_inputs():
+    """Load test inputs from tests/test-inputs.json. Exit if missing or invalid."""
+    json_path = os.path.join(os.path.dirname(__file__), "test-inputs.json")
+    if not os.path.exists(json_path):
+        print(f"❌ Required input file {json_path} not found. Please create it.")
+        sys.exit(1)
     try:
-        with open("media/test-recording.webm", "rb") as f:
+        with open(json_path, "r") as f:
+            user_inputs = json.load(f)
+        return user_inputs
+    except Exception as e:
+        print(f"❌ Error loading input JSON: {e}")
+        sys.exit(1)
+
+
+# Global variable to hold loaded test inputs
+TEST_INPUTS = {}
+
+
+# Update load_test_video to use the path from TEST_INPUTS
+def load_test_video():
+    """Load the test video file from the path specified in TEST_INPUTS."""
+    video_path = TEST_INPUTS["test_video_path"]
+    try:
+        with open(video_path, "rb") as f:
             return f.read()
     except FileNotFoundError:
-        print("❌ test-recording.webm not found in media folder")
+        print(f"❌ {video_path} not found")
         return None
     except Exception as e:
         print(f"❌ Error loading test video: {e}")
@@ -88,10 +110,7 @@ def test_sentiment_service(timeout=30):
     """Test sentiment analysis service"""
     print("\nTesting sentiment analysis service...")
 
-    test_data = {
-        "question": "Tell me about yourself",
-        "answer": "I am a software developer with 5 years of experience.",
-    }
+    test_data = TEST_INPUTS["sentiment"]
 
     try:
         response = requests.post(
@@ -124,7 +143,7 @@ def test_audio_analysis_service(timeout=60):
         print("❌ Cannot test audio analysis service without test video file")
         return
 
-    test_transcription = "This is a test transcription for audio analysis."
+    test_transcription = TEST_INPUTS["transcription"]
 
     try:
         files = {"file": ("test-recording.webm", video_data, "video/webm")}
@@ -157,10 +176,7 @@ def test_backend_agent_endpoints(timeout=120):
     print("\nTesting backend Azure AI agent endpoints...")
 
     # Test data for all endpoints
-    test_q_and_a = {
-        "question": "Tell me about your experience with team collaboration",
-        "answer": "I have extensive experience working in cross-functional teams. In my previous role, I led a team of 5 developers and collaborated with product managers, designers, and stakeholders to deliver high-quality software solutions. I believe in open communication, regular feedback, and creating an inclusive environment where everyone feels valued and heard.",
-    }
+    test_q_and_a = TEST_INPUTS["backend_agents"]
 
     # Test 1: Response Content Analysis
     print("   Testing Response Content Analysis...")
@@ -278,8 +294,9 @@ def test_full_workflow(timeout=120):
 
         # Step 3: Test sentiment analysis with actual transcription
         print("   Step 3: Sentiment analysis...")
+        workflow_question = TEST_INPUTS["workflow_question"]
         sentiment_data = {
-            "question": "Tell me about yourself",
+            "question": workflow_question,
             "answer": edited_transcription,
         }
 
@@ -309,7 +326,7 @@ def test_full_workflow(timeout=120):
 
         # Test response content analysis with actual transcription
         agent_data = {
-            "question": "Tell me about yourself",
+            "question": workflow_question,
             "answer": edited_transcription,
         }
 
@@ -407,6 +424,8 @@ def list_available_services():
 
 def main():
     args = parse_arguments()
+    global TEST_INPUTS
+    TEST_INPUTS = load_test_inputs()
 
     if args.list:
         list_available_services()
