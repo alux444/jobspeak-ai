@@ -27,12 +27,25 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
+      # Mount Azure CLI configuration for authentication (writable)
+      - ~/.azure:/root/.azure
+      # Mount Azure CLI cache for token persistence (writable)
+      - ~/.azure-cli:/root/.azure-cli
+      # Note: Environment variables are read from host system or root .env file
     depends_on:
       - audio
       - sentiment
       - transcriber
     environment:
       - NODE_ENV=development
+      # Enable Azure CLI authentication
+      - AZURE_CONFIG_DIR=/root/.azure
+      # Azure AI Foundry configuration (set these in your .env file)
+      - AZURE_AI_FOUNDRY_ENDPOINT=${AZURE_AI_FOUNDRY_ENDPOINT:-}
+      - AZURE_AI_FOUNDRY_RESPONSE_CONTENT_ANALYSIS_AGENT_ID=${AZURE_AI_FOUNDRY_RESPONSE_CONTENT_ANALYSIS_AGENT_ID:-}
+      - AZURE_AI_FOUNDRY_RESPONSE_SENTIMENT_ANALYSIS_AGENT_ID=${AZURE_AI_FOUNDRY_RESPONSE_SENTIMENT_ANALYSIS_AGENT_ID:-}
+      - AZURE_AI_FOUNDRY_JOB_DESCRIPTION_KEYWORDS_GENERATION_AGENT_ID=${AZURE_AI_FOUNDRY_JOB_DESCRIPTION_KEYWORDS_GENERATION_AGENT_ID:-}
+      - AZURE_AI_FOUNDRY_KEYWORD_ANALYSIS_AGENT_ID=${AZURE_AI_FOUNDRY_KEYWORD_ANALYSIS_AGENT_ID:-}
 
   audio:
     platform: linux/amd64

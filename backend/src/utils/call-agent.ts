@@ -25,38 +25,26 @@ export async function callAgent(agentId: AgentId, userString: string): Promise<s
   console.log(`Created message, message ID: ${message.id}`);
 
   // Create and execute a run
-  const streamEventMessages = await client.runs.create(thread.id, azureAgentId).stream();
+  const run = await client.runs.create(thread.id, azureAgentId);
+  console.log(`Created run, run ID: ${run.id}`);
 
-  // for await (const eventMessage of streamEventMessages) {
-  //   switch (eventMessage.event) {
-  //     case RunStreamEvent.ThreadRunCreated:
-  //       console.log(`ThreadRun status: ${(eventMessage.data as ThreadRun).status}`);
-  //       break;
-  //     case MessageStreamEvent.ThreadMessageDelta:
-  //       {
-  //         const messageDelta = eventMessage.data as MessageDeltaChunk;
-  //         messageDelta.delta.content.forEach((contentPart) => {
-  //           if (contentPart.type === "text") {
-  //             const textContent = contentPart as MessageDeltaTextContent;
-  //             const textValue = textContent.text?.value || "No text";
-  //             console.log(`Text delta received:: ${textValue}`);
-  //           }
-  //         });
-  //       }
-  //       break;
+  // Wait for the run to complete
+  let runStatus = run.status;
+  while (runStatus === "queued" || runStatus === "in_progress") {
+    console.log(`Run status: ${runStatus}, waiting...`);
+    await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+    
+    const updatedRun = await client.runs.get(thread.id, run.id);
+    runStatus = updatedRun.status;
+    
+    if (runStatus === "failed" || runStatus === "cancelled") {
+      throw new Error(`Run failed with status: ${runStatus}`);
+    }
+  }
+  
+  console.log(`Run completed with status: ${runStatus}`);
 
-  //     case RunStreamEvent.ThreadRunCompleted:
-  //       console.log("Thread Run Completed");
-  //       break;
-  //     case ErrorEvent.Error:
-  //       console.log(`An error occurred. Data ${eventMessage.data}`);
-  //       break;
-  //     case DoneEvent.Done:
-  //       console.log("Stream completed.");
-  //       break;
-  //   }
-  // }
-
+  // Get messages after run completion
   const messagesIterator = client.messages.list(thread.id);
   const messagesArray = [];
   for await (const m of messagesIterator) {
@@ -64,22 +52,57 @@ export async function callAgent(agentId: AgentId, userString: string): Promise<s
   }
   console.log("Messages:", messagesArray);
 
-  // Iterate through messages and print details for each annotation
+  // If no assistant response yet, wait a bit more and try again
+  const assistantMessages = messagesArray.filter(m => m.role === "assistant");
+  if (assistantMessages.length === 0 || assistantMessages.every(m => !m.content || m.content.length === 0)) {
+    console.log("No assistant response yet, waiting a bit more...");
+    await new Promise(resolve => setTimeout(resolve, 3000)); // Wait 3 more seconds
+    
+    const messagesIterator2 = client.messages.list(thread.id);
+    const messagesArray2 = [];
+    for await (const m of messagesIterator2) {
+      messagesArray2.push(m);
+    }
+    console.log("Updated Messages:", messagesArray2);
+    
+    // Use the updated messages
+    messagesArray.length = 0; // Clear the array
+    messagesArray.push(...messagesArray2);
+  }
+
+  // Iterate through messages and extract assistant responses
   let response = "";
 
   console.log(`File Paths:`);
   console.log(`Message Details:`);
-  messagesArray.forEach((m) => {
-    console.log(`Type: ${m.content[0].type}`);
-    if (isOutputOfType<MessageTextContent>(m.content[0], "text")) {
-      const textContent = m.content[0] as MessageTextContent;
-      // console.log(`Text: ${textContent.text.value}`);
-      response += textContent.text.value;
+  
+  // Process messages in reverse order to get the latest assistant response
+  const reversedMessages = [...messagesArray].reverse();
+  
+  for (const m of reversedMessages) {
+    if (m.role === "assistant") {
+      console.log(`Processing assistant message: ${m.id}`);
+      
+      // Check if message has content and if the first content item exists
+      if (m.content && m.content.length > 0 && m.content[0]) {
+        console.log(`Content type: ${m.content[0].type}`);
+        if (isOutputOfType<MessageTextContent>(m.content[0], "text")) {
+          const textContent = m.content[0] as MessageTextContent;
+          const textValue = textContent.text?.value || "";
+          console.log(`Text content: ${textValue.substring(0, 100)}...`);
+          response += textValue;
+          break; // Use the first (most recent) assistant message with content
+        }
+      } else {
+        console.log(`Assistant message ${m.id} has no content or empty content array`);
+      }
     }
-    // console.log(`File ID: ${m.id}`);
-    // firstId and lastId are properties of the paginator, not the messages array
-    // Removing these references as they don't exist in this context
-  });
+  }
+
+  if (!response) {
+    console.log("No assistant response found with text content");
+    return "No response generated by the agent.";
+  }
 
   return response;
 }
