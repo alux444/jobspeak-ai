@@ -6,7 +6,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>Interview Response Analyzer</h1>
-        <p>Record your response to a behavioral question and get AI feedback</p>
+        <p>Practice with random behavioral questions and get AI-powered feedback on your responses</p>
       </header>
       <main>
         <Recorder />
