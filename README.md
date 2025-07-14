@@ -48,7 +48,8 @@ p4p/
 ├── SETUP.md                  # Project setup and testing guide
 ├── docker-compose.yml        # Project docker compose
 ├── Dockerfile.base           # Compose base image
-├── test-services.py          # Services health + endpoint checks
+│
+├── tests                     # Project tests
 │
 ├── audio-analysis            # Audio analysis with fluency, confidence and emotion detection
 │
