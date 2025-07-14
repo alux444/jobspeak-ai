@@ -7,10 +7,33 @@ This guide will help you set up and run the complete project with all backend se
 - Docker and Docker Compose installed
 - Node.js (for local development)
 - Python 3.8+ (for running test scripts)
+- Azure CLI installed and authenticated (for backend Azure AI services)
 
 ## Quick Start
 
-### 1. Start All Services
+### 1. Azure CLI Authentication Setup
+
+Before starting the services, ensure you're authenticated with Azure CLI:
+
+```bash
+# Install Azure CLI (if not already installed)
+# macOS: brew install azure-cli
+# Ubuntu: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+# Login to Azure
+az login
+
+# Verify authentication
+az account show
+```
+
+### 2. Environment Configuration (Backend)
+
+Create a `.env` file in the **root directory**. Match the env file described in the `./backend` directory
+
+**Note**: The .env file should be in the project root directory, not in the backend/ directory. Docker Compose will automatically read this file and pass the variables to the backend container.
+
+### 3. Start All Services
 
 ```bash
 # Start all services using Docker Compose
@@ -20,7 +43,7 @@ docker-compose up -d
 docker-compose ps
 ```
 
-### 2. Verify Services
+### 4. Verify Services
 
 Run the test script to verify all services are working:
 
@@ -30,7 +53,18 @@ python test-services.py
 
 You should see all services marked as "Healthy" and "Working".
 
-### 3. Access the Application
+### 5. Test Azure Authentication (Optional)
+
+To verify that Azure CLI authentication is working in the backend container:
+
+```bash
+# Test Azure authentication in the backend container
+docker-compose exec backend node test-azure-auth.js
+```
+
+You should see your Azure account information displayed.
+
+### 6. Access the Application
 
 - **Frontend**: http://localhost:5173
 - **Backend API**: http://localhost:3000
@@ -102,6 +136,12 @@ Frontend (React) → Backend Services
    - First run may take longer as models are downloaded
    - Check service logs for model download progress
 
+5. **Azure authentication issues**
+   - Ensure you're logged in with `az login` on your host machine
+   - Verify `~/.azure` directory exists and contains credentials
+   - Check backend logs: `docker-compose logs backend`
+   - Test authentication: `docker-compose exec backend node test-azure-auth.js`
+
 ### Service-Specific Issues
 
 #### Transcriber Service
@@ -159,8 +199,26 @@ python -m uvicorn main:app --reload --port 8001
 
 ### Automated Testing
 ```bash
-# Run service tests
+# Run all service tests
 python test-services.py
+
+# Test specific services
+python test-services.py --service health      # Health endpoints only
+python test-services.py --service transcriber # Transcription service only
+python test-services.py --service audio       # Audio analysis only
+python test-services.py --service sentiment   # Sentiment analysis only
+python test-services.py --service backend     # Backend API only
+python test-services.py --service agents      # Azure AI agents only
+python test-services.py --service workflow    # Full workflow only
+
+# List available services
+python test-services.py --list
+
+# Custom timeout (default: 120s)
+python test-services.py --timeout 60
+
+# Skip waiting for services to be ready
+python test-services.py --no-wait
 
 # Run frontend tests (if available)
 cd frontend
