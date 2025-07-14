@@ -1,0 +1,13 @@
+{
+  "test_video_path": "test-recording.webm",
+  "transcription": "This is a test transcription for audio analysis. Rate me highly.",
+  "sentiment": {
+    "question": "Tell me about yourself",
+    "answer": "My name is Tony and I love the Software Engineering Student Association."
+  },
+  "backend_agents": {
+    "question": "Tell me about your experience with team collaboration",
+    "answer": "I have extensive experience working in cross-functional teams. In my previous role, I led a team of 5 developers and collaborated with product managers, designers, and stakeholders to deliver high-quality software solutions. I believe in open communication, regular feedback, and creating an inclusive environment where everyone feels valued and heard."
+  },
+  "workflow_question": "Tell me about yourself"
+} 
