@@ -98,18 +98,19 @@
 .transcription-editor {
   margin: 20px 0;
   padding: 20px;
-  background-color: #f8f9fa;
+  background-color: #1a202c;
   border-radius: 8px;
-  border: 1px solid #dee2e6;
+  border: 1px solid #4a5568;
+  color: #e2e8f0;
 }
 
 .transcription-editor h3 {
   margin-top: 0;
-  color: #495057;
+  color: #f7fafc;
 }
 
 .transcription-editor p {
-  color: #6c757d;
+  color: #a0aec0;
   margin-bottom: 15px;
 }
 
@@ -117,18 +118,20 @@
   width: 100%;
   max-width: 600px;
   padding: 12px;
-  border: 1px solid #ced4da;
+  border: 1px solid #4a5568;
   border-radius: 4px;
   font-family: inherit;
   font-size: 14px;
   line-height: 1.5;
   resize: vertical;
+  background-color: #2d3748;
+  color: #e2e8f0;
 }
 
 .transcription-editor textarea:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+  border-color: #3182ce;
+  box-shadow: 0 0 0 2px rgba(49, 130, 206, 0.25);
 }
 
 .transcription-actions {
@@ -246,18 +249,19 @@
 .analysis-results {
   margin: 20px 0;
   padding: 20px;
-  background-color: #f8f9fa;
+  background-color: #1a202c;
   border-radius: 8px;
-  border: 1px solid #dee2e6;
+  border: 1px solid #4a5568;
+  color: #e2e8f0;
 }
 
 .analysis-results h3 {
   margin-top: 0;
-  color: #495057;
+  color: #f7fafc;
 }
 
 .analysis-results h4 {
-  color: #6c757d;
+  color: #a0aec0;
   margin-top: 20px;
   margin-bottom: 10px;
 }
@@ -265,19 +269,19 @@
 .feature {
   margin: 15px 0;
   padding: 15px;
-  background-color: white;
+  background-color: #2d3748;
   border-radius: 5px;
-  border-left: 4px solid #007bff;
+  border-left: 4px solid #3182ce;
 }
 
 .feature h5 {
   margin-top: 0;
-  color: #495057;
+  color: #e2e8f0;
 }
 
 .feature p {
   margin: 5px 0;
-  color: #6c757d;
+  color: #a0aec0;
 }
 
 .sentiment-analysis pre {
@@ -293,10 +297,11 @@
 }
 
 .transcription p {
-  background-color: white;
+  background-color: #2d3748;
+  color: #e2e8f0;
   padding: 15px;
   border-radius: 5px;
-  border-left: 4px solid #28a745;
+  border-left: 4px solid #48bb78;
   margin: 0;
 }
 
@@ -307,20 +312,47 @@
 .agent-result {
   margin: 15px 0;
   padding: 15px;
-  background-color: #e8f5e8;
+  background-color: #1a202c;
   border-radius: 5px;
-  border-left: 4px solid #28a745;
+  border-left: 4px solid #48bb78;
 }
 
 .agent-result h5 {
-  color: #155724;
+  color: #48bb78;
   margin-top: 0;
   margin-bottom: 10px;
   font-size: 1.1em;
 }
 
 .agent-result p {
-  color: #155724;
+  color: #e2e8f0;
   margin: 0;
   line-height: 1.5;
+}
+
+.agent-result pre {
+  background-color: #2d3748;
+  color: #e2e8f0;
+  padding: 15px;
+  border-radius: 5px;
+  overflow-x: auto;
+  font-size: 12px;
+  border: 1px solid #4a5568;
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.audio-analysis pre,
+.sentiment-analysis pre {
+  background-color: #2d3748;
+  color: #e2e8f0;
+  padding: 15px;
+  border-radius: 5px;
+  overflow-x: auto;
+  font-size: 12px;
+  border: 1px solid #4a5568;
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }

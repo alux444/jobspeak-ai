@@ -8,6 +8,7 @@ interface AnalysisResultsProps {
 const AnalysisResults: React.FC<AnalysisResultsProps> = ({ analysisResults }) => {
   if (!analysisResults) return null;
 
+  // TODO: format all the results
   return (
     <div className="analysis-results">
       <h3>Analysis Results</h3>
@@ -15,13 +16,7 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({ analysisResults }) =>
       {analysisResults?.results && (
         <div className="audio-analysis">
           <h4>Audio Analysis</h4>
-          {Object.entries(analysisResults.results).map(([feature, data]: [string, { Score: number; Feedback: string }]) => (
-            <div key={feature} className="feature">
-              <h5>{feature}</h5>
-              <p>Score: {data.Score}/10</p>
-              <p>Feedback: {data.Feedback}</p>
-            </div>
-          ))}
+          <pre>{JSON.stringify(analysisResults.results, null, 2)}</pre>
         </div>
       )}
 
@@ -39,21 +34,21 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({ analysisResults }) =>
           {analysisResults.agentResults.keywordAnalysis && (
             <div className="agent-result">
               <h5>Keyword Analysis</h5>
-              <p>{analysisResults.agentResults.keywordAnalysis}</p>
+              <pre>{analysisResults.agentResults.keywordAnalysis}</pre>
             </div>
           )}
 
           {analysisResults.agentResults.responseContent && (
             <div className="agent-result">
               <h5>Response Content Analysis</h5>
-              <p>{analysisResults.agentResults.responseContent}</p>
+              <pre>{analysisResults.agentResults.responseContent}</pre>
             </div>
           )}
 
           {analysisResults.agentResults.responseSentiment && (
             <div className="agent-result">
               <h5>Response Sentiment Analysis</h5>
-              <p>{analysisResults.agentResults.responseSentiment}</p>
+              <pre>{analysisResults.agentResults.responseSentiment}</pre>
             </div>
           )}
         </div>
