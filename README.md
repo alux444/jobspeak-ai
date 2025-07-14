@@ -23,10 +23,11 @@ To run the project, you will need to set up a Python virtual environment and ins
 
 ### Prerequisites
 
-- [Python 3.11 or later](https://www.python.org/downloads/)
+- [Python 3.8 or later](https://www.python.org/downloads/)
 - [Docker](https://www.docker.com/products/docker-desktop) for running the backend and models
 - [Node.js](https://nodejs.org/en/download/) for the frontend React app
-- [PyTorch](https://download.pytorch.org/whl/cpu/torch-2.3.0%2Bcpu-cp311-cp311-linux_x86_64.whl) for local model inference
+- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/?view=azure-cli-latest) for Azure auth
+- [Azure AI Foundry Instance](https://azure.microsoft.com/en-us/products/ai-foundry) for AI agents
 
 ### Installation
 
@@ -37,45 +38,36 @@ To run the project, you will need to set up a Python virtual environment and ins
    cd p4p
    ```
 
-2. Set up a Python virtual environment:
-
-   ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-   ```
-
-3. Make sure to download the local PyTorch wheel file from [here](https://download.pytorch.org/whl/cpu/torch-2.3.0%2Bcpu-cp311-cp311-linux_x86_64.whl) and place it in the root directory of the project. Do not change the filename.
-
-4. In `backend`, create a `.env` file with the required environment variables. You can use the provided `.env.example` as a template.
-
-   ```bash
-   cp backend/.env.example backend/.env
-   ```
-
-   Fill in the `.env` file with your Azure Cognitive Services keys and endpoints.
-
-5. From the root directory, run the Docker container:
-   ```bash
-   docker compose up --build
-   ```
+2. Follow steps in `SETUP.md` for a comprehensive setup guide
 
 ## File structure
 
 ```
 p4p/
 ├── README.md                 # This README file
+├── SETUP.md                  # Project setup and testing guide
+├── docker-compose.yml        # Project docker compose
+├── Dockerfile.base           # Compose base image
+├── test-services.py          # Services health + endpoint checks
+│
 ├── audio-analysis            # Audio analysis with fluency, confidence and emotion detection
+│
 ├── backend                   # Simple backend for connecting to our cloud models
+│
 ├── expression-recognition/   # Attempts with expression recognition libraries
 │   ├── deepface/             # Deepface library
 │   │   ├── live              # Example app with live recording
 │   │   └── recording         # Example app with video file parsing
 │   └── fer/                  # Fer library
 │       └── live              # Example app with live recording
+│
 ├── agent-prompts             # Initial agent prompts for each Azure model
+│
 ├── frontend                  # React webapp for prompting questions + recording responses
+│
 ├── media                     # Relevant media files
+│
 ├── sentiment-analysis        # Sentiment analysis models
-├── transcriber               # Transcribing app using OpenAI Whisper
-└── torch.whl                 # Local PyTorch wheel file (torch-2.3.0+cpu-cp311-cp311-linux_x86_64.whl)
+│
+└── transcriber               # Transcribing app using OpenAI Whisper
 ```
