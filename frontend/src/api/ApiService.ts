@@ -10,6 +10,16 @@ export interface AnalysisResponse {
   sentiment?: string;
   transcription?: string;
   error?: string;
+  agentResults?: {
+    keywordAnalysis?: string;
+    responseContent?: string;
+    responseSentiment?: string;
+  };
+}
+
+export interface QuestionAndAnswer {
+  question: string;
+  answer: string;
 }
 
 // Base URLs for services - these should match the Docker service names
@@ -46,7 +56,7 @@ export async function transcribeRecording(blob: Blob): Promise<string> {
   }
 }
 
-export async function analyzeRecording(blob: Blob, transcriptionText: string): Promise<AnalysisResponse> {
+export async function analyzeRecording(blob: Blob, transcriptionText: string, question: string): Promise<AnalysisResponse> {
   try {
     // Prepare form data for audio analysis with transcription
     const audioFormData = new FormData();
@@ -55,14 +65,26 @@ export async function analyzeRecording(blob: Blob, transcriptionText: string): P
 
     // Prepare sentiment analysis request
     const sentimentRequest = {
-      question: "Tell me about yourself", // This would need to be dynamic in a real implementation
+      question: question,
       answer: transcriptionText,
     };
 
-    console.log("Starting parallel analysis requests...");
+    // Prepare agent analysis requests
+    const questionAndAnswer: QuestionAndAnswer = {
+      question: question,
+      answer: transcriptionText,
+    };
 
-    // Run both analyses in parallel using Promise.allSettled
-    const [audioAnalysisResult, sentimentAnalysisResult] = await Promise.allSettled([
+    console.log("Starting comprehensive analysis requests...");
+
+    // Run all analyses in parallel using Promise.allSettled
+    const [
+      audioAnalysisResult, 
+      sentimentAnalysisResult,
+      keywordAnalysisResult,
+      responseContentResult,
+      responseSentimentResult
+    ] = await Promise.allSettled([
       // Audio analysis
       fetch(`${API_BASE_URLS.audioAnalysis}/analyse-audio/`, {
         method: "POST",
@@ -91,12 +113,65 @@ export async function analyzeRecording(blob: Blob, transcriptionText: string): P
         }
         return response.json();
       }),
+
+      // Keyword analysis agent
+      fetch(`${API_BASE_URLS.backend}/keyword-analysis`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ questionAndAnswer }),
+      }).then((response) => {
+        if (!response.ok) {
+          return response.text().then(errorText => {
+            throw new Error(`Keyword analysis failed: ${response.status} ${response.statusText} - ${errorText}`);
+          });
+        }
+        return response.json();
+      }),
+
+      // Response content analysis agent
+      fetch(`${API_BASE_URLS.backend}/response-content`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(questionAndAnswer),
+      }).then((response) => {
+        if (!response.ok) {
+          return response.text().then(errorText => {
+            throw new Error(`Response content analysis failed: ${response.status} ${response.statusText} - ${errorText}`);
+          });
+        }
+        return response.json();
+      }),
+
+      // Response sentiment analysis agent
+      fetch(`${API_BASE_URLS.backend}/response-sentiment`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(questionAndAnswer),
+      }).then((response) => {
+        if (!response.ok) {
+          return response.text().then(errorText => {
+            throw new Error(`Response sentiment analysis failed: ${response.status} ${response.statusText} - ${errorText}`);
+          });
+        }
+        return response.json();
+      }),
     ]);
 
     // Handle results and collect any errors
     const errors: string[] = [];
     let audioResults = null;
     let sentimentResults = null;
+    const agentResults: {
+      keywordAnalysis?: string;
+      responseContent?: string;
+      responseSentiment?: string;
+    } = {};
 
     if (audioAnalysisResult.status === "fulfilled") {
       audioResults = audioAnalysisResult.value;
@@ -116,8 +191,35 @@ export async function analyzeRecording(blob: Blob, transcriptionText: string): P
       console.error("Sentiment analysis failed:", errorMsg);
     }
 
-    // If both analyses failed, return error
-    if (errors.length === 2) {
+    if (keywordAnalysisResult.status === "fulfilled") {
+      agentResults.keywordAnalysis = keywordAnalysisResult.value.result;
+      console.log("Keyword analysis successful:", keywordAnalysisResult.value.result);
+    } else {
+      const errorMsg = keywordAnalysisResult.reason.message;
+      errors.push(`Keyword analysis failed: ${errorMsg}`);
+      console.error("Keyword analysis failed:", errorMsg);
+    }
+
+    if (responseContentResult.status === "fulfilled") {
+      agentResults.responseContent = responseContentResult.value.result;
+      console.log("Response content analysis successful:", responseContentResult.value.result);
+    } else {
+      const errorMsg = responseContentResult.reason.message;
+      errors.push(`Response content analysis failed: ${errorMsg}`);
+      console.error("Response content analysis failed:", errorMsg);
+    }
+
+    if (responseSentimentResult.status === "fulfilled") {
+      agentResults.responseSentiment = responseSentimentResult.value.result;
+      console.log("Response sentiment analysis successful:", responseSentimentResult.value.result);
+    } else {
+      const errorMsg = responseSentimentResult.reason.message;
+      errors.push(`Response sentiment analysis failed: ${errorMsg}`);
+      console.error("Response sentiment analysis failed:", errorMsg);
+    }
+
+    // If all analyses failed, return error
+    if (errors.length === 5) {
       return {
         error: `All analyses failed: ${errors.join("; ")}`,
         transcription: transcriptionText,
@@ -129,6 +231,7 @@ export async function analyzeRecording(blob: Blob, transcriptionText: string): P
       results: audioResults?.results || undefined,
       sentiment: sentimentResults || undefined,
       transcription: transcriptionText,
+      agentResults,
       ...(errors.length > 0 && { error: `Partial failure: ${errors.join("; ")}` }),
     };
   } catch (error) {
@@ -140,13 +243,13 @@ export async function analyzeRecording(blob: Blob, transcriptionText: string): P
   }
 }
 
-export async function uploadRecording(blob: Blob): Promise<AnalysisResponse> {
+export async function uploadRecording(blob: Blob, question: string): Promise<AnalysisResponse> {
   try {
     // Step 1: Upload to transcriber service first
     const transcriptionText = await transcribeRecording(blob);
 
-    // Step 2: Analyze with the transcription
-    return await analyzeRecording(blob, transcriptionText);
+    // Step 2: Analyze with the transcription and question
+    return await analyzeRecording(blob, transcriptionText, question);
   } catch (error) {
     console.error("Analysis error:", error);
     return {

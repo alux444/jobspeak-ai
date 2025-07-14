@@ -17,8 +17,8 @@ responseContentRouter.post("/", express.json(), async (req, res) => {
     }
     
     const inputString = getInputString(qAndA);
-    await callAgent(agentId, inputString);
-    res.status(200).send("Response content analysis initiated successfully.");
+    const result = await callAgent(agentId, inputString);
+    res.status(200).json({ result });
   } catch (error) {
     console.error("Error in response content analysis:", error);
     res.status(500).send("Failed to initiate response content analysis.");

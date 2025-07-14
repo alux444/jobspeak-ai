@@ -31,7 +31,7 @@ const Recorder: React.FC = () => {
     handleTranscriptionEdit,
     handleTranscriptionSubmit,
     handleTranscriptionCancel,
-  } = useRecorder();
+  } = useRecorder(currentQuestion);
 
   // Memoize the playback URL so it doesn't get recreated on every render
   const playbackUrl = useMemo(() => {
