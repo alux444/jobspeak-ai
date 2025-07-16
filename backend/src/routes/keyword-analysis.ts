@@ -4,6 +4,7 @@ import { AgentId } from "../types/agents";
 import { internJobDescriptions } from "../mocks/job-descriptions/intern";
 import { getBehaviouralKeywords, getJobDescriptionString, getKeywordAnalysisString } from "../utils/util";
 import { JobDescription, QuestionAndAnswer } from "../types/mocks";
+import type { KeywordAnalysis } from "../types/feedbackSummariser";
 
 export const keywordAnalysisRouter = express.Router();
 
@@ -26,7 +27,7 @@ const callKeywordAnalysisAgent = async (keywords: string, qAndA: QuestionAndAnsw
 keywordAnalysisRouter.post("/", express.json(), async (req, res) => {
   try {
     const { questionAndAnswer }: { questionAndAnswer: QuestionAndAnswer } = req.body;
-    
+
     if (!questionAndAnswer || !questionAndAnswer.question || !questionAndAnswer.answer) {
       res.status(400).send("Missing required questionAndAnswer data in request body");
       return;
@@ -34,8 +35,15 @@ keywordAnalysisRouter.post("/", express.json(), async (req, res) => {
 
     const jobDescription: JobDescription = internJobDescriptions[0];
     const keywords = await getKeywords(jobDescription);
-    const result = await callKeywordAnalysisAgent(keywords, questionAndAnswer);
-    res.status(200).json({ result });
+    let result = await callKeywordAnalysisAgent(keywords, questionAndAnswer);
+    try {
+      let parsed: KeywordAnalysis = JSON.parse(result);
+      res.status(200).json(parsed);
+      return;
+    } catch {
+      res.status(500).send("Agent did not return valid KeywordAnalysis JSON");
+      return;
+    }
   } catch (error) {
     console.error("Error in keyword analysis:", error);
     res.status(500).send("Failed to initiate keyword analysis.");

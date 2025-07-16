@@ -7,6 +7,13 @@ type AnalysisStep = "audio" | "keyword" | "content" | "sentiment" | "summary";
 type StepStatus = "pending" | "in_progress" | "done" | "error";
 type AnalysisProgress = Record<AnalysisStep, StepStatus>;
 
+function unwrapResult<T>(res: T | { result: T }): T {
+  if (res && typeof res === "object" && "result" in res) {
+    return (res as { result: T }).result;
+  }
+  return res as T;
+}
+
 export const useRecorder = (currentQuestion: Question | null) => {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const [recording, setRecording] = useState(false);
@@ -86,7 +93,7 @@ export const useRecorder = (currentQuestion: Question | null) => {
       // Keyword analysis
       try {
         const keywordRes = await analyseKeyword(currentQuestion.text, transcription);
-        keywordResults = keywordRes.result;
+        keywordResults = unwrapResult(keywordRes);
         setAnalysisProgress((prev) => ({ ...prev, keyword: "done", content: "in_progress" }));
       } catch (err) {
         setAnalysisProgress((prev) => ({ ...prev, keyword: "error" }));
@@ -96,7 +103,7 @@ export const useRecorder = (currentQuestion: Question | null) => {
       // Content analysis
       try {
         const contentRes = await analyseContent(currentQuestion.text, transcription);
-        contentResults = contentRes.result;
+        contentResults = unwrapResult(contentRes);
         setAnalysisProgress((prev) => ({ ...prev, content: "done", sentiment: "in_progress" }));
       } catch (err) {
         setAnalysisProgress((prev) => ({ ...prev, content: "error" }));
@@ -106,7 +113,7 @@ export const useRecorder = (currentQuestion: Question | null) => {
       // Sentiment analysis
       try {
         const sentimentRes = await analyseSentiment(currentQuestion.text, transcription);
-        sentimentResults = sentimentRes.result;
+        sentimentResults = unwrapResult(sentimentRes);
         setAnalysisProgress((prev) => ({ ...prev, sentiment: "done", summary: "in_progress" }));
       } catch (err) {
         setAnalysisProgress((prev) => ({ ...prev, sentiment: "error" }));

@@ -3,6 +3,7 @@ import { callAgent } from "../utils/call-agent";
 import { AgentId } from "../types/agents";
 import { getInputString } from "../utils/util";
 import { QuestionAndAnswer } from "../types/mocks";
+import type { ResponseContentAnalysis } from "../types/feedbackSummariser";
 
 export const responseContentRouter = express.Router();
 
@@ -17,8 +18,15 @@ responseContentRouter.post("/", express.json(), async (req, res) => {
     }
     
     const inputString = getInputString(qAndA);
-    const result = await callAgent(agentId, inputString);
-    res.status(200).json({ result });
+    let result = await callAgent(agentId, inputString);
+    try {
+      const parsed: { result: ResponseContentAnalysis } = JSON.parse(result);
+      res.status(200).json(parsed);
+      return;
+    } catch {
+      res.status(500).send("Agent did not return valid ResponseContentAnalysis JSON");
+      return;
+    }
   } catch (error) {
     console.error("Error in response content analysis:", error);
     res.status(500).send("Failed to initiate response content analysis.");
