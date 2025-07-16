@@ -22,7 +22,7 @@ const Recorder: React.FC = () => {
     showTranscription,
     analysisResults,
     error,
-
+    analysisProgress,
     // Actions
     startRecording,
     stopRecording,
@@ -72,6 +72,7 @@ const Recorder: React.FC = () => {
         isTranscribing={isTranscribing}
         isProcessing={isProcessing}
         error={error}
+        analysisProgress={analysisProgress}
       />
 
       {showTranscription && (

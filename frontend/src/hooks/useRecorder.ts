@@ -1,6 +1,11 @@
 import { useRef, useState } from "react";
-import { transcribeRecording as transcribeRecordingApi, analyzeRecording, type AnalysisResponse } from "../api/ApiService";
+import { transcribeRecording as transcribeRecordingApi, analyseKeyword, analyseContent, analyseSentiment, summariseFeedback, type AnalysisResponse } from "../api/ApiService";
 import type { Question } from "../data/questions";
+import type { KeywordAnalysis, ResponseContentAnalysis, ResponseSentimentAnalysis, FeedbackSummary } from "../types/feedbackSummariser";
+
+type AnalysisStep = "audio" | "keyword" | "content" | "sentiment" | "summary";
+type StepStatus = "pending" | "in_progress" | "done" | "error";
+type AnalysisProgress = Record<AnalysisStep, StepStatus>;
 
 export const useRecorder = (currentQuestion: Question | null) => {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -13,6 +18,13 @@ export const useRecorder = (currentQuestion: Question | null) => {
   const [showTranscription, setShowTranscription] = useState(false);
   const [analysisResults, setAnalysisResults] = useState<AnalysisResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [analysisProgress, setAnalysisProgress] = useState<AnalysisProgress>({
+    audio: "pending",
+    keyword: "pending",
+    content: "pending",
+    sentiment: "pending",
+    summary: "pending",
+  });
 
   const stopRecording = () => {
     mediaRecorderRef.current?.stop();
@@ -42,7 +54,7 @@ export const useRecorder = (currentQuestion: Question | null) => {
 
       const blob = new Blob(recordedChunks, { type: "video/webm" });
       const transcriptionText = await transcribeRecordingApi(blob);
-      
+
       setTranscription(transcriptionText);
       setShowTranscription(true);
     } catch (err) {
@@ -58,18 +70,105 @@ export const useRecorder = (currentQuestion: Question | null) => {
     try {
       setIsProcessing(true);
       setError(null);
+      setAnalysisProgress({
+        audio: "in_progress",
+        keyword: "pending",
+        content: "pending",
+        sentiment: "pending",
+        summary: "pending",
+      });
 
-      const blob = new Blob(recordedChunks, { type: "video/webm" });
-      const results = await analyzeRecording(blob, transcription, currentQuestion.text);
+      let keywordResults: KeywordAnalysis | null = null;
+      let contentResults: ResponseContentAnalysis | null = null;
+      let sentimentResults: ResponseSentimentAnalysis | null = null;
+      let feedbackSummary: FeedbackSummary | null = null;
 
-      if (results.error) {
-        setError(results.error);
-      } else {
-        setAnalysisResults(results);
-        setShowTranscription(false); // Hide transcription after analysis
+      // Keyword analysis
+      try {
+        const keywordRes = await analyseKeyword(currentQuestion.text, transcription);
+        keywordResults = keywordRes.result;
+        setAnalysisProgress((prev) => ({ ...prev, keyword: "done", content: "in_progress" }));
+      } catch (err) {
+        setAnalysisProgress((prev) => ({ ...prev, keyword: "error" }));
+        throw err;
       }
+
+      // Content analysis
+      try {
+        const contentRes = await analyseContent(currentQuestion.text, transcription);
+        contentResults = contentRes.result;
+        setAnalysisProgress((prev) => ({ ...prev, content: "done", sentiment: "in_progress" }));
+      } catch (err) {
+        setAnalysisProgress((prev) => ({ ...prev, content: "error" }));
+        throw err;
+      }
+
+      // Sentiment analysis
+      try {
+        const sentimentRes = await analyseSentiment(currentQuestion.text, transcription);
+        sentimentResults = sentimentRes.result;
+        setAnalysisProgress((prev) => ({ ...prev, sentiment: "done", summary: "in_progress" }));
+      } catch (err) {
+        setAnalysisProgress((prev) => ({ ...prev, sentiment: "error" }));
+        throw err;
+      }
+
+      // Feedback summary
+      try {
+        feedbackSummary = await summariseFeedback(keywordResults!, contentResults!, sentimentResults!);
+        setAnalysisProgress((prev) => ({ ...prev, summary: "done" }));
+      } catch (err) {
+        setAnalysisProgress((prev) => ({ ...prev, summary: "error" }));
+        throw err;
+      }
+
+      setAnalysisResults({
+        feedbackSummary: feedbackSummary!,
+        agentResults: {
+          keywordAnalysis: keywordResults!,
+          responseContent: contentResults!,
+          responseSentiment: sentimentResults!,
+        },
+        error: undefined,
+      });
+      setShowTranscription(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An unknown error occurred");
+      const errorMsg = err instanceof Error ? err.message : "An unknown error occurred";
+      setError(errorMsg);
+      setAnalysisResults({
+        feedbackSummary: {
+          verdict: "",
+          strengths: "",
+          weaknesses: "",
+          improvement_suggestion: "",
+          overall_score: 0,
+        },
+        agentResults: {
+          keywordAnalysis: {
+            matched_keywords: [],
+            missing_keywords: [],
+            score: 0,
+            notes: "",
+          },
+          responseContent: {
+            assessment: [],
+            scores: {
+              clarityAndStructure: 0,
+              relevance: 0,
+              useOfStarMethod: 0,
+              impact: 0,
+              authenticity: 0,
+            },
+            improvement: [],
+          },
+          responseSentiment: {
+            sentiment: "",
+            confidence: 0,
+            evidence: [],
+          },
+        },
+        error: errorMsg,
+      });
     } finally {
       setIsProcessing(false);
     }
@@ -125,7 +224,8 @@ export const useRecorder = (currentQuestion: Question | null) => {
     showTranscription,
     analysisResults,
     error,
-    
+    analysisProgress,
+
     // Actions
     startRecording,
     stopRecording,

@@ -1,12 +1,11 @@
-export interface FeedbackSummary {
-  verdict: string;
-  strengths: string;
-  weaknesses: string;
-  improvement_suggestion: string;
-  overall_score: number;
-}
+import type {
+  KeywordAnalysis,
+  ResponseContentAnalysis,
+  ResponseSentimentAnalysis,
+  FeedbackSummary
+} from "../types/feedbackSummariser";
+
 export interface AnalysisResponse {
-  feedbackSummary?: FeedbackSummary;
   results?: {
     [feature: string]: {
       Score: number;
@@ -18,10 +17,11 @@ export interface AnalysisResponse {
   sentiment?: string;
   transcription?: string;
   error?: string;
-  agentResults?: {
-    keywordAnalysis?: string;
-    responseContent?: string;
-    responseSentiment?: string;
+  feedbackSummary: FeedbackSummary;
+  agentResults: {
+    keywordAnalysis: KeywordAnalysis;
+    responseContent: ResponseContentAnalysis;
+    responseSentiment: ResponseSentimentAnalysis;
   };
 }
 
@@ -79,7 +79,7 @@ export async function analyseAudio(blob: Blob, transcriptionText: string) {
   return response.json();
 }
 
-export async function analyseKeyword(question: string, answer: string) {
+export async function analyseKeyword(question: string, answer: string): Promise<{ result: KeywordAnalysis }> {
   const questionAndAnswer = { question, answer };
   const response = await fetch(`${API_BASE_URLS.backend}/keyword-analysis`, {
     method: "POST",
@@ -93,7 +93,7 @@ export async function analyseKeyword(question: string, answer: string) {
   return response.json();
 }
 
-export async function analyseContent(question: string, answer: string) {
+export async function analyseContent(question: string, answer: string): Promise<{ result: ResponseContentAnalysis }> {
   const questionAndAnswer = { question, answer };
   const response = await fetch(`${API_BASE_URLS.backend}/response-content`, {
     method: "POST",
@@ -107,7 +107,7 @@ export async function analyseContent(question: string, answer: string) {
   return response.json();
 }
 
-export async function analyseSentiment(question: string, answer: string) {
+export async function analyseSentiment(question: string, answer: string): Promise<{ result: ResponseSentimentAnalysis }> {
   const response = await fetch(`${API_BASE_URLS.backend}/response-sentiment`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -121,7 +121,15 @@ export async function analyseSentiment(question: string, answer: string) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function summariseFeedback(keywordAnalysis: any, responseContentAnalysis: any, responseSentimentAnalysis: any) {
+export async function summariseFeedback(
+  keywordAnalysis: KeywordAnalysis,
+  responseContentAnalysis: ResponseContentAnalysis,
+  responseSentimentAnalysis: ResponseSentimentAnalysis
+): Promise<FeedbackSummary> {
+  console.log("keywordAnalysis", keywordAnalysis);
+  console.log("responseContentAnalysis", responseContentAnalysis);
+  console.log("responseSentimentAnalysis", responseSentimentAnalysis);
+  console.log(JSON.stringify({ keywordAnalysis, responseContentAnalysis, responseSentimentAnalysis }));
   const response = await fetch(`${API_BASE_URLS.backend}/feedback-summariser`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -142,16 +150,3 @@ export async function summariseFeedback(keywordAnalysis: any, responseContentAna
   }
   return feedbackSummary;
 }
-
-// export async function uploadRecording(blob: Blob, question: string): Promise<AnalysisResponse> {
-//   try {
-//     const transcriptionText = await transcribeRecording(blob);
-
-//     return await analyseRecording(blob, transcriptionText, question);
-//   } catch (error) {
-//     console.error("Analysis error:", error);
-//     return {
-//       error: error instanceof Error ? error.message : "Unknown error occurred",
-//     };
-//   }
-// }
