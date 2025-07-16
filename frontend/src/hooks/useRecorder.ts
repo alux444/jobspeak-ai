@@ -3,7 +3,7 @@ import { transcribeRecording as transcribeRecordingApi, analyseKeyword, analyseC
 import type { Question } from "../data/questions";
 import type { KeywordAnalysis, ResponseContentAnalysis, ResponseSentimentAnalysis, FeedbackSummary } from "../types/feedbackSummariser";
 
-type AnalysisStep = "audio" | "keyword" | "content" | "sentiment" | "summary";
+type AnalysisStep = "audio" | "keyword" | "content" | "sentiment_model" | "sentiment" | "summary";
 type StepStatus = "pending" | "in_progress" | "done" | "error";
 type AnalysisProgress = Record<AnalysisStep, StepStatus>;
 
@@ -29,6 +29,7 @@ export const useRecorder = (currentQuestion: Question | null) => {
     audio: "pending",
     keyword: "pending",
     content: "pending",
+    sentiment_model: "pending",
     sentiment: "pending",
     summary: "pending",
   });
@@ -81,6 +82,7 @@ export const useRecorder = (currentQuestion: Question | null) => {
         audio: "in_progress",
         keyword: "pending",
         content: "pending",
+        sentiment_model: "pending",
         sentiment: "pending",
         summary: "pending",
       });
@@ -89,6 +91,16 @@ export const useRecorder = (currentQuestion: Question | null) => {
       let contentResults: ResponseContentAnalysis | null = null;
       let sentimentResults: ResponseSentimentAnalysis | null = null;
       let feedbackSummary: FeedbackSummary | null = null;
+      let audioResults: unknown = null;
+      // Audio analysis (if available)
+      try {
+        setAnalysisProgress((prev) => ({ ...prev, audio: "in_progress" }));
+        const blob = new Blob(recordedChunks, { type: "video/webm" });
+        audioResults = await import("../api/ApiService").then(api => api.analyseAudio(blob, transcription));
+        setAnalysisProgress((prev) => ({ ...prev, audio: "done", keyword: prev.keyword }));
+      } catch {
+        setAnalysisProgress((prev) => ({ ...prev, audio: "error" }));
+      }
 
       // Keyword analysis
       try {
@@ -105,19 +117,20 @@ export const useRecorder = (currentQuestion: Question | null) => {
       try {
         const contentRes = await analyseContent(currentQuestion.text, transcription);
         contentResults = unwrapResult(contentRes);
-        setAnalysisProgress((prev) => ({ ...prev, content: "done", sentiment: "in_progress" }));
+        setAnalysisProgress((prev) => ({ ...prev, content: "done", sentiment_model: "in_progress" }));
       } catch (err) {
         setAnalysisProgress((prev) => ({ ...prev, content: "error" }));
         throw err;
       }
 
-      // Sentiment analysis
+      // Sentiment analysis (model call)
       try {
+        setAnalysisProgress((prev) => ({ ...prev, sentiment_model: "in_progress" }));
         const sentimentRes = await analyseSentiment(currentQuestion.text, transcription);
         sentimentResults = unwrapResult(sentimentRes);
-        setAnalysisProgress((prev) => ({ ...prev, sentiment: "done", summary: "in_progress" }));
+        setAnalysisProgress((prev) => ({ ...prev, sentiment_model: "done", sentiment: "in_progress" }));
       } catch (err) {
-        setAnalysisProgress((prev) => ({ ...prev, sentiment: "error" }));
+        setAnalysisProgress((prev) => ({ ...prev, sentiment_model: "error" }));
         throw err;
       }
 
@@ -137,6 +150,12 @@ export const useRecorder = (currentQuestion: Question | null) => {
           responseContent: contentResults!,
           responseSentiment: sentimentResults!,
         },
+        results:
+          audioResults && typeof audioResults === "object" && audioResults !== null && Object.keys(audioResults as object).length > 0
+            ? (audioResults as { [feature: string]: { Score: number; Feedback: string } })
+            : undefined,
+        sentiment: sentimentResults?.sentiment || undefined,
+        transcription,
         error: undefined,
       });
       setShowTranscription(false);

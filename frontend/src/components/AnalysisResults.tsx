@@ -10,6 +10,8 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({ analysisResults }) =>
   const [showKeyword, setShowKeyword] = useState(false);
   const [showContent, setShowContent] = useState(false);
   const [showSentiment, setShowSentiment] = useState(false);
+  const [showAudio, setShowAudio] = useState(false);
+  const [showSentimentRaw, setShowSentimentRaw] = useState(false);
 
   if (!analysisResults) return null;
 
@@ -45,6 +47,29 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({ analysisResults }) =>
         {agentResults && (
           <div className="agent-results">
             <h4>Agent Results (Raw Data)</h4>
+            {/* Audio Analysis Raw */}
+            {analysisResults.results && (
+              <div className="agent-section">
+                <button className="expand-btn" onClick={() => setShowAudio((v) => !v)}>
+                  {showAudio ? "Hide" : "Show"} Audio Analysis
+                </button>
+                {showAudio && (
+                  <pre>{JSON.stringify(analysisResults.results, null, 2)}</pre>
+                )}
+              </div>
+            )}
+            {/* Sentiment Raw */}
+            {analysisResults.sentiment && (
+              <div className="agent-section">
+                <button className="expand-btn" onClick={() => setShowSentimentRaw((v) => !v)}>
+                  {showSentimentRaw ? "Hide" : "Show"} Sentiment Model Output
+                </button>
+                {showSentimentRaw && (
+                  <pre>{JSON.stringify(analysisResults.sentiment, null, 2)}</pre>
+                )}
+              </div>
+            )}
+            {/* Existing agent results */}
             <div className="agent-section">
               <button className="expand-btn" onClick={() => setShowKeyword((v) => !v)}>
                 {showKeyword ? "Hide" : "Show"} Keyword Analysis
