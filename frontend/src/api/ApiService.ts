@@ -1,9 +1,4 @@
-import type {
-  KeywordAnalysis,
-  ResponseContentAnalysis,
-  ResponseSentimentAnalysis,
-  FeedbackSummary
-} from "../types/feedbackSummariser";
+import type { KeywordAnalysis, ResponseContentAnalysis, ResponseSentimentAnalysis, FeedbackSummary } from "../types/feedbackSummariser";
 
 export interface AnalysisResponse {
   results?: {
@@ -90,7 +85,9 @@ export async function analyseKeyword(question: string, answer: string): Promise<
     const errorText = await response.text();
     throw new Error(`Keyword analysis failed: ${response.status} ${response.statusText} - ${errorText}`);
   }
-  return response.json();
+  const json = await response.json();
+  console.log("Keyword Analysis Result:", json);
+  return json;
 }
 
 export async function analyseContent(question: string, answer: string): Promise<{ result: ResponseContentAnalysis }> {
@@ -104,7 +101,9 @@ export async function analyseContent(question: string, answer: string): Promise<
     const errorText = await response.text();
     throw new Error(`Response content analysis failed: ${response.status} ${response.statusText} - ${errorText}`);
   }
-  return response.json();
+  const json = await response.json();
+  console.log("Response Content Analysis Result:", json);
+  return json;
 }
 
 export async function analyseSentiment(question: string, answer: string): Promise<{ result: ResponseSentimentAnalysis }> {
@@ -117,19 +116,12 @@ export async function analyseSentiment(question: string, answer: string): Promis
     const errorText = await response.text();
     throw new Error(`Response sentiment analysis failed: ${response.status} ${response.statusText} - ${errorText}`);
   }
-  return response.json();
+  const json = await response.json();
+  console.log("Response Sentiment Analysis Result:", json);
+  return json;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function summariseFeedback(
-  keywordAnalysis: KeywordAnalysis,
-  responseContentAnalysis: ResponseContentAnalysis,
-  responseSentimentAnalysis: ResponseSentimentAnalysis
-): Promise<FeedbackSummary> {
-  console.log("keywordAnalysis", keywordAnalysis);
-  console.log("responseContentAnalysis", responseContentAnalysis);
-  console.log("responseSentimentAnalysis", responseSentimentAnalysis);
-  console.log(JSON.stringify({ keywordAnalysis, responseContentAnalysis, responseSentimentAnalysis }));
+export async function summariseFeedback(keywordAnalysis: KeywordAnalysis, responseContentAnalysis: ResponseContentAnalysis, responseSentimentAnalysis: ResponseSentimentAnalysis): Promise<FeedbackSummary> {
   const response = await fetch(`${API_BASE_URLS.backend}/feedback-summariser`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -140,13 +132,5 @@ export async function summariseFeedback(
     throw new Error(`Feedback summariser failed: ${response.status} ${response.statusText} - ${errorText}`);
   }
   const feedbackSummariserResult = await response.json();
-  let feedbackSummary = feedbackSummariserResult.result;
-  if (typeof feedbackSummary === "string") {
-    try {
-      feedbackSummary = JSON.parse(feedbackSummary);
-    } catch {
-      // leave as string if parsing fails
-    }
-  }
-  return feedbackSummary;
+  return feedbackSummariserResult;
 }

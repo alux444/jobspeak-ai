@@ -1,7 +1,7 @@
 import express from "express";
 import { callAgent } from "../utils/call-agent";
 import { AgentId } from "../types/agents";
-import type { FeedbackSummariserInput } from "../types/feedbackSummariser";
+import type { FeedbackSummariserInput, FeedbackSummary } from "../types/feedbackSummariser";
 
 export const feedbackSummariserRouter = express.Router();
 
@@ -19,8 +19,15 @@ feedbackSummariserRouter.post("/", express.json(), async (req, res) => {
 
     // Compose the input string for the agent
     const inputString = `Keyword Analysis: ${JSON.stringify(keywordAnalysis, null, 2)}\n\nResponse Content Analysis: ${JSON.stringify(responseContentAnalysis, null, 2)}\n\nResponse Sentiment Analysis: ${JSON.stringify(responseSentimentAnalysis, null, 2)}`;
-    const result = await callAgent(agentId, inputString);
-    res.status(200).json({ result });
+    let result = await callAgent(agentId, inputString);
+    try {
+      const parsed: { result: FeedbackSummary } = JSON.parse(result);
+      res.status(200).json(parsed);
+      return;
+    } catch {
+      res.status(500).send("Agent did not return valid FeedbackSummary JSON");
+      return;
+    }
   } catch (error) {
     console.error("Error in feedback summariser:", error);
     res.status(500).send("Failed to initiate feedback summariser.");
