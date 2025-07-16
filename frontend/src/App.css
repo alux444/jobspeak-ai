@@ -393,3 +393,34 @@
   font-weight: 700;
   color: #4fd1c5;
 }
+
+.analysis-checklist {
+  margin: 20px 0;
+  padding: 16px 20px;
+  background: #23272f;
+  border-radius: 8px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  color: #e2e8f0;
+}
+.analysis-checklist h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #ffd700;
+  font-size: 1.1em;
+}
+.analysis-checklist ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.analysis-checklist li {
+  display: flex;
+  align-items: center;
+  font-size: 1em;
+  margin-bottom: 8px;
+}
+.analysis-checklist li:last-child {
+  margin-bottom: 0;
+}

@@ -1,12 +1,11 @@
-export interface FeedbackSummary {
-  verdict: string;
-  strengths: string;
-  weaknesses: string;
-  improvement_suggestion: string;
-  overall_score: number;
-}
+import type {
+  KeywordAnalysis,
+  ResponseContentAnalysis,
+  ResponseSentimentAnalysis,
+  FeedbackSummary
+} from "../types/feedbackSummariser";
+
 export interface AnalysisResponse {
-  feedbackSummary?: FeedbackSummary;
   results?: {
     [feature: string]: {
       Score: number;
@@ -18,10 +17,11 @@ export interface AnalysisResponse {
   sentiment?: string;
   transcription?: string;
   error?: string;
-  agentResults?: {
-    keywordAnalysis?: string;
-    responseContent?: string;
-    responseSentiment?: string;
+  feedbackSummary: FeedbackSummary;
+  agentResults: {
+    keywordAnalysis: KeywordAnalysis;
+    responseContent: ResponseContentAnalysis;
+    responseSentiment: ResponseSentimentAnalysis;
   };
 }
 
@@ -64,175 +64,89 @@ export async function transcribeRecording(blob: Blob): Promise<string> {
   }
 }
 
-export async function analyzeRecording(blob: Blob, transcriptionText: string, question: string): Promise<AnalysisResponse> {
-  try {
-    // Prepare form data for audio analysis with transcription
-    const audioFormData = new FormData();
-    audioFormData.append("file", blob, "recording.webm");
-    audioFormData.append("transcription", transcriptionText);
-
-    // Prepare sentiment analysis request
-    const sentimentRequest = {
-      question: question,
-      answer: transcriptionText,
-    };
-
-    // Prepare agent analysis requests
-    const questionAndAnswer: QuestionAndAnswer = {
-      question: question,
-      answer: transcriptionText,
-    };
-
-    console.log("Starting comprehensive analysis requests...");
-
-    // Run all analyses in parallel using Promise.allSettled
-    const [keywordAnalysisResult, responseContentResult, responseSentimentResult] = await Promise.allSettled([
-      // Audio analysis
-      fetch(`${API_BASE_URLS.audioAnalysis}/analyse-audio/`, {
-        method: "POST",
-        body: audioFormData,
-      }).then((response) => {
-        if (!response.ok) {
-          return response.text().then((errorText) => {
-            throw new Error(`Audio analysis failed: ${response.status} ${response.statusText} - ${errorText}`);
-          });
-        }
-        return response.json();
-      }),
-
-      // Sentiment analysis
-      fetch(`${API_BASE_URLS.sentimentAnalysis}/sentiment-analysis`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(sentimentRequest),
-      }).then((response) => {
-        if (!response.ok) {
-          return response.text().then((errorText) => {
-            throw new Error(`Sentiment analysis failed: ${response.status} ${response.statusText} - ${errorText}`);
-          });
-        }
-        return response.json();
-      }),
-
-      // Keyword analysis agent
-      fetch(`${API_BASE_URLS.backend}/keyword-analysis`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ questionAndAnswer }),
-      }).then((response) => {
-        if (!response.ok) {
-          return response.text().then((errorText) => {
-            throw new Error(`Keyword analysis failed: ${response.status} ${response.statusText} - ${errorText}`);
-          });
-        }
-        return response.json();
-      }),
-
-      // Response content analysis agent
-      fetch(`${API_BASE_URLS.backend}/response-content`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(questionAndAnswer),
-      }).then((response) => {
-        if (!response.ok) {
-          return response.text().then((errorText) => {
-            throw new Error(`Response content analysis failed: ${response.status} ${response.statusText} - ${errorText}`);
-          });
-        }
-        return response.json();
-      }),
-
-      // Response sentiment analysis agent
-      fetch(`${API_BASE_URLS.backend}/response-sentiment`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(questionAndAnswer),
-      }).then((response) => {
-        if (!response.ok) {
-          return response.text().then((errorText) => {
-            throw new Error(`Response sentiment analysis failed: ${response.status} ${response.statusText} - ${errorText}`);
-          });
-        }
-        return response.json();
-      }),
-    ]);
-
-    // Extract and parse agent results
-    function tryParseJSON(str: string) {
-      try {
-        return JSON.parse(str);
-      } catch {
-        return str;
-      }
-    }
-
-    const keywordAnalysis = keywordAnalysisResult.status === "fulfilled" ? tryParseJSON(keywordAnalysisResult.value.results) : null;
-    const responseContentAnalysis = responseContentResult.status === "fulfilled" ? responseContentResult.value : null;
-    const responseSentimentAnalysis = responseSentimentResult.status === "fulfilled" ? tryParseJSON(responseSentimentResult.value.result) : null;
-
-    console.log("KeywordAnalysis", keywordAnalysisResult);
-    console.log("ResponseContentAnalysis", responseContentResult);
-    console.log("ResponseSentimentAnalysis", responseSentimentResult);
-
-    // Call feedback summariser with all required inputs
-    const feedbackSummariserResponse = await fetch(`${API_BASE_URLS.backend}/feedback-summariser`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        keywordAnalysis,
-        responseContentAnalysis,
-        responseSentimentAnalysis,
-      }),
-    });
-
-    if (!feedbackSummariserResponse.ok) {
-      const errorText = await feedbackSummariserResponse.text();
-      throw new Error(`Feedback summariser failed: ${feedbackSummariserResponse.status} ${feedbackSummariserResponse.statusText} - ${errorText}`);
-    }
-
-    console.log("FeedbackSummariserResponse", feedbackSummariserResponse);
-    const feedbackSummariserResult = await feedbackSummariserResponse.json();
-    let feedbackSummary = feedbackSummariserResult.result;
-    if (typeof feedbackSummary === "string") {
-      try {
-        feedbackSummary = JSON.parse(feedbackSummary);
-      } catch {
-        // leave as string if parsing fails
-      }
-    }
-    return {
-      feedbackSummary,
-    };
-  } catch (error) {
-    console.error("Analysis error:", error);
-    return {
-      error: error instanceof Error ? error.message : "Unknown error occurred",
-      transcription: transcriptionText,
-    };
+export async function analyseAudio(blob: Blob, transcriptionText: string) {
+  const audioFormData = new FormData();
+  audioFormData.append("file", blob, "recording.webm");
+  audioFormData.append("transcription", transcriptionText);
+  const response = await fetch(`${API_BASE_URLS.audioAnalysis}/analyse-audio/`, {
+    method: "POST",
+    body: audioFormData,
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Audio analysis failed: ${response.status} ${response.statusText} - ${errorText}`);
   }
+  return response.json();
 }
 
-export async function uploadRecording(blob: Blob, question: string): Promise<AnalysisResponse> {
-  try {
-    // Step 1: Upload to transcriber service first
-    const transcriptionText = await transcribeRecording(blob);
-
-    // Step 2: Analyze with the transcription and question
-    return await analyzeRecording(blob, transcriptionText, question);
-  } catch (error) {
-    console.error("Analysis error:", error);
-    return {
-      error: error instanceof Error ? error.message : "Unknown error occurred",
-    };
+export async function analyseKeyword(question: string, answer: string): Promise<{ result: KeywordAnalysis }> {
+  const questionAndAnswer = { question, answer };
+  const response = await fetch(`${API_BASE_URLS.backend}/keyword-analysis`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ questionAndAnswer }),
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Keyword analysis failed: ${response.status} ${response.statusText} - ${errorText}`);
   }
+  return response.json();
+}
+
+export async function analyseContent(question: string, answer: string): Promise<{ result: ResponseContentAnalysis }> {
+  const questionAndAnswer = { question, answer };
+  const response = await fetch(`${API_BASE_URLS.backend}/response-content`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(questionAndAnswer),
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Response content analysis failed: ${response.status} ${response.statusText} - ${errorText}`);
+  }
+  return response.json();
+}
+
+export async function analyseSentiment(question: string, answer: string): Promise<{ result: ResponseSentimentAnalysis }> {
+  const response = await fetch(`${API_BASE_URLS.backend}/response-sentiment`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ question, answer }),
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Response sentiment analysis failed: ${response.status} ${response.statusText} - ${errorText}`);
+  }
+  return response.json();
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function summariseFeedback(
+  keywordAnalysis: KeywordAnalysis,
+  responseContentAnalysis: ResponseContentAnalysis,
+  responseSentimentAnalysis: ResponseSentimentAnalysis
+): Promise<FeedbackSummary> {
+  console.log("keywordAnalysis", keywordAnalysis);
+  console.log("responseContentAnalysis", responseContentAnalysis);
+  console.log("responseSentimentAnalysis", responseSentimentAnalysis);
+  console.log(JSON.stringify({ keywordAnalysis, responseContentAnalysis, responseSentimentAnalysis }));
+  const response = await fetch(`${API_BASE_URLS.backend}/feedback-summariser`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ keywordAnalysis, responseContentAnalysis, responseSentimentAnalysis }),
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Feedback summariser failed: ${response.status} ${response.statusText} - ${errorText}`);
+  }
+  const feedbackSummariserResult = await response.json();
+  let feedbackSummary = feedbackSummariserResult.result;
+  if (typeof feedbackSummary === "string") {
+    try {
+      feedbackSummary = JSON.parse(feedbackSummary);
+    } catch {
+      // leave as string if parsing fails
+    }
+  }
+  return feedbackSummary;
 }
