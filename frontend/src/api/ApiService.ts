@@ -1,4 +1,5 @@
 export interface AnalysisResponse {
+  feedbackSummary?: string;
   results?: {
     [feature: string]: {
       Score: number;
@@ -79,8 +80,6 @@ export async function analyzeRecording(blob: Blob, transcriptionText: string, qu
 
     // Run all analyses in parallel using Promise.allSettled
     const [
-      audioAnalysisResult, 
-      sentimentAnalysisResult,
       keywordAnalysisResult,
       responseContentResult,
       responseSentimentResult
@@ -163,76 +162,51 @@ export async function analyzeRecording(blob: Blob, transcriptionText: string, qu
       }),
     ]);
 
-    // Handle results and collect any errors
-    const errors: string[] = [];
-    let audioResults = null;
-    let sentimentResults = null;
-    const agentResults: {
-      keywordAnalysis?: string;
-      responseContent?: string;
-      responseSentiment?: string;
-    } = {};
-
-    if (audioAnalysisResult.status === "fulfilled") {
-      audioResults = audioAnalysisResult.value;
-      console.log("Audio analysis successful:", audioResults);
-    } else {
-      const errorMsg = audioAnalysisResult.reason.message;
-      errors.push(`Audio analysis failed: ${errorMsg}`);
-      console.error("Audio analysis failed:", errorMsg);
+    // Extract and parse agent results
+    function tryParseJSON(str: string) {
+      try {
+        return JSON.parse(str);
+      } catch {
+        return str;
+      }
     }
 
-    if (sentimentAnalysisResult.status === "fulfilled") {
-      sentimentResults = sentimentAnalysisResult.value;
-      console.log("Sentiment analysis successful:", sentimentResults);
-    } else {
-      const errorMsg = sentimentAnalysisResult.reason.message;
-      errors.push(`Sentiment analysis failed: ${errorMsg}`);
-      console.error("Sentiment analysis failed:", errorMsg);
+    const keywordAnalysis = keywordAnalysisResult.status === "fulfilled"
+      ? tryParseJSON(keywordAnalysisResult.value.results)
+      : null;
+    const responseContentAnalysis = responseContentResult.status === "fulfilled"
+      ? responseContentResult.value
+      : null;
+    const responseSentimentAnalysis = responseSentimentResult.status === "fulfilled"
+      ? tryParseJSON(responseSentimentResult.value.result)
+      : null;
+
+    console.log("KeywordAnalysis", keywordAnalysisResult);
+    console.log("ResponseContentAnalysis", responseContentResult);
+    console.log("ResponseSentimentAnalysis", responseSentimentResult);
+
+    // Call feedback summariser with all required inputs
+    const feedbackSummariserResponse = await fetch(`${API_BASE_URLS.backend}/feedback-summariser`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        keywordAnalysis,
+        responseContentAnalysis,
+        responseSentimentAnalysis
+      }),
+    });
+
+    if (!feedbackSummariserResponse.ok) {
+      const errorText = await feedbackSummariserResponse.text();
+      throw new Error(`Feedback summariser failed: ${feedbackSummariserResponse.status} ${feedbackSummariserResponse.statusText} - ${errorText}`);
     }
 
-    if (keywordAnalysisResult.status === "fulfilled") {
-      agentResults.keywordAnalysis = keywordAnalysisResult.value.result;
-      console.log("Keyword analysis successful:", keywordAnalysisResult.value.result);
-    } else {
-      const errorMsg = keywordAnalysisResult.reason.message;
-      errors.push(`Keyword analysis failed: ${errorMsg}`);
-      console.error("Keyword analysis failed:", errorMsg);
-    }
+    const feedbackSummariserResult = await feedbackSummariserResponse.json();
 
-    if (responseContentResult.status === "fulfilled") {
-      agentResults.responseContent = responseContentResult.value.result;
-      console.log("Response content analysis successful:", responseContentResult.value.result);
-    } else {
-      const errorMsg = responseContentResult.reason.message;
-      errors.push(`Response content analysis failed: ${errorMsg}`);
-      console.error("Response content analysis failed:", errorMsg);
-    }
-
-    if (responseSentimentResult.status === "fulfilled") {
-      agentResults.responseSentiment = responseSentimentResult.value.result;
-      console.log("Response sentiment analysis successful:", responseSentimentResult.value.result);
-    } else {
-      const errorMsg = responseSentimentResult.reason.message;
-      errors.push(`Response sentiment analysis failed: ${errorMsg}`);
-      console.error("Response sentiment analysis failed:", errorMsg);
-    }
-
-    // If all analyses failed, return error
-    if (errors.length === 5) {
-      return {
-        error: `All analyses failed: ${errors.join("; ")}`,
-        transcription: transcriptionText,
-      };
-    }
-
-    // Return results with any successful analyses
     return {
-      results: audioResults?.results || undefined,
-      sentiment: sentimentResults || undefined,
-      transcription: transcriptionText,
-      agentResults,
-      ...(errors.length > 0 && { error: `Partial failure: ${errors.join("; ")}` }),
+      feedbackSummary: feedbackSummariserResult.result
     };
   } catch (error) {
     console.error("Analysis error:", error);
