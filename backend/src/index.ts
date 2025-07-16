@@ -3,6 +3,7 @@ import cors from "cors";
 import { responseContentRouter } from "./routes/response-content";
 import { responseSentimentRouter } from "./routes/response-sentiment";
 import { keywordAnalysisRouter } from "./routes/keyword-analysis";
+import { feedbackSummariserRouter } from "./routes/feedback-summariser";
 
 const app = express();
 const port = 3000;
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use("/response-content", responseContentRouter);
 app.use("/response-sentiment", responseSentimentRouter);
 app.use("/keyword-analysis", keywordAnalysisRouter);
+app.use("/feedback-summariser", feedbackSummariserRouter);
 
 app.get("/", (_req, res) => {
   res.send("Hello, Worlds!");
