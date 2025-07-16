@@ -9,5 +9,29 @@
     "question": "Tell me about your experience with team collaboration",
     "answer": "I have extensive experience working in cross-functional teams. In my previous role, I led a team of 5 developers and collaborated with product managers, designers, and stakeholders to deliver high-quality software solutions. I believe in open communication, regular feedback, and creating an inclusive environment where everyone feels valued and heard."
   },
-  "workflow_question": "Tell me about yourself"
+  "workflow_question": "Tell me about yourself",
+  "feedback_summariser_inputs": {
+    "keywordAnalysis": {
+      "matched_keywords": ["teamwork", "collaboration"],
+      "missing_keywords": ["leadership"],
+      "score": 0.8,
+      "notes": "Strong on teamwork, could mention leadership."
+    },
+    "responseContentAnalysis": {
+      "assessment": ["Clear STAR structure.", "Relevant example."],
+      "scores": {
+        "clarityAndStructure": 1.0,
+        "relevance": 1.0,
+        "useOfStarMethod": 1.0,
+        "impact": 0.8,
+        "authenticity": 1.0
+      },
+      "improvement": ["Highlight leadership role more explicitly."]
+    },
+    "responseSentimentAnalysis": {
+      "sentiment": "positive",
+      "confidence": 9.5,
+      "evidence": ["Confident tone", "Positive language"]
+    }
+  }
 } 
