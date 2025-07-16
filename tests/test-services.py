@@ -190,7 +190,11 @@ def test_backend_agent_endpoints(timeout=120):
 
         if response.status_code == 200:
             print("   ✅ Response Content Analysis: Working")
-            print(f"   📝 Response: {response.text}")
+            try:
+                print("   📝 Response:")
+                print(json.dumps(response.json(), indent=2, ensure_ascii=False))
+            except Exception:
+                print(f"   📝 Response: {response.text}")
         else:
             print(
                 f"   ❌ Response Content Analysis: Failed (Status: {response.status_code})"
@@ -211,7 +215,11 @@ def test_backend_agent_endpoints(timeout=120):
 
         if response.status_code == 200:
             print("   ✅ Response Sentiment Analysis: Working")
-            print(f"   📝 Response: {response.text}")
+            try:
+                print("   📝 Response:")
+                print(json.dumps(response.json(), indent=2, ensure_ascii=False))
+            except Exception:
+                print(f"   📝 Response: {response.text}")
         else:
             print(
                 f"   ❌ Response Sentiment Analysis: Failed (Status: {response.status_code})"
@@ -232,7 +240,11 @@ def test_backend_agent_endpoints(timeout=120):
 
         if response.status_code == 200:
             print("   ✅ Keyword Analysis: Working")
-            print(f"   📝 Response: {response.text}")
+            try:
+                print("   📝 Response:")
+                print(json.dumps(response.json(), indent=2, ensure_ascii=False))
+            except Exception:
+                print(f"   📝 Response: {response.text}")
         else:
             print(f"   ❌ Keyword Analysis: Failed (Status: {response.status_code})")
             print(f"   Error: {response.text}")
@@ -340,7 +352,13 @@ def test_full_workflow(timeout=120):
 
             if agent_response.status_code == 200:
                 print("   ✅ Azure AI Response Content Analysis: Working")
-                print(f"   📝 Agent Response: {agent_response.text}")
+                try:
+                    print("   📝 Agent Response:")
+                    print(
+                        json.dumps(agent_response.json(), indent=2, ensure_ascii=False)
+                    )
+                except Exception:
+                    print(f"   📝 Agent Response: {agent_response.text}")
             else:
                 print(
                     f"   ❌ Azure AI Response Content Analysis: Failed (Status: {agent_response.status_code})"
@@ -353,6 +371,35 @@ def test_full_workflow(timeout=120):
 
     except requests.exceptions.RequestException as e:
         print(f"   ❌ Workflow test failed: {e}")
+
+
+def test_feedback_summariser(timeout=120):
+    """Test the feedback summariser agent endpoint"""
+    print("\nTesting feedback summariser agent endpoint...")
+
+    payload = TEST_INPUTS["feedback_summariser_inputs"]
+
+    try:
+        response = requests.post(
+            f"{SERVICES['backend']}/feedback-summariser",
+            json=payload,
+            headers={"Content-Type": "application/json"},
+            timeout=timeout,
+        )
+        if response.status_code == 200:
+            print("✅ Feedback summariser agent: Working")
+            try:
+                print("   📝 Response:")
+                print(json.dumps(response.json(), indent=2, ensure_ascii=False))
+            except Exception:
+                print(f"   📝 Response: {response.text}")
+        else:
+            print(
+                f"❌ Feedback summariser agent: Failed (Status: {response.status_code})"
+            )
+            print(f"   Error: {response.text}")
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Feedback summariser agent: Connection failed - {e}")
 
 
 def parse_arguments():
@@ -450,6 +497,7 @@ def main():
         test_audio_analysis_service(args.timeout)
         test_backend_agent_endpoints(args.timeout)
         test_full_workflow(args.timeout)
+        test_feedback_summariser(args.timeout)
     elif args.service == "health":
         test_health_endpoints(args.timeout)
     elif args.service == "transcriber":
@@ -464,6 +512,8 @@ def main():
         test_backend_agent_endpoints(args.timeout)
     elif args.service == "workflow":
         test_full_workflow(args.timeout)
+    elif args.service == "feedback":
+        test_feedback_summariser(args.timeout)
     else:
         print(f"❌ Unknown service: {args.service}")
         print("Use --list to see available services")
