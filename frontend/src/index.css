@@ -179,3 +179,36 @@ pre {
   letter-spacing: 1px;
   font-size: 1.1em;
 }
+
+.agent-results {
+  margin-top: 2rem;
+  background: rgba(76, 175, 80, 0.05);
+  border-radius: 6px;
+  padding: 1rem 1.5rem;
+}
+.agent-section {
+  margin-bottom: 1rem;
+}
+.expand-btn {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 14px;
+  font-size: 0.98em;
+  cursor: pointer;
+  margin-bottom: 0.5em;
+  transition: background 0.2s;
+}
+.expand-btn:hover {
+  background: #145ea8;
+}
+.agent-section pre {
+  background: #222;
+  color: #e0e0e0;
+  padding: 12px;
+  border-radius: 4px;
+  font-size: 0.97em;
+  margin-top: 0.5em;
+  overflow-x: auto;
+}

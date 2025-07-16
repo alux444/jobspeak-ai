@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import type { AnalysisResponse } from "../api/ApiService";
 
 interface AnalysisResultsProps {
@@ -6,10 +6,16 @@ interface AnalysisResultsProps {
 }
 
 const AnalysisResults: React.FC<AnalysisResultsProps> = ({ analysisResults }) => {
+  // Expand/collapse state for each agent (must be at the top, before any return)
+  const [showKeyword, setShowKeyword] = useState(false);
+  const [showContent, setShowContent] = useState(false);
+  const [showSentiment, setShowSentiment] = useState(false);
+
   if (!analysisResults) return null;
 
   if (analysisResults.feedbackSummary) {
     const summary = analysisResults.feedbackSummary;
+    const agentResults = analysisResults.agentResults;
     return (
       <div className="analysis-results">
         <h3>Overall Feedback</h3>
@@ -35,6 +41,36 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({ analysisResults }) =>
             <span className="feedback-value score">{summary.overall_score} / 100</span>
           </div>
         </div>
+        {/* Agent Results Expandable Sections */}
+        {agentResults && (
+          <div className="agent-results">
+            <h4>Agent Results (Raw Data)</h4>
+            <div className="agent-section">
+              <button className="expand-btn" onClick={() => setShowKeyword((v) => !v)}>
+                {showKeyword ? "Hide" : "Show"} Keyword Analysis
+              </button>
+              {showKeyword && (
+                <pre>{JSON.stringify(agentResults.keywordAnalysis, null, 2)}</pre>
+              )}
+            </div>
+            <div className="agent-section">
+              <button className="expand-btn" onClick={() => setShowContent((v) => !v)}>
+                {showContent ? "Hide" : "Show"} Content Analysis
+              </button>
+              {showContent && (
+                <pre>{JSON.stringify(agentResults.responseContent, null, 2)}</pre>
+              )}
+            </div>
+            <div className="agent-section">
+              <button className="expand-btn" onClick={() => setShowSentiment((v) => !v)}>
+                {showSentiment ? "Hide" : "Show"} Sentiment Analysis
+              </button>
+              {showSentiment && (
+                <pre>{JSON.stringify(agentResults.responseSentiment, null, 2)}</pre>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     );
   }
