@@ -92,6 +92,7 @@ export const useRecorder = (currentQuestion: Question | null) => {
 
       // Keyword analysis
       try {
+        setAnalysisProgress((prev) => ({ ...prev, keyword: "in_progress" }));
         const keywordRes = await analyseKeyword(currentQuestion.text, transcription);
         keywordResults = unwrapResult(keywordRes);
         setAnalysisProgress((prev) => ({ ...prev, keyword: "done", content: "in_progress" }));
