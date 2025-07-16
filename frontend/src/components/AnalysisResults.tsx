@@ -9,10 +9,32 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({ analysisResults }) =>
   if (!analysisResults) return null;
 
   if (analysisResults.feedbackSummary) {
+    const summary = analysisResults.feedbackSummary;
     return (
       <div className="analysis-results">
         <h3>Overall Feedback</h3>
-        <pre>{analysisResults.feedbackSummary}</pre>
+        <div className="feedback-summary">
+          <div className="feedback-row">
+            <span className="feedback-label">Verdict:</span>
+            <span className="feedback-value verdict">{summary.verdict}</span>
+          </div>
+          <div className="feedback-row">
+            <span className="feedback-label">Strengths:</span>
+            <span className="feedback-value">{summary.strengths}</span>
+          </div>
+          <div className="feedback-row">
+            <span className="feedback-label">Weaknesses:</span>
+            <span className="feedback-value">{summary.weaknesses}</span>
+          </div>
+          <div className="feedback-row">
+            <span className="feedback-label">Improvement Suggestion:</span>
+            <span className="feedback-value">{summary.improvement_suggestion}</span>
+          </div>
+          <div className="feedback-row">
+            <span className="feedback-label">Overall Score:</span>
+            <span className="feedback-value score">{summary.overall_score} / 100</span>
+          </div>
+        </div>
       </div>
     );
   }
@@ -46,4 +68,4 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({ analysisResults }) =>
   );
 };
 
-export default AnalysisResults; 
+export default AnalysisResults;

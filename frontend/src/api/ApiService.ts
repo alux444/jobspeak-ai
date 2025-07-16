@@ -1,5 +1,12 @@
+export interface FeedbackSummary {
+  verdict: string;
+  strengths: string;
+  weaknesses: string;
+  improvement_suggestion: string;
+  overall_score: number;
+}
 export interface AnalysisResponse {
-  feedbackSummary?: string;
+  feedbackSummary?: FeedbackSummary;
   results?: {
     [feature: string]: {
       Score: number;
@@ -37,7 +44,7 @@ export async function transcribeRecording(blob: Blob): Promise<string> {
     formData.append("file", blob, "recording.webm");
 
     console.log("Sending transcription request to:", `${API_BASE_URLS.transcriber}/transcribe/`);
-    
+
     const transcriptionResponse = await fetch(`${API_BASE_URLS.transcriber}/transcribe/`, {
       method: "POST",
       body: formData,
@@ -79,18 +86,14 @@ export async function analyzeRecording(blob: Blob, transcriptionText: string, qu
     console.log("Starting comprehensive analysis requests...");
 
     // Run all analyses in parallel using Promise.allSettled
-    const [
-      keywordAnalysisResult,
-      responseContentResult,
-      responseSentimentResult
-    ] = await Promise.allSettled([
+    const [keywordAnalysisResult, responseContentResult, responseSentimentResult] = await Promise.allSettled([
       // Audio analysis
       fetch(`${API_BASE_URLS.audioAnalysis}/analyse-audio/`, {
         method: "POST",
         body: audioFormData,
       }).then((response) => {
         if (!response.ok) {
-          return response.text().then(errorText => {
+          return response.text().then((errorText) => {
             throw new Error(`Audio analysis failed: ${response.status} ${response.statusText} - ${errorText}`);
           });
         }
@@ -106,7 +109,7 @@ export async function analyzeRecording(blob: Blob, transcriptionText: string, qu
         body: JSON.stringify(sentimentRequest),
       }).then((response) => {
         if (!response.ok) {
-          return response.text().then(errorText => {
+          return response.text().then((errorText) => {
             throw new Error(`Sentiment analysis failed: ${response.status} ${response.statusText} - ${errorText}`);
           });
         }
@@ -122,7 +125,7 @@ export async function analyzeRecording(blob: Blob, transcriptionText: string, qu
         body: JSON.stringify({ questionAndAnswer }),
       }).then((response) => {
         if (!response.ok) {
-          return response.text().then(errorText => {
+          return response.text().then((errorText) => {
             throw new Error(`Keyword analysis failed: ${response.status} ${response.statusText} - ${errorText}`);
           });
         }
@@ -138,7 +141,7 @@ export async function analyzeRecording(blob: Blob, transcriptionText: string, qu
         body: JSON.stringify(questionAndAnswer),
       }).then((response) => {
         if (!response.ok) {
-          return response.text().then(errorText => {
+          return response.text().then((errorText) => {
             throw new Error(`Response content analysis failed: ${response.status} ${response.statusText} - ${errorText}`);
           });
         }
@@ -154,7 +157,7 @@ export async function analyzeRecording(blob: Blob, transcriptionText: string, qu
         body: JSON.stringify(questionAndAnswer),
       }).then((response) => {
         if (!response.ok) {
-          return response.text().then(errorText => {
+          return response.text().then((errorText) => {
             throw new Error(`Response sentiment analysis failed: ${response.status} ${response.statusText} - ${errorText}`);
           });
         }
@@ -171,15 +174,9 @@ export async function analyzeRecording(blob: Blob, transcriptionText: string, qu
       }
     }
 
-    const keywordAnalysis = keywordAnalysisResult.status === "fulfilled"
-      ? tryParseJSON(keywordAnalysisResult.value.results)
-      : null;
-    const responseContentAnalysis = responseContentResult.status === "fulfilled"
-      ? responseContentResult.value
-      : null;
-    const responseSentimentAnalysis = responseSentimentResult.status === "fulfilled"
-      ? tryParseJSON(responseSentimentResult.value.result)
-      : null;
+    const keywordAnalysis = keywordAnalysisResult.status === "fulfilled" ? tryParseJSON(keywordAnalysisResult.value.results) : null;
+    const responseContentAnalysis = responseContentResult.status === "fulfilled" ? responseContentResult.value : null;
+    const responseSentimentAnalysis = responseSentimentResult.status === "fulfilled" ? tryParseJSON(responseSentimentResult.value.result) : null;
 
     console.log("KeywordAnalysis", keywordAnalysisResult);
     console.log("ResponseContentAnalysis", responseContentResult);
@@ -194,7 +191,7 @@ export async function analyzeRecording(blob: Blob, transcriptionText: string, qu
       body: JSON.stringify({
         keywordAnalysis,
         responseContentAnalysis,
-        responseSentimentAnalysis
+        responseSentimentAnalysis,
       }),
     });
 
@@ -203,10 +200,18 @@ export async function analyzeRecording(blob: Blob, transcriptionText: string, qu
       throw new Error(`Feedback summariser failed: ${feedbackSummariserResponse.status} ${feedbackSummariserResponse.statusText} - ${errorText}`);
     }
 
+    console.log("FeedbackSummariserResponse", feedbackSummariserResponse);
     const feedbackSummariserResult = await feedbackSummariserResponse.json();
-
+    let feedbackSummary = feedbackSummariserResult.result;
+    if (typeof feedbackSummary === "string") {
+      try {
+        feedbackSummary = JSON.parse(feedbackSummary);
+      } catch {
+        // leave as string if parsing fails
+      }
+    }
     return {
-      feedbackSummary: feedbackSummariserResult.result
+      feedbackSummary,
     };
   } catch (error) {
     console.error("Analysis error:", error);
