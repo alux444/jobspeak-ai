@@ -1,5 +1,15 @@
 import type { KeywordAnalysis, ResponseContentAnalysis, ResponseSentimentAnalysis, FeedbackSummary } from "../types/feedbackSummariser";
 
+export interface SentimentModelResult {
+  label: string;
+  score: number;
+}
+
+export interface SentimentModelResponse {
+  input: string;
+  analysis: SentimentModelResult[][];
+}
+
 export interface AnalysisResponse {
   results?: {
     [feature: string]: {
@@ -10,6 +20,7 @@ export interface AnalysisResponse {
   duration_seconds?: number;
   input?: string;
   sentiment?: string;
+  sentimentModelResponse?: SentimentModelResponse;
   transcription?: string;
   error?: string;
   feedbackSummary: FeedbackSummary;
@@ -118,6 +129,21 @@ export async function analyseSentiment(question: string, answer: string): Promis
   }
   const json = await response.json();
   console.log("Response Sentiment Analysis Result:", json);
+  return json;
+}
+
+export async function analyseSentimentModel(question: string, answer: string): Promise<SentimentModelResponse> {
+  const response = await fetch(`${API_BASE_URLS.sentimentAnalysis}/sentiment-analysis`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ question, answer }),
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Sentiment model analysis failed: ${response.status} ${response.statusText} - ${errorText}`);
+  }
+  const json = await response.json();
+  console.log("Sentiment Model Analysis Result:", json);
   return json;
 }
 
