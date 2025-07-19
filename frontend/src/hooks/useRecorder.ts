@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { transcribeRecording as transcribeRecordingApi, analyseKeyword, analyseContent, analyseSentiment, summariseFeedback, type AnalysisResponse } from "../api/ApiService";
+import { transcribeRecording as transcribeRecordingApi, analyseKeyword, analyseContent, analyseSentiment, analyseSentimentModel, summariseFeedback, type AnalysisResponse, type SentimentModelResponse } from "../api/ApiService";
 import type { Question } from "../data/questions";
 import type { KeywordAnalysis, ResponseContentAnalysis, ResponseSentimentAnalysis, FeedbackSummary } from "../types/feedbackSummariser";
 
@@ -90,6 +90,7 @@ export const useRecorder = (currentQuestion: Question | null) => {
       let keywordResults: KeywordAnalysis | null = null;
       let contentResults: ResponseContentAnalysis | null = null;
       let sentimentResults: ResponseSentimentAnalysis | null = null;
+      let sentimentModelResults: SentimentModelResponse | null = null;
       let feedbackSummary: FeedbackSummary | null = null;
       let audioResults: unknown = null;
       // Audio analysis (if available)
@@ -126,11 +127,20 @@ export const useRecorder = (currentQuestion: Question | null) => {
       // Sentiment analysis (model call)
       try {
         setAnalysisProgress((prev) => ({ ...prev, sentiment_model: "in_progress" }));
-        const sentimentRes = await analyseSentiment(currentQuestion.text, transcription);
-        sentimentResults = unwrapResult(sentimentRes);
+        sentimentModelResults = await analyseSentimentModel(currentQuestion.text, transcription);
         setAnalysisProgress((prev) => ({ ...prev, sentiment_model: "done", sentiment: "in_progress" }));
       } catch (err) {
         setAnalysisProgress((prev) => ({ ...prev, sentiment_model: "error" }));
+        throw err;
+      }
+
+      // Sentiment analysis (agent)
+      try {
+        const sentimentRes = await analyseSentiment(currentQuestion.text, transcription);
+        sentimentResults = unwrapResult(sentimentRes);
+        setAnalysisProgress((prev) => ({ ...prev, sentiment: "done", summary: "in_progress" }));
+      } catch (err) {
+        setAnalysisProgress((prev) => ({ ...prev, sentiment: "error" }));
         throw err;
       }
 
@@ -155,6 +165,7 @@ export const useRecorder = (currentQuestion: Question | null) => {
             ? (audioResults as { [feature: string]: { Score: number; Feedback: string } })
             : undefined,
         sentiment: sentimentResults?.sentiment || undefined,
+        sentimentModelResponse: sentimentModelResults || undefined,
         transcription,
         error: undefined,
       });

@@ -58,14 +58,34 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({ analysisResults }) =>
                 )}
               </div>
             )}
-            {/* Sentiment Raw */}
-            {analysisResults.sentiment && (
+            {/* Sentiment Model Results */}
+            {analysisResults.sentimentModelResponse && (
               <div className="agent-section">
                 <button className="expand-btn" onClick={() => setShowSentimentRaw((v) => !v)}>
-                  {showSentimentRaw ? "Hide" : "Show"} Sentiment Model Output
+                  {showSentimentRaw ? "Hide" : "Show"} Emotion Analysis (AI Model)
                 </button>
                 {showSentimentRaw && (
-                  <pre>{JSON.stringify(analysisResults.sentiment, null, 2)}</pre>
+                  <div className="sentiment-model-results">
+                    <div className="sentiment-model-summary">
+                      <h6>Detected Emotions:</h6>
+                      {analysisResults.sentimentModelResponse.analysis[0]?.map((emotion, index) => (
+                        <div key={index} className="emotion-item">
+                          <span className="emotion-label">{emotion.label}:</span>
+                          <span className="emotion-score">{(emotion.score * 100).toFixed(1)}%</span>
+                          <div className="emotion-bar">
+                            <div 
+                              className="emotion-fill" 
+                              style={{ width: `${emotion.score * 100}%` }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <details style={{ marginTop: '15px' }}>
+                      <summary style={{ cursor: 'pointer', color: '#a0aec0' }}>View Raw Data</summary>
+                      <pre style={{ marginTop: '10px' }}>{JSON.stringify(analysisResults.sentimentModelResponse, null, 2)}</pre>
+                    </details>
+                  </div>
                 )}
               </div>
             )}
@@ -112,9 +132,32 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({ analysisResults }) =>
         </div>
       )}
 
+      {analysisResults?.sentimentModelResponse && (
+        <div className="sentiment-analysis">
+          <h4>Emotion Analysis (AI Model)</h4>
+          <div className="sentiment-model-results">
+            <div className="sentiment-model-summary">
+              <h6>Detected Emotions:</h6>
+              {analysisResults.sentimentModelResponse.analysis[0]?.map((emotion, index) => (
+                <div key={index} className="emotion-item">
+                  <span className="emotion-label">{emotion.label}:</span>
+                  <span className="emotion-score">{(emotion.score * 100).toFixed(1)}%</span>
+                  <div className="emotion-bar">
+                    <div 
+                      className="emotion-fill" 
+                      style={{ width: `${emotion.score * 100}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {analysisResults?.sentiment && (
         <div className="sentiment-analysis">
-          <h4>Sentiment Analysis</h4>
+          <h4>Sentiment Analysis (Agent)</h4>
           <pre>{JSON.stringify(analysisResults.sentiment, null, 2)}</pre>
         </div>
       )}
