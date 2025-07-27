@@ -11,6 +11,19 @@
   },
   "workflow_question": "Tell me about yourself",
   "feedback_summariser_inputs": {
+    "audioAnalysis": {
+      "assessment": "Clear and articulate response with a confident tone.",
+      "scores": {
+        "clarityAndArticulation": 0.9,
+        "toneAndEmotion": 0.8,
+        "confidence": 0.85,
+        "pace": 0.75
+      },
+      "improvement": [
+        "Maintain a steady pace throughout the response.",
+        "Use more varied intonation to enhance engagement."
+      ]
+    },
     "keywordAnalysis": {
       "matched_keywords": ["teamwork", "collaboration"],
       "missing_keywords": ["leadership"],
@@ -34,4 +47,4 @@
       "evidence": ["Confident tone", "Positive language"]
     }
   }
-} 
+}

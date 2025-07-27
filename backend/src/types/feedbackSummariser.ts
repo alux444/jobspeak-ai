@@ -3,8 +3,8 @@ export interface AudioAnalysis {
   scores: {
     clarityAndArticulation: number;
     toneAndEmotion: number;
-    engagementAndPresence: number;
-    paceAndRhythm: number;
+    confidence: number;
+    pace: number;
   };
   improvement: string[];
 }
