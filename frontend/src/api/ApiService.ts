@@ -1,4 +1,4 @@
-import type { KeywordAnalysis, ResponseContentAnalysis, ResponseSentimentAnalysis, FeedbackSummary } from "../types/feedbackSummariser";
+import type { KeywordAnalysis, ResponseContentAnalysis, ResponseSentimentAnalysis, FeedbackSummary, AudioAnalysis } from "../types/feedbackSummariser";
 
 export interface SentimentModelResult {
   label: string;
@@ -147,11 +147,11 @@ export async function analyseSentimentModel(question: string, answer: string): P
   return json;
 }
 
-export async function summariseFeedback(keywordAnalysis: KeywordAnalysis, responseContentAnalysis: ResponseContentAnalysis, responseSentimentAnalysis: ResponseSentimentAnalysis): Promise<FeedbackSummary> {
+export async function summariseFeedback(audioAnalysis: AudioAnalysis, keywordAnalysis: KeywordAnalysis, responseContentAnalysis: ResponseContentAnalysis, responseSentimentAnalysis: ResponseSentimentAnalysis): Promise<FeedbackSummary> {
   const response = await fetch(`${API_BASE_URLS.backend}/feedback-summariser`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ keywordAnalysis, responseContentAnalysis, responseSentimentAnalysis }),
+    body: JSON.stringify({ audioAnalysis, keywordAnalysis, responseContentAnalysis, responseSentimentAnalysis }),
   });
   if (!response.ok) {
     const errorText = await response.text();

@@ -1,3 +1,14 @@
+export interface AudioAnalysis {
+  assessment: string[];
+  scores: {
+    clarityAndArticulation: number;
+    toneAndEmotion: number;
+    confidence: number;
+    pace: number;
+  };
+  improvement: string[];
+}
+
 export interface KeywordAnalysis {
   matched_keywords: string[];
   missing_keywords: string[];
