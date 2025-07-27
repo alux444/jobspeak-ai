@@ -178,14 +178,37 @@ def test_backend_agent_endpoints(timeout=120):
     # Test data for all endpoints
     test_q_and_a = TEST_INPUTS["backend_agents"]
 
-    # Test 1: Response Content Analysis
-    print("   Testing Response Content Analysis...")
+    # Test 1: Audio Analysis Agent
+    print("   Testing Audio Analysis Agent...")
+    try:
+        response = requests.post(
+            f"{SERVICES['backend']}/audio-analysis",
+            json=test_q_and_a,
+            headers={"Content-Type": "application/json"},
+            timeout=timeout,  # Longer timeout for AI agents
+        )
+        
+        if response.status_code == 200:
+            print("   ✅ Audio Analysis Agent: Working")
+            try:
+                print("   📝 Response:")
+                print(json.dumps(response.json(), indent=2, ensure_ascii=False))
+            except Exception:
+                print(f"   📝 Response: {response.text}")
+        else:
+            print(f"   ❌ Audio Analysis Agent: Failed (Status: {response.status_code})")
+            print(f"   Error: {response.text}")
+    except requests.exceptions.RequestException as e:
+        print(f"   ❌ Audio Analysis Agent: Connection failed - {e}")
+    
+    # Test 2: Response Content Analysis Agent
+    print("   Testing Response Content Analysis Agent...")
     try:
         response = requests.post(
             f"{SERVICES['backend']}/response-content",
             json=test_q_and_a,
             headers={"Content-Type": "application/json"},
-            timeout=timeout,  # Longer timeout for AI agents
+            timeout=timeout,
         )
 
         if response.status_code == 200:
@@ -203,8 +226,8 @@ def test_backend_agent_endpoints(timeout=120):
     except requests.exceptions.RequestException as e:
         print(f"   ❌ Response Content Analysis: Connection failed - {e}")
 
-    # Test 2: Response Sentiment Analysis
-    print("   Testing Response Sentiment Analysis...")
+    # Test 3: Response Sentiment Analysis Agent
+    print("   Testing Response Sentiment Analysis Agent...")
     try:
         response = requests.post(
             f"{SERVICES['backend']}/response-sentiment",
@@ -228,8 +251,8 @@ def test_backend_agent_endpoints(timeout=120):
     except requests.exceptions.RequestException as e:
         print(f"   ❌ Response Sentiment Analysis: Connection failed - {e}")
 
-    # Test 3: Keyword Analysis
-    print("   Testing Keyword Analysis...")
+    # Test 4: Keyword Analysis Agent
+    print("   Testing Keyword Analysis Agent...")
     try:
         response = requests.post(
             f"{SERVICES['backend']}/keyword-analysis",
