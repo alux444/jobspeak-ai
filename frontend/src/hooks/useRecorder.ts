@@ -1,9 +1,30 @@
 import { useRef, useState } from "react";
-import { transcribeRecording as transcribeRecordingApi, analyseKeyword, analyseContent, analyseSentiment, analyseSentimentModel, summariseFeedback, type AnalysisResponse, type SentimentModelResponse } from "../api/ApiService";
+import {
+  transcribeRecording as transcribeRecordingApi,
+  analyseKeyword,
+  analyseContent,
+  analyseSentiment,
+  analyseSentimentModel,
+  summariseFeedback,
+  type AnalysisResponse,
+  type SentimentModelResponse,
+} from "../api/ApiService";
 import type { Question } from "../data/questions";
-import type { KeywordAnalysis, ResponseContentAnalysis, ResponseSentimentAnalysis, FeedbackSummary } from "../types/feedbackSummariser";
+import type {
+  KeywordAnalysis,
+  ResponseContentAnalysis,
+  ResponseSentimentAnalysis,
+  FeedbackSummary,
+  AudioAnalysis,
+} from "../types/feedbackSummariser";
 
-type AnalysisStep = "audio" | "keyword" | "content" | "sentiment_model" | "sentiment" | "summary";
+type AnalysisStep =
+  | "audio"
+  | "keyword"
+  | "content"
+  | "sentiment_model"
+  | "sentiment"
+  | "summary";
 type StepStatus = "pending" | "in_progress" | "done" | "error";
 type AnalysisProgress = Record<AnalysisStep, StepStatus>;
 
@@ -23,7 +44,8 @@ export const useRecorder = (currentQuestion: Question | null) => {
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [transcription, setTranscription] = useState<string>("");
   const [showTranscription, setShowTranscription] = useState(false);
-  const [analysisResults, setAnalysisResults] = useState<AnalysisResponse | null>(null);
+  const [analysisResults, setAnalysisResults] =
+    useState<AnalysisResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [analysisProgress, setAnalysisProgress] = useState<AnalysisProgress>({
     audio: "pending",
@@ -66,14 +88,17 @@ export const useRecorder = (currentQuestion: Question | null) => {
       setTranscription(transcriptionText);
       setShowTranscription(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An unknown error occurred");
+      setError(
+        err instanceof Error ? err.message : "An unknown error occurred"
+      );
     } finally {
       setIsTranscribing(false);
     }
   };
 
   const processAnalysis = async () => {
-    if (recordedChunks.length === 0 || !transcription || !currentQuestion) return;
+    if (recordedChunks.length === 0 || !transcription || !currentQuestion)
+      return;
 
     try {
       setIsProcessing(true);
@@ -87,18 +112,25 @@ export const useRecorder = (currentQuestion: Question | null) => {
         summary: "pending",
       });
 
+      let audioResults: AudioAnalysis | null = null;
       let keywordResults: KeywordAnalysis | null = null;
       let contentResults: ResponseContentAnalysis | null = null;
       let sentimentResults: ResponseSentimentAnalysis | null = null;
       let sentimentModelResults: SentimentModelResponse | null = null;
       let feedbackSummary: FeedbackSummary | null = null;
-      let audioResults: unknown = null;
-      // Audio analysis (if available)
+
       try {
         setAnalysisProgress((prev) => ({ ...prev, audio: "in_progress" }));
         const blob = new Blob(recordedChunks, { type: "video/webm" });
-        audioResults = await import("../api/ApiService").then(api => api.analyseAudio(blob, transcription));
-        setAnalysisProgress((prev) => ({ ...prev, audio: "done", keyword: prev.keyword }));
+        const audioRes = await import("../api/ApiService").then((api) =>
+          api.analyseAudio(blob, transcription)
+        );
+        audioResults = unwrapResult(audioRes);
+        setAnalysisProgress((prev) => ({
+          ...prev,
+          audio: "done",
+          keyword: prev.keyword,
+        }));
       } catch {
         setAnalysisProgress((prev) => ({ ...prev, audio: "error" }));
       }
@@ -106,9 +138,16 @@ export const useRecorder = (currentQuestion: Question | null) => {
       // Keyword analysis
       try {
         setAnalysisProgress((prev) => ({ ...prev, keyword: "in_progress" }));
-        const keywordRes = await analyseKeyword(currentQuestion.text, transcription);
+        const keywordRes = await analyseKeyword(
+          currentQuestion.text,
+          transcription
+        );
         keywordResults = unwrapResult(keywordRes);
-        setAnalysisProgress((prev) => ({ ...prev, keyword: "done", content: "in_progress" }));
+        setAnalysisProgress((prev) => ({
+          ...prev,
+          keyword: "done",
+          content: "in_progress",
+        }));
       } catch (err) {
         setAnalysisProgress((prev) => ({ ...prev, keyword: "error" }));
         throw err;
@@ -116,9 +155,16 @@ export const useRecorder = (currentQuestion: Question | null) => {
 
       // Content analysis
       try {
-        const contentRes = await analyseContent(currentQuestion.text, transcription);
+        const contentRes = await analyseContent(
+          currentQuestion.text,
+          transcription
+        );
         contentResults = unwrapResult(contentRes);
-        setAnalysisProgress((prev) => ({ ...prev, content: "done", sentiment_model: "in_progress" }));
+        setAnalysisProgress((prev) => ({
+          ...prev,
+          content: "done",
+          sentiment_model: "in_progress",
+        }));
       } catch (err) {
         setAnalysisProgress((prev) => ({ ...prev, content: "error" }));
         throw err;
@@ -126,9 +172,19 @@ export const useRecorder = (currentQuestion: Question | null) => {
 
       // Sentiment analysis (model call)
       try {
-        setAnalysisProgress((prev) => ({ ...prev, sentiment_model: "in_progress" }));
-        sentimentModelResults = await analyseSentimentModel(currentQuestion.text, transcription);
-        setAnalysisProgress((prev) => ({ ...prev, sentiment_model: "done", sentiment: "in_progress" }));
+        setAnalysisProgress((prev) => ({
+          ...prev,
+          sentiment_model: "in_progress",
+        }));
+        sentimentModelResults = await analyseSentimentModel(
+          currentQuestion.text,
+          transcription
+        );
+        setAnalysisProgress((prev) => ({
+          ...prev,
+          sentiment_model: "done",
+          sentiment: "in_progress",
+        }));
       } catch (err) {
         setAnalysisProgress((prev) => ({ ...prev, sentiment_model: "error" }));
         throw err;
@@ -136,9 +192,16 @@ export const useRecorder = (currentQuestion: Question | null) => {
 
       // Sentiment analysis (agent)
       try {
-        const sentimentRes = await analyseSentiment(currentQuestion.text, transcription);
+        const sentimentRes = await analyseSentiment(
+          currentQuestion.text,
+          transcription
+        );
         sentimentResults = unwrapResult(sentimentRes);
-        setAnalysisProgress((prev) => ({ ...prev, sentiment: "done", summary: "in_progress" }));
+        setAnalysisProgress((prev) => ({
+          ...prev,
+          sentiment: "done",
+          summary: "in_progress",
+        }));
       } catch (err) {
         setAnalysisProgress((prev) => ({ ...prev, sentiment: "error" }));
         throw err;
@@ -146,7 +209,12 @@ export const useRecorder = (currentQuestion: Question | null) => {
 
       // Feedback summary
       try {
-        feedbackSummary = await summariseFeedback(keywordResults!, contentResults!, sentimentResults!);
+        feedbackSummary = await summariseFeedback(
+          audioResults!,
+          keywordResults!,
+          contentResults!,
+          sentimentResults!
+        );
         setAnalysisProgress((prev) => ({ ...prev, summary: "done" }));
       } catch (err) {
         setAnalysisProgress((prev) => ({ ...prev, summary: "error" }));
@@ -156,14 +224,11 @@ export const useRecorder = (currentQuestion: Question | null) => {
       setAnalysisResults({
         feedbackSummary: feedbackSummary!,
         agentResults: {
+          audioAnalysis: audioResults!,
           keywordAnalysis: keywordResults!,
           responseContent: contentResults!,
           responseSentiment: sentimentResults!,
         },
-        results:
-          audioResults && typeof audioResults === "object" && audioResults !== null && Object.keys(audioResults as object).length > 0
-            ? (audioResults as { [feature: string]: { Score: number; Feedback: string } })
-            : undefined,
         sentiment: sentimentResults?.sentiment || undefined,
         sentimentModelResponse: sentimentModelResults || undefined,
         transcription,
@@ -171,7 +236,8 @@ export const useRecorder = (currentQuestion: Question | null) => {
       });
       setShowTranscription(false);
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : "An unknown error occurred";
+      const errorMsg =
+        err instanceof Error ? err.message : "An unknown error occurred";
       setError(errorMsg);
       setAnalysisResults({
         feedbackSummary: {
@@ -182,6 +248,16 @@ export const useRecorder = (currentQuestion: Question | null) => {
           overall_score: 0,
         },
         agentResults: {
+          audioAnalysis: {
+            assessment: [],
+            scores: {
+              clarityAndArticulation: 0,
+              toneAndEmotion: 0,
+              confidence: 0,
+              pace: 0,
+            },
+            improvement: [],
+          },
           keywordAnalysis: {
             matched_keywords: [],
             missing_keywords: [],
@@ -212,7 +288,9 @@ export const useRecorder = (currentQuestion: Question | null) => {
     }
   };
 
-  const handleTranscriptionEdit = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleTranscriptionEdit = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     setTranscription(event.target.value);
   };
 
@@ -229,7 +307,10 @@ export const useRecorder = (currentQuestion: Question | null) => {
 
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: true,
+      });
       setStream(stream);
       mediaRecorderRef.current = new MediaRecorder(stream);
 
@@ -247,7 +328,11 @@ export const useRecorder = (currentQuestion: Question | null) => {
       setTranscription("");
       setShowTranscription(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to access camera/microphone");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to access camera/microphone"
+      );
     }
   };
 

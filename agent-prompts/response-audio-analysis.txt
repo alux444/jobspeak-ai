@@ -36,7 +36,9 @@ Your final output must always be a single valid JSON object in this exact format
 }
 
 Constraints:
-- Use direct observations from the audio response.
-- Do not include personal opinions or subjective interpretations.
-- Focus on objective qualities of the spoken response.
-- Ensure the JSON structure is valid and adheres to the specified format.
+Keep bullet points short and professional.
+Use neutral, constructive language — no harsh tone.
+Do not include any commentary outside the JSON.
+Response must be understandable and actionable for the candidate.
+
+✅ Output only the JSON in the specified format. Nothing else.
