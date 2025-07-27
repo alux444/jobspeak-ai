@@ -25,9 +25,9 @@ services:
       - ./backend:/app
       - /app/node_modules
       # Mount Azure CLI configuration for authentication (writable)
-      - /mnt/c/Users/HP/.azure:/root/.azure
+      - ~/.azure:/root/.azure
       # Mount Azure CLI cache for token persistence (writable)
-      - /mnt/c/Users/HP/.azure-cli:/root/.azure-cli
+      - ~/.azure-cli:/root/.azure-cli
       # Note: Environment variables are read from host system or root .env file
     depends_on:
       - audio
