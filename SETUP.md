@@ -36,11 +36,14 @@ Create a `.env` file in the **root directory**. Match the env file described in 
 ### 3. Start All Services
 
 ```bash
+# Build the base image - only need to do this once
+docker build -f Dockerfile.base -t base-image:latest .
+
 # Start all services using Docker Compose
-docker-compose up -d
+docker compose up -d
 
 # Check if all services are running
-docker-compose ps
+docker compose ps
 ```
 
 ### 4. Verify Services
