@@ -47,17 +47,6 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({ analysisResults }) =>
         {agentResults && (
           <div className="agent-results">
             <h4>Agent Results (Raw Data)</h4>
-            {/* Audio Analysis Raw */}
-            {analysisResults.results && (
-              <div className="agent-section">
-                <button className="expand-btn" onClick={() => setShowAudio((v) => !v)}>
-                  {showAudio ? "Hide" : "Show"} Audio Analysis
-                </button>
-                {showAudio && (
-                  <pre>{JSON.stringify(analysisResults.results, null, 2)}</pre>
-                )}
-              </div>
-            )}
             {/* Sentiment Model Results */}
             {analysisResults.sentimentModelResponse && (
               <div className="agent-section">
@@ -90,6 +79,14 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({ analysisResults }) =>
               </div>
             )}
             {/* Existing agent results */}
+            <div className="agent-section">
+              <button className="expand-btn" onClick={() => setShowAudio((v) => !v)}>
+                {showAudio ? "Hide" : "Show"} Audio Analysis
+              </button>
+              {showAudio && (
+                <pre>{JSON.stringify(agentResults.audioAnalysis, null, 2)}</pre>
+              )}
+            </div>
             <div className="agent-section">
               <button className="expand-btn" onClick={() => setShowKeyword((v) => !v)}>
                 {showKeyword ? "Hide" : "Show"} Keyword Analysis
@@ -124,14 +121,6 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({ analysisResults }) =>
   return (
     <div className="analysis-results">
       <h3>Analysis Results</h3>
-
-      {analysisResults?.results && (
-        <div className="audio-analysis">
-          <h4>Audio Analysis</h4>
-          <pre>{JSON.stringify(analysisResults.results, null, 2)}</pre>
-        </div>
-      )}
-
       {analysisResults?.sentimentModelResponse && (
         <div className="sentiment-analysis">
           <h4>Emotion Analysis (AI Model)</h4>

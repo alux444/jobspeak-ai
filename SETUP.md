@@ -15,6 +15,12 @@ This guide will help you set up and run the complete project with all backend se
 
 Before starting the services, ensure you're authenticated with Azure CLI:
 
+>Note: For Windows users, you may need to run the Azure CLI commands to login within the Docker container to ensure the backend can access Azure services.
+```bash
+docker exec -it p4p-backend-1 /bin/sh
+# Then sign in to Azure with the commands below
+```
+
 ```bash
 # Install Azure CLI (if not already installed)
 # macOS: brew install azure-cli
@@ -36,11 +42,14 @@ Create a `.env` file in the **root directory**. Match the env file described in 
 ### 3. Start All Services
 
 ```bash
+# Build the base image - only need to do this once
+docker build -f Dockerfile.base -t base-image:latest .
+
 # Start all services using Docker Compose
-docker-compose up -d
+docker compose up -d
 
 # Check if all services are running
-docker-compose ps
+docker compose ps
 ```
 
 ### 4. Verify Services
