@@ -34,6 +34,15 @@ export interface ResponseSentimentAnalysis {
   evidence: string[];
 }
 
+export interface VideoAnalysis {
+  assessment: string[];
+  scores: {
+    facialExpression: number;
+    // add more
+  };
+  improvement: string[];
+}
+
 export interface FeedbackSummariserInput {
   keywordAnalysis: KeywordAnalysis;
   responseContentAnalysis: ResponseContentAnalysis;
