@@ -4,6 +4,7 @@ import type {
   ResponseSentimentAnalysis,
   FeedbackSummary,
   AudioAnalysis,
+  VideoAnalysis,
 } from "../types/feedbackSummariser";
 
 export interface SentimentModelResult {
@@ -42,6 +43,7 @@ const API_BASE_URLS = {
   transcriber: "http://localhost:8002",
   audioAnalysis: "http://localhost:8000",
   sentimentAnalysis: "http://localhost:8001",
+  videoAnalysis: "http://localhost:8003",
   backend: "http://localhost:3000",
 };
 
@@ -187,11 +189,33 @@ export async function analyseSentimentModel(
   return json;
 }
 
+export async function analyseVideo(
+  blob: Blob
+): Promise<{ result: VideoAnalysis }> {
+  const videoFormData = new FormData();
+  videoFormData.append("file", blob, "recording.webm");
+  const response = await fetch(
+    `${API_BASE_URLS.videoAnalysis}/analyse-video/`,
+    {
+      method: "POST",
+      body: videoFormData,
+    }
+  );
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(
+      `Video analysis failed: ${response.status} ${response.statusText} - ${errorText}`
+    );
+  }
+  return response.json();
+}
+
 export async function summariseFeedback(
   audioAnalysis: AudioAnalysis,
   keywordAnalysis: KeywordAnalysis,
   responseContentAnalysis: ResponseContentAnalysis,
-  responseSentimentAnalysis: ResponseSentimentAnalysis
+  responseSentimentAnalysis: ResponseSentimentAnalysis,
+  videoAnalysis: VideoAnalysis
 ): Promise<FeedbackSummary> {
   const response = await fetch(`${API_BASE_URLS.backend}/feedback-summariser`, {
     method: "POST",
@@ -201,6 +225,7 @@ export async function summariseFeedback(
       keywordAnalysis,
       responseContentAnalysis,
       responseSentimentAnalysis,
+      videoAnalysis,
     }),
   });
   if (!response.ok) {

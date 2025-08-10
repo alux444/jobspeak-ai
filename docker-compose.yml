@@ -33,6 +33,7 @@ services:
       - audio
       - sentiment
       - transcriber
+      # - video
     environment:
       - NODE_ENV=development
       # Enable Azure CLI authentication
@@ -45,6 +46,7 @@ services:
       - AZURE_AI_FOUNDRY_RESPONSE_SENTIMENT_ANALYSIS_AGENT_ID=${AZURE_AI_FOUNDRY_RESPONSE_SENTIMENT_ANALYSIS_AGENT_ID:-}
       - AZURE_AI_FOUNDRY_JOB_DESCRIPTION_KEYWORDS_GENERATION_AGENT_ID=${AZURE_AI_FOUNDRY_JOB_DESCRIPTION_KEYWORDS_GENERATION_AGENT_ID:-}
       - AZURE_AI_FOUNDRY_KEYWORD_ANALYSIS_AGENT_ID=${AZURE_AI_FOUNDRY_KEYWORD_ANALYSIS_AGENT_ID:-}
+      - AZURE_AI_FOUNDRY_VIDEO_ANALYSIS_AGENT_ID=${AZURE_AI_FOUNDRY_VIDEO_ANALYSIS_AGENT_ID:-}
       - AZURE_AI_FOUNDRY_FEEDBACK_SUMMARISER_AGENT_ID=${AZURE_AI_FOUNDRY_FEEDBACK_SUMMARISER_AGENT_ID:-}
 
   audio:
@@ -82,3 +84,15 @@ services:
       - ./transcriber:/app
     depends_on:
       - base
+
+  # video:
+  #   build:
+  #     context: ./video-analysis
+  #     dockerfile: Dockerfile
+  #   image: video-service
+  #   ports:
+  #     - "8003:8003"
+  #   volumes:
+  #     - ./video-analysis:/app
+  #   depends_on:
+  #     - base
