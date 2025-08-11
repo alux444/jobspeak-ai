@@ -15,6 +15,8 @@ const Recorder: React.FC = () => {
     // State
     recording,
     recordedChunks,
+    uploadedFile,
+    mode,
     stream,
     isProcessing,
     isTranscribing,
@@ -31,15 +33,26 @@ const Recorder: React.FC = () => {
     handleTranscriptionEdit,
     handleTranscriptionSubmit,
     handleTranscriptionCancel,
+    handleFileUpload,
+    switchMode,
+    clearUploadedFile,
   } = useRecorder(currentQuestion);
 
-  // Memoize the playback URL so it doesn't get recreated on every render
-  const playbackUrl = useMemo(() => {
+  // Memoize the playback URL for recorded video
+  const recordedPlaybackUrl = useMemo(() => {
     if (recordedChunks.length > 0) {
       return URL.createObjectURL(new Blob(recordedChunks, { type: "video/webm" }));
     }
     return null;
   }, [recordedChunks]);
+
+  // Memoize the playback URL for uploaded video
+  const uploadedPlaybackUrl = useMemo(() => {
+    if (uploadedFile) {
+      return URL.createObjectURL(uploadedFile);
+    }
+    return null;
+  }, [uploadedFile]);
 
   return (
     <div className="recorder-container">
@@ -48,6 +61,8 @@ const Recorder: React.FC = () => {
       <Controls
         recording={recording}
         recordedChunks={recordedChunks}
+        uploadedFile={uploadedFile}
+        mode={mode}
         isProcessing={isProcessing}
         isTranscribing={isTranscribing}
         showTranscription={showTranscription}
@@ -55,16 +70,31 @@ const Recorder: React.FC = () => {
         onStopRecording={stopRecording}
         onSaveRecording={saveRecording}
         onTranscribeRecording={transcribeRecording}
+        onFileUpload={handleFileUpload}
+        onSwitchMode={switchMode}
+        onClearUploadedFile={clearUploadedFile}
       />
 
-      {/* Always show the live video preview */}
-      <VideoPreview stream={stream} />
+      {/* Live video preview - only show in record mode */}
+      {mode === "record" && <VideoPreview stream={stream} />}
 
-      {/* Show playback video if a recording exists and not currently recording */}
-      {playbackUrl && !recording && (
+      {/* Video playback section */}
+      {((mode === "record" && recordedPlaybackUrl && !recording) || 
+        (mode === "upload" && uploadedPlaybackUrl)) && (
         <div className="playback-video" style={{ margin: '20px 0' }}>
-          <h4>Playback</h4>
-          <video src={playbackUrl} controls style={{ width: 400 }} />
+          <h4>
+            {mode === "record" ? "Recorded Video" : "Uploaded Video"}
+            {uploadedFile && mode === "upload" && (
+              <span style={{ fontSize: '14px', color: '#666', marginLeft: '10px' }}>
+                ({uploadedFile.name})
+              </span>
+            )}
+          </h4>
+          <video 
+            src={mode === "record" ? recordedPlaybackUrl || undefined : uploadedPlaybackUrl || undefined} 
+            controls 
+            style={{ width: 400, maxWidth: '100%' }} 
+          />
         </div>
       )}
 

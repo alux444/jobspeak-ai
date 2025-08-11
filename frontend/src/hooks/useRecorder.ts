@@ -42,6 +42,8 @@ export const useRecorder = (currentQuestion: Question | null) => {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const [recording, setRecording] = useState(false);
   const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [mode, setMode] = useState<"record" | "upload">("record");
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
@@ -80,14 +82,21 @@ export const useRecorder = (currentQuestion: Question | null) => {
   };
 
   const transcribeRecording = async () => {
-    if (recordedChunks.length === 0) return;
+    // Get video blob from either recorded chunks or uploaded file
+    let videoBlob: Blob;
+    if (mode === "upload" && uploadedFile) {
+      videoBlob = uploadedFile;
+    } else if (mode === "record" && recordedChunks.length > 0) {
+      videoBlob = new Blob(recordedChunks, { type: "video/webm" });
+    } else {
+      return;
+    }
 
     try {
       setIsTranscribing(true);
       setError(null);
 
-      const blob = new Blob(recordedChunks, { type: "video/webm" });
-      const transcriptionText = await transcribeRecordingApi(blob);
+      const transcriptionText = await transcribeRecordingApi(videoBlob);
 
       setTranscription(transcriptionText);
       setShowTranscription(true);
@@ -101,8 +110,19 @@ export const useRecorder = (currentQuestion: Question | null) => {
   };
 
   const processAnalysis = async () => {
-    if (recordedChunks.length === 0 || !transcription || !currentQuestion)
-      return;
+    // Check if we have video data (either recorded or uploaded) and transcription
+    const hasVideoData = (mode === "record" && recordedChunks.length > 0) || 
+                        (mode === "upload" && uploadedFile);
+    
+    if (!hasVideoData || !transcription || !currentQuestion) return;
+
+    // Get video blob from either recorded chunks or uploaded file
+    let videoBlob: Blob;
+    if (mode === "upload" && uploadedFile) {
+      videoBlob = uploadedFile;
+    } else {
+      videoBlob = new Blob(recordedChunks, { type: "video/webm" });
+    }
 
     try {
       setIsProcessing(true);
@@ -127,9 +147,8 @@ export const useRecorder = (currentQuestion: Question | null) => {
 
       try {
         setAnalysisProgress((prev) => ({ ...prev, audio: "in_progress" }));
-        const blob = new Blob(recordedChunks, { type: "video/webm" });
         const audioRes = await import("../api/ApiService").then((api) =>
-          api.analyseAudio(blob, transcription)
+          api.analyseAudio(videoBlob, transcription)
         );
         audioResults = unwrapResult(audioRes);
         setAnalysisProgress((prev) => ({
@@ -143,8 +162,7 @@ export const useRecorder = (currentQuestion: Question | null) => {
 
       // Video analysis
       try {
-        const blob = new Blob(recordedChunks, { type: "video/webm" });
-        videoResults = await analyseVideo(blob);
+        videoResults = await analyseVideo(videoBlob);
         setAnalysisProgress((prev) => ({
           ...prev,
           video: "done",
@@ -364,10 +382,50 @@ export const useRecorder = (currentQuestion: Question | null) => {
     }
   };
 
+  // File upload functions
+  const handleFileUpload = (file: File) => {
+    // Reset previous results when uploading a new file
+    setUploadedFile(file);
+    setRecordedChunks([]); // Clear any existing recording
+    setAnalysisResults(null);
+    setError(null);
+    setTranscription("");
+    setShowTranscription(false);
+  };
+
+  const switchMode = (newMode: "record" | "upload") => {
+    setMode(newMode);
+    // Clear data when switching modes
+    if (newMode === "record") {
+      setUploadedFile(null);
+    } else {
+      setRecordedChunks([]);
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+        setStream(null);
+      }
+    }
+    // Reset analysis state
+    setAnalysisResults(null);
+    setError(null);
+    setTranscription("");
+    setShowTranscription(false);
+  };
+
+  const clearUploadedFile = () => {
+    setUploadedFile(null);
+    setAnalysisResults(null);
+    setError(null);
+    setTranscription("");
+    setShowTranscription(false);
+  };
+
   return {
     // State
     recording,
     recordedChunks,
+    uploadedFile,
+    mode,
     stream,
     isProcessing,
     isTranscribing,
@@ -386,5 +444,8 @@ export const useRecorder = (currentQuestion: Question | null) => {
     handleTranscriptionEdit,
     handleTranscriptionSubmit,
     handleTranscriptionCancel,
+    handleFileUpload,
+    switchMode,
+    clearUploadedFile,
   };
 };

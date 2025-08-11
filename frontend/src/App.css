@@ -72,6 +72,92 @@
   cursor: not-allowed;
 }
 
+/* Mode Switcher Styles */
+.mode-switcher {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.mode-switcher button {
+  flex: 1;
+  margin: 0;
+  padding: 8px 16px;
+  background-color: transparent;
+  color: #6c757d;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.mode-switcher button.active {
+  background-color: #007bff;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+}
+
+.mode-switcher button:hover:not(:disabled) {
+  background-color: #e9ecef;
+}
+
+.mode-switcher button.active:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+/* Upload Controls Styles */
+.upload-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.uploaded-file-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background-color: #e8f5e8;
+  border: 1px solid #c3e6c3;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #155724;
+}
+
+.clear-file-btn {
+  background: none !important;
+  border: none !important;
+  color: #dc3545 !important;
+  font-size: 16px !important;
+  padding: 0 4px !important;
+  margin: 0 !important;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clear-file-btn:hover {
+  background-color: rgba(220, 53, 69, 0.1) !important;
+}
+
+/* Action Controls */
+.action-controls {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #dee2e6;
+}
+
+.recording-controls {
+  margin-bottom: 10px;
+}
+
 .video-preview {
   margin: 20px 0;
 }
