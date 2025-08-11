@@ -22,6 +22,7 @@ export interface AnalysisResponse {
   input?: string;
   sentiment?: string;
   sentimentModelResponse?: SentimentModelResponse;
+  videoAnalysis?: VideoAnalysis;
   transcription?: string;
   error?: string;
   feedbackSummary: FeedbackSummary;
@@ -30,6 +31,7 @@ export interface AnalysisResponse {
     keywordAnalysis: KeywordAnalysis;
     responseContent: ResponseContentAnalysis;
     responseSentiment: ResponseSentimentAnalysis;
+    videoAnalysis?: VideoAnalysis;
   };
 }
 
@@ -191,7 +193,7 @@ export async function analyseSentimentModel(
 
 export async function analyseVideo(
   blob: Blob
-): Promise<{ result: VideoAnalysis }> {
+): Promise<VideoAnalysis> {
   const videoFormData = new FormData();
   videoFormData.append("file", blob, "recording.webm");
   const response = await fetch(
