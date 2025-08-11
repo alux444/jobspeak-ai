@@ -6,10 +6,19 @@ import TranscriptionEditor from "./TranscriptionEditor";
 import AnalysisResults from "./AnalysisResults";
 import StatusMessages from "./StatusMessages";
 import QuestionPrompt from "./QuestionPrompt";
+import { JobDescriptionSelector } from "./JobDescriptionSelector";
 import type { Question } from "../data/questions";
+import type { JobDescriptionCategory } from "../types/jobDescriptions";
 
 const Recorder: React.FC = () => {
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
+  const [selectedJobDescription, setSelectedJobDescription] = useState<JobDescriptionCategory>('java-developer');
+  const [customJobDescription, setCustomJobDescription] = useState<string | undefined>(undefined);
+
+  const handleJobDescriptionChange = (category: JobDescriptionCategory, customDescription?: string) => {
+    setSelectedJobDescription(category);
+    setCustomJobDescription(customDescription);
+  };
   
   const {
     // State
@@ -36,7 +45,7 @@ const Recorder: React.FC = () => {
     handleFileUpload,
     switchMode,
     clearUploadedFile,
-  } = useRecorder(currentQuestion);
+  } = useRecorder(currentQuestion, selectedJobDescription, customJobDescription);
 
   // Memoize the playback URL for recorded video
   const recordedPlaybackUrl = useMemo(() => {
@@ -56,7 +65,12 @@ const Recorder: React.FC = () => {
 
   return (
     <div className="recorder-container">
-      <QuestionPrompt onQuestionChange={setCurrentQuestion} />
+      <JobDescriptionSelector 
+        selectedJobDescription={selectedJobDescription}
+        onJobDescriptionChange={handleJobDescriptionChange}
+      />      <QuestionPrompt 
+        onQuestionChange={setCurrentQuestion} 
+      />
       
       <Controls
         recording={recording}

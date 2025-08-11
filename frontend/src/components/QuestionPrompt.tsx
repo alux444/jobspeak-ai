@@ -6,7 +6,9 @@ interface QuestionPromptProps {
   onQuestionChange?: (question: Question) => void;
 }
 
-const QuestionPrompt: React.FC<QuestionPromptProps> = ({ onQuestionChange }) => {
+const QuestionPrompt: React.FC<QuestionPromptProps> = ({ 
+  onQuestionChange
+}) => {
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
 
   const loadNewQuestion = () => {
@@ -17,7 +19,7 @@ const QuestionPrompt: React.FC<QuestionPromptProps> = ({ onQuestionChange }) => 
 
   useEffect(() => {
     loadNewQuestion();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleRefreshQuestion = () => {
     loadNewQuestion();
@@ -39,6 +41,7 @@ const QuestionPrompt: React.FC<QuestionPromptProps> = ({ onQuestionChange }) => 
           🔄 New Question
         </button>
       </div>
+
       <div className="question-content">
         <p className="question-text">{currentQuestion.text}</p>
         <div className="question-meta">

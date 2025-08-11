@@ -40,6 +40,12 @@ export interface QuestionAndAnswer {
   answer: string;
 }
 
+export interface KeywordAnalysisRequest {
+  questionAndAnswer: QuestionAndAnswer;
+  jobDescriptionCategory?: string;
+  customJobDescription?: string;
+}
+
 // Base URLs for services - these should match the Docker service names
 const API_BASE_URLS = {
   transcriber: "http://localhost:8002",
@@ -108,13 +114,25 @@ export async function analyseAudio(
 
 export async function analyseKeyword(
   question: string,
-  answer: string
+  answer: string,
+  jobDescriptionCategory?: string,
+  customJobDescription?: string
 ): Promise<{ result: KeywordAnalysis }> {
   const questionAndAnswer = { question, answer };
+  const requestBody: KeywordAnalysisRequest = { questionAndAnswer };
+  
+  if (jobDescriptionCategory) {
+    requestBody.jobDescriptionCategory = jobDescriptionCategory;
+  }
+  
+  if (customJobDescription) {
+    requestBody.customJobDescription = customJobDescription;
+  }
+  
   const response = await fetch(`${API_BASE_URLS.backend}/keyword-analysis`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ questionAndAnswer }),
+    body: JSON.stringify(requestBody),
   });
   if (!response.ok) {
     const errorText = await response.text();

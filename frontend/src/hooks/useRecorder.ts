@@ -19,6 +19,7 @@ import type {
   AudioAnalysis,
   VideoAnalysis,
 } from "../types/feedbackSummariser";
+import type { JobDescriptionCategory } from "../types/jobDescriptions";
 
 type AnalysisStep =
   | "audio"
@@ -38,7 +39,11 @@ function unwrapResult<T>(res: T | { result: T }): T {
   return res as T;
 }
 
-export const useRecorder = (currentQuestion: Question | null) => {
+export const useRecorder = (
+  currentQuestion: Question | null, 
+  jobDescriptionCategory?: JobDescriptionCategory,
+  customJobDescription?: string
+) => {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const [recording, setRecording] = useState(false);
   const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
@@ -176,7 +181,9 @@ export const useRecorder = (currentQuestion: Question | null) => {
       try {
         const keywordRes = await analyseKeyword(
           currentQuestion.text,
-          transcription
+          transcription,
+          jobDescriptionCategory,
+          customJobDescription
         );
         keywordResults = unwrapResult(keywordRes);
         setAnalysisProgress((prev) => ({
