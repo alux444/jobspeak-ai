@@ -1,3 +1,7 @@
 deepface
 opencv-python
 tf-keras
+fastapi
+uvicorn
+python-multipart
+pydantic

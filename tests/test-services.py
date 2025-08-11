@@ -1,6 +1,18 @@
 #!/usr/bin/env python3
 """
 Test script to verify all backend services are working correctly
+
+Services tested:
+- Transcriber (port 8002): Video transcription using Whisper
+- Audio Analysis (port 8000): Audio quality analysis 
+- Video Analysis (port 8003): Facial emotion analysis using DeepFace
+- Sentiment Analysis (port 8001): Text sentiment analysis
+- Backend (port 3000): Main API with Azure AI agent endpoints
+
+Usage:
+    python test-services.py --service all        # Test all services
+    python test-services.py --service video      # Test only video analysis
+    python test-services.py --list               # List available services
 """
 
 import requests
@@ -15,6 +27,7 @@ SERVICES = {
     "transcriber": "http://localhost:8002",
     "audio-analysis": "http://localhost:8000",
     "sentiment-analysis": "http://localhost:8001",
+    "video-analysis": "http://localhost:8003",
     "backend": "http://localhost:3000",
 }
 
@@ -168,6 +181,47 @@ def test_audio_analysis_service(timeout=60):
             return None
     except requests.exceptions.RequestException as e:
         print(f"❌ Audio analysis service: Connection failed - {e}")
+        return None
+
+
+def test_video_analysis_service(timeout=60):
+    """Test video analysis service with the real test video file"""
+    print("\nTesting video analysis service...")
+
+    # Load the real test video file
+    video_data = load_test_video()
+    if video_data is None:
+        print("❌ Cannot test video analysis service without test video file")
+        return
+
+    try:
+        files = {"file": ("test-recording.webm", video_data, "video/webm")}
+        response = requests.post(
+            f"{SERVICES['video-analysis']}/analyse-video/", 
+            files=files, 
+            timeout=timeout
+        )
+
+        if response.status_code == 200:
+            print("✅ Video analysis service: Working")
+            result = response.json()
+            print(f"   Assessment: {len(result.get('assessment', []))} items")
+            print(f"   Scores: {list(result.get('scores', {}).keys())}")
+            print(f"   Improvement: {len(result.get('improvement', []))} suggestions")
+            
+            # Print some sample results if available
+            if result.get('assessment'):
+                print(f"   Sample assessment: {result['assessment'][0][:80]}...")
+            if result.get('scores', {}).get('facialExpression'):
+                print(f"   Facial expression score: {result['scores']['facialExpression']}")
+            
+            return result
+        else:
+            print(f"❌ Video analysis service: Failed (Status: {response.status_code})")
+            print(f"   Error: {response.text}")
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Video analysis service: Connection failed - {e}")
         return None
 
 
@@ -327,8 +381,30 @@ def test_full_workflow(timeout=120):
             print(f"   ❌ Audio analysis failed: {audio_response.status_code}")
             print(f"   Error: {audio_response.text}")
 
-        # Step 3: Test sentiment analysis with actual transcription
-        print("   Step 3: Sentiment analysis...")
+        # Step 3: Test video analysis
+        print("   Step 3: Video analysis...")
+        video_files = {"file": ("test-recording.webm", video_data, "video/webm")}
+        
+        video_response = requests.post(
+            f"{SERVICES['video-analysis']}/analyse-video/", 
+            files=video_files, 
+            timeout=timeout
+        )
+
+        if video_response.status_code == 200:
+            print("   ✅ Video analysis successful")
+            video_result = video_response.json()
+            print(f"   📊 Video analysis completed:")
+            print(f"      Assessment items: {len(video_result.get('assessment', []))}")
+            print(f"      Improvement suggestions: {len(video_result.get('improvement', []))}")
+            if video_result.get('scores', {}).get('facialExpression'):
+                print(f"      Facial expression score: {video_result['scores']['facialExpression']}")
+        else:
+            print(f"   ❌ Video analysis failed: {video_response.status_code}")
+            print(f"   Error: {video_response.text}")
+
+        # Step 4: Test sentiment analysis with actual transcription
+        print("   Step 4: Sentiment analysis...")
         workflow_question = TEST_INPUTS["workflow_question"]
         sentiment_data = {
             "question": workflow_question,
@@ -356,8 +432,8 @@ def test_full_workflow(timeout=120):
             print(f"   ❌ Sentiment analysis failed: {sentiment_response.status_code}")
             print(f"   Error: {sentiment_response.text}")
 
-        # Step 4: Test Azure AI agents with actual transcription
-        print("   Step 4: Azure AI Agent Analysis...")
+        # Step 5: Test Azure AI agents with actual transcription
+        print("   Step 5: Azure AI Agent Analysis...")
 
         # Test response content analysis with actual transcription
         agent_data = {
@@ -449,6 +525,7 @@ Examples:
             "health",
             "transcriber",
             "audio",
+            "video",
             "sentiment",
             "backend",
             "workflow",
@@ -484,10 +561,12 @@ def list_available_services():
     print("health      - Health endpoints for all services")
     print("transcriber - Transcription service with test video")
     print("audio       - Audio analysis service")
+    print("video       - Video analysis service")
     print("sentiment   - Sentiment analysis service")
     print("backend     - Backend API health and root endpoints")
     print("agents      - Azure AI agent endpoints")
     print("workflow    - Complete end-to-end workflow")
+    print("feedback    - Feedback summariser service")
     print("all         - All services (default)")
     print("\nUsage: python test-services.py --service <service_name>")
 
@@ -518,6 +597,7 @@ def main():
         test_transcription_service(args.timeout)
         test_sentiment_service(args.timeout)
         test_audio_analysis_service(args.timeout)
+        test_video_analysis_service(args.timeout)
         test_backend_agent_endpoints(args.timeout)
         test_full_workflow(args.timeout)
         test_feedback_summariser(args.timeout)
@@ -527,6 +607,8 @@ def main():
         test_transcription_service(args.timeout)
     elif args.service == "audio":
         test_audio_analysis_service(args.timeout)
+    elif args.service == "video":
+        test_video_analysis_service(args.timeout)
     elif args.service == "sentiment":
         test_sentiment_service(args.timeout)
     elif args.service == "backend":
