@@ -33,7 +33,7 @@ services:
       - audio
       - sentiment
       - transcriber
-      # - video
+      - video
     environment:
       - NODE_ENV=development
       # Enable Azure CLI authentication
@@ -85,14 +85,14 @@ services:
     depends_on:
       - base
 
-  # video:
-  #   build:
-  #     context: ./video-analysis
-  #     dockerfile: Dockerfile
-  #   image: video-service
-  #   ports:
-  #     - "8003:8003"
-  #   volumes:
-  #     - ./video-analysis:/app
-  #   depends_on:
-  #     - base
+  video:
+    build:
+      context: ./expression-recognition/deepface/recording
+      dockerfile: Dockerfile
+    image: video-service
+    ports:
+      - "8003:8003"
+    volumes:
+      - ./expression-recognition/deepface/recording:/app
+    depends_on:
+      - base

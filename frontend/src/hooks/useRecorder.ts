@@ -5,6 +5,7 @@ import {
   analyseContent,
   analyseSentiment,
   analyseSentimentModel,
+  analyseVideo,
   summariseFeedback,
   type AnalysisResponse,
   type SentimentModelResponse,
@@ -16,10 +17,12 @@ import type {
   ResponseSentimentAnalysis,
   FeedbackSummary,
   AudioAnalysis,
+  VideoAnalysis,
 } from "../types/feedbackSummariser";
 
 type AnalysisStep =
   | "audio"
+  | "video"
   | "keyword"
   | "content"
   | "sentiment_model"
@@ -49,6 +52,7 @@ export const useRecorder = (currentQuestion: Question | null) => {
   const [error, setError] = useState<string | null>(null);
   const [analysisProgress, setAnalysisProgress] = useState<AnalysisProgress>({
     audio: "pending",
+    video: "pending",
     keyword: "pending",
     content: "pending",
     sentiment_model: "pending",
@@ -105,6 +109,7 @@ export const useRecorder = (currentQuestion: Question | null) => {
       setError(null);
       setAnalysisProgress({
         audio: "in_progress",
+        video: "pending",
         keyword: "pending",
         content: "pending",
         sentiment_model: "pending",
@@ -113,6 +118,7 @@ export const useRecorder = (currentQuestion: Question | null) => {
       });
 
       let audioResults: AudioAnalysis | null = null;
+      let videoResults: VideoAnalysis | null = null;
       let keywordResults: KeywordAnalysis | null = null;
       let contentResults: ResponseContentAnalysis | null = null;
       let sentimentResults: ResponseSentimentAnalysis | null = null;
@@ -129,15 +135,27 @@ export const useRecorder = (currentQuestion: Question | null) => {
         setAnalysisProgress((prev) => ({
           ...prev,
           audio: "done",
-          keyword: prev.keyword,
+          video: "in_progress",
         }));
       } catch {
         setAnalysisProgress((prev) => ({ ...prev, audio: "error" }));
       }
 
+      // Video analysis
+      try {
+        const blob = new Blob(recordedChunks, { type: "video/webm" });
+        videoResults = await analyseVideo(blob);
+        setAnalysisProgress((prev) => ({
+          ...prev,
+          video: "done",
+          keyword: "in_progress",
+        }));
+      } catch {
+        setAnalysisProgress((prev) => ({ ...prev, video: "error" }));
+      }
+
       // Keyword analysis
       try {
-        setAnalysisProgress((prev) => ({ ...prev, keyword: "in_progress" }));
         const keywordRes = await analyseKeyword(
           currentQuestion.text,
           transcription
@@ -213,7 +231,8 @@ export const useRecorder = (currentQuestion: Question | null) => {
           audioResults!,
           keywordResults!,
           contentResults!,
-          sentimentResults!
+          sentimentResults!,
+          videoResults!
         );
         setAnalysisProgress((prev) => ({ ...prev, summary: "done" }));
       } catch (err) {
@@ -228,9 +247,11 @@ export const useRecorder = (currentQuestion: Question | null) => {
           keywordAnalysis: keywordResults!,
           responseContent: contentResults!,
           responseSentiment: sentimentResults!,
+          videoAnalysis: videoResults!,
         },
         sentiment: sentimentResults?.sentiment || undefined,
         sentimentModelResponse: sentimentModelResults || undefined,
+        videoAnalysis: videoResults || undefined,
         transcription,
         error: undefined,
       });
@@ -279,6 +300,13 @@ export const useRecorder = (currentQuestion: Question | null) => {
             sentiment: "",
             confidence: 0,
             evidence: [],
+          },
+          videoAnalysis: {
+            assessment: [],
+            scores: {
+              facialExpression: 0,
+            },
+            improvement: [],
           },
         },
         error: errorMsg,

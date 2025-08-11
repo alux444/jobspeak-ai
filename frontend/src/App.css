@@ -477,6 +477,85 @@
   transition: width 0.3s ease;
 }
 
+/* Video Analysis Styles */
+.video-analysis {
+  margin: 20px 0;
+  padding: 20px;
+  background-color: #1a202c;
+  border-radius: 8px;
+  border: 1px solid #4a5568;
+  color: #e2e8f0;
+}
+
+.video-analysis h4 {
+  color: #f7fafc;
+  margin-bottom: 15px;
+}
+
+.video-analysis-results {
+  background-color: #2d3748;
+  padding: 15px;
+  border-radius: 6px;
+  border: 1px solid #4a5568;
+}
+
+.video-analysis-summary h6 {
+  color: #63b3ed;
+  margin: 15px 0 8px 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.assessment-item,
+.improvement-item {
+  color: #e2e8f0;
+  margin: 5px 0;
+  padding: 3px 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.emotion-score-item {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+  padding: 8px 0;
+  border-bottom: 1px solid #4a5568;
+  font-size: 14px;
+}
+
+.emotion-score-item:last-child {
+  border-bottom: none;
+}
+
+.emotion-score-item .emotion-label {
+  min-width: 150px;
+  color: #a0aec0;
+  font-weight: 500;
+}
+
+.emotion-score-item .emotion-score {
+  min-width: 60px;
+  color: #f7fafc;
+  font-weight: 600;
+}
+
+.emotion-score-item .emotion-bar {
+  flex: 1;
+  margin-left: 15px;
+  height: 8px;
+  background-color: #4a5568;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.emotion-score-item .emotion-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #9f7aea 0%, #667eea 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
 .expand-btn {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);

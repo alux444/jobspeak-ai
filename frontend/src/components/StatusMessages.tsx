@@ -9,6 +9,7 @@ interface StatusMessagesProps {
 
 const stepLabels: Record<string, string> = {
   audio: "Audio Analysis",
+  video: "Video Analysis (Facial Emotions)",
   keyword: "Keyword Analysis",
   content: "Content Analysis",
   sentiment_model: "Sentiment Model",

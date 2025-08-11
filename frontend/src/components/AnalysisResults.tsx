@@ -11,6 +11,7 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({ analysisResults }) =>
   const [showContent, setShowContent] = useState(false);
   const [showSentiment, setShowSentiment] = useState(false);
   const [showAudio, setShowAudio] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
   const [showSentimentRaw, setShowSentimentRaw] = useState(false);
 
   if (!analysisResults) return null;
@@ -62,17 +63,14 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({ analysisResults }) =>
                           <span className="emotion-label">{emotion.label}:</span>
                           <span className="emotion-score">{(emotion.score * 100).toFixed(1)}%</span>
                           <div className="emotion-bar">
-                            <div 
-                              className="emotion-fill" 
-                              style={{ width: `${emotion.score * 100}%` }}
-                            />
+                            <div className="emotion-fill" style={{ width: `${emotion.score * 100}%` }} />
                           </div>
                         </div>
                       ))}
                     </div>
-                    <details style={{ marginTop: '15px' }}>
-                      <summary style={{ cursor: 'pointer', color: '#a0aec0' }}>View Raw Data</summary>
-                      <pre style={{ marginTop: '10px' }}>{JSON.stringify(analysisResults.sentimentModelResponse, null, 2)}</pre>
+                    <details style={{ marginTop: "15px" }}>
+                      <summary style={{ cursor: "pointer", color: "#a0aec0" }}>View Raw Data</summary>
+                      <pre style={{ marginTop: "10px" }}>{JSON.stringify(analysisResults.sentimentModelResponse, null, 2)}</pre>
                     </details>
                   </div>
                 )}
@@ -83,33 +81,69 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({ analysisResults }) =>
               <button className="expand-btn" onClick={() => setShowAudio((v) => !v)}>
                 {showAudio ? "Hide" : "Show"} Audio Analysis
               </button>
-              {showAudio && (
-                <pre>{JSON.stringify(agentResults.audioAnalysis, null, 2)}</pre>
-              )}
+              {showAudio && <pre>{JSON.stringify(agentResults.audioAnalysis, null, 2)}</pre>}
             </div>
+            {/* Video Analysis Section */}
+            {agentResults.videoAnalysis && (
+              <div className="agent-section">
+                <button className="expand-btn" onClick={() => setShowVideo((v) => !v)}>
+                  {showVideo ? "Hide" : "Show"} Video Analysis (Facial Emotion Recognition)
+                </button>
+                {showVideo && (
+                  <div className="video-analysis-results">
+                    <div className="video-analysis-summary">
+                      <h6>Assessment:</h6>
+                      {agentResults.videoAnalysis.assessment.map((item, index) => (
+                        <div key={index} className="assessment-item">
+                          • {item}
+                        </div>
+                      ))}
+
+                      <h6>Emotion Scores:</h6>
+                      {Object.entries(agentResults.videoAnalysis.scores).map(([emotion, score]) => (
+                        <div key={emotion} className="emotion-score-item">
+                          <span className="emotion-label">{emotion}:</span>
+                          <span className="emotion-score">{score.toFixed(2)}</span>
+                          {emotion.includes("Score") && (
+                            <div className="emotion-bar">
+                              <div className="emotion-fill" style={{ width: `${Math.min(score, 100)}%` }} />
+                            </div>
+                          )}
+                        </div>
+                      ))}
+
+                      <h6>Improvement Suggestions:</h6>
+                      {agentResults.videoAnalysis.improvement.map((item, index) => (
+                        <div key={index} className="improvement-item">
+                          • {item}
+                        </div>
+                      ))}
+                    </div>
+                    <details style={{ marginTop: "15px" }}>
+                      <summary style={{ cursor: "pointer", color: "#a0aec0" }}>View Raw Data</summary>
+                      <pre style={{ marginTop: "10px" }}>{JSON.stringify(agentResults.videoAnalysis, null, 2)}</pre>
+                    </details>
+                  </div>
+                )}
+              </div>
+            )}
             <div className="agent-section">
               <button className="expand-btn" onClick={() => setShowKeyword((v) => !v)}>
                 {showKeyword ? "Hide" : "Show"} Keyword Analysis
               </button>
-              {showKeyword && (
-                <pre>{JSON.stringify(agentResults.keywordAnalysis, null, 2)}</pre>
-              )}
+              {showKeyword && <pre>{JSON.stringify(agentResults.keywordAnalysis, null, 2)}</pre>}
             </div>
             <div className="agent-section">
               <button className="expand-btn" onClick={() => setShowContent((v) => !v)}>
                 {showContent ? "Hide" : "Show"} Content Analysis
               </button>
-              {showContent && (
-                <pre>{JSON.stringify(agentResults.responseContent, null, 2)}</pre>
-              )}
+              {showContent && <pre>{JSON.stringify(agentResults.responseContent, null, 2)}</pre>}
             </div>
             <div className="agent-section">
               <button className="expand-btn" onClick={() => setShowSentiment((v) => !v)}>
                 {showSentiment ? "Hide" : "Show"} Sentiment Analysis
               </button>
-              {showSentiment && (
-                <pre>{JSON.stringify(agentResults.responseSentiment, null, 2)}</pre>
-              )}
+              {showSentiment && <pre>{JSON.stringify(agentResults.responseSentiment, null, 2)}</pre>}
             </div>
           </div>
         )}
@@ -132,11 +166,44 @@ const AnalysisResults: React.FC<AnalysisResultsProps> = ({ analysisResults }) =>
                   <span className="emotion-label">{emotion.label}:</span>
                   <span className="emotion-score">{(emotion.score * 100).toFixed(1)}%</span>
                   <div className="emotion-bar">
-                    <div 
-                      className="emotion-fill" 
-                      style={{ width: `${emotion.score * 100}%` }}
-                    />
+                    <div className="emotion-fill" style={{ width: `${emotion.score * 100}%` }} />
                   </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {analysisResults?.videoAnalysis && (
+        <div className="video-analysis">
+          <h4>Video Analysis (Facial Emotion Recognition)</h4>
+          <div className="video-analysis-results">
+            <div className="video-analysis-summary">
+              <h6>Assessment:</h6>
+              {analysisResults.videoAnalysis.assessment.map((item, index) => (
+                <div key={index} className="assessment-item">
+                  • {item}
+                </div>
+              ))}
+
+              <h6>Emotion Scores:</h6>
+              {Object.entries(analysisResults.videoAnalysis.scores).map(([emotion, score]) => (
+                <div key={emotion} className="emotion-score-item">
+                  <span className="emotion-label">{emotion}:</span>
+                  <span className="emotion-score">{score}</span>
+                  {emotion.includes("Score") && (
+                    <div className="emotion-bar">
+                      <div className="emotion-fill" style={{ width: `${Math.min(score, 100)}%` }} />
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              <h6>Improvement Suggestions:</h6>
+              {analysisResults.videoAnalysis.improvement.map((item, index) => (
+                <div key={index} className="improvement-item">
+                  • {item}
                 </div>
               ))}
             </div>
