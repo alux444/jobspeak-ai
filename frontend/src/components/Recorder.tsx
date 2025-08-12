@@ -6,20 +6,16 @@ import TranscriptionEditor from "./TranscriptionEditor";
 import AnalysisResults from "./AnalysisResults";
 import StatusMessages from "./StatusMessages";
 import QuestionPrompt from "./QuestionPrompt";
-import { JobDescriptionSelector } from "./JobDescriptionSelector/JobDescriptionSelector";
 import type { Question } from "../data/questions";
 import type { JobDescriptionCategory } from "../types/jobDescriptions";
 
-const Recorder: React.FC = () => {
+interface RecorderProps {
+  selectedJobDescription: JobDescriptionCategory;
+  customJobDescription: string | undefined;
+}
+
+const Recorder: React.FC<RecorderProps> = ({ selectedJobDescription, customJobDescription }) => {
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
-  const [selectedJobDescription, setSelectedJobDescription] = useState<JobDescriptionCategory>('java-developer');
-  const [customJobDescription, setCustomJobDescription] = useState<string | undefined>(undefined);
-
-  const handleJobDescriptionChange = (category: JobDescriptionCategory, customDescription?: string) => {
-    setSelectedJobDescription(category);
-    setCustomJobDescription(customDescription);
-  };
-
   const {
     // State
     recording,
@@ -68,10 +64,7 @@ const Recorder: React.FC = () => {
 
   return (
     <div className="recorder-container">
-      <JobDescriptionSelector
-        selectedJobDescription={selectedJobDescription}
-        onJobDescriptionChange={handleJobDescriptionChange}
-      />      <QuestionPrompt
+      <QuestionPrompt
         onQuestionChange={setCurrentQuestion}
       />
 
