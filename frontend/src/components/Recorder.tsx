@@ -6,7 +6,7 @@ import TranscriptionEditor from "./TranscriptionEditor";
 import AnalysisResults from "./AnalysisResults";
 import StatusMessages from "./StatusMessages";
 import QuestionPrompt from "./QuestionPrompt";
-import { JobDescriptionSelector } from "./JobDescriptionSelector";
+import { JobDescriptionSelector } from "./JobDescriptionSelector/JobDescriptionSelector";
 import type { Question } from "../data/questions";
 import type { JobDescriptionCategory } from "../types/jobDescriptions";
 

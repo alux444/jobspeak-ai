@@ -14,22 +14,6 @@ interface JobDescriptionOption {
 
 export const jobDescriptionOptions: JobDescriptionOption[] = [
   {
-    value: "intern",
-    label: "Intern/Entry Level",
-    description: "General entry-level position for new graduates",
-    fullDescription: `An Intern or Entry-level position is designed for recent graduates or career changers. Key expectations include:
-
-    • Learning fundamental programming and business concepts
-    • Contributing to team projects under supervision
-    • Developing problem-solving and analytical skills
-    • Participating in code reviews and team meetings
-    • Following established processes and best practices
-    • Showing eagerness to learn and grow
-    • Building professional communication skills
-
-    Focus areas: Basic programming, teamwork, communication, adaptability, willingness to learn.`,
-  },
-  {
     value: "java-developer",
     label: "Java Developer",
     description: "Backend development with Java and Spring framework",
@@ -43,7 +27,7 @@ export const jobDescriptionOptions: JobDescriptionOption[] = [
     • Collaborating in Agile development environments
     • Performance optimization and debugging complex applications
 
-    Required skills: Java, Spring Framework, SQL, Git, Maven/Gradle, understanding of JVM internals.`,
+  Required skills: Java, Spring Framework, SQL, Git, Maven/Gradle, understanding of JVM internals.`,
   },
   {
     value: "business-analyst",
@@ -59,7 +43,7 @@ export const jobDescriptionOptions: JobDescriptionOption[] = [
     • Creating process flow diagrams and documentation
     • Supporting user acceptance testing and training
 
-    Required skills: Requirements analysis, process modeling, stakeholder management, documentation, SQL basics, Agile methodologies.`,
+  Required skills: Requirements analysis, process modeling, stakeholder management, documentation, SQL basics, Agile methodologies.`,
   },
   {
     value: "data-analyst",
@@ -75,6 +59,22 @@ export const jobDescriptionOptions: JobDescriptionOption[] = [
     • Presenting findings and recommendations to management
     • Ensuring data quality and integrity
 
-    Required skills: SQL, Excel, Python/R, Tableau/Power BI, statistics, data visualization, critical thinking.`,
+  Required skills: SQL, Excel, Python/R, Tableau/Power BI, statistics, data visualization, critical thinking.`,
+  },
+  {
+    value: "intern",
+    label: "Intern/Entry Level",
+    description: "General entry-level position for new graduates",
+    fullDescription: `An Intern or Entry-level position is designed for recent graduates or career changers. Key expectations include:
+
+    • Learning fundamental programming and business concepts
+    • Contributing to team projects under supervision
+    • Developing problem-solving and analytical skills
+    • Participating in code reviews and team meetings
+    • Following established processes and best practices
+    • Showing eagerness to learn and grow
+    • Building professional communication skills
+
+  Focus areas: Basic programming, teamwork, communication, adaptability, willingness to learn.`,
   },
 ];
