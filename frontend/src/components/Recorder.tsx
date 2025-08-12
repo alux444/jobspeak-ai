@@ -19,7 +19,7 @@ const Recorder: React.FC = () => {
     setSelectedJobDescription(category);
     setCustomJobDescription(customDescription);
   };
-  
+
   const {
     // State
     recording,
@@ -63,27 +63,26 @@ const Recorder: React.FC = () => {
     return null;
   }, [uploadedFile]);
 
+  const hasVideoContent = (mode === "record" && recordedChunks.length > 0) ||
+    (mode === "upload" && uploadedFile);
+
   return (
     <div className="recorder-container">
-      <JobDescriptionSelector 
+      <JobDescriptionSelector
         selectedJobDescription={selectedJobDescription}
         onJobDescriptionChange={handleJobDescriptionChange}
-      />      <QuestionPrompt 
-        onQuestionChange={setCurrentQuestion} 
+      />      <QuestionPrompt
+        onQuestionChange={setCurrentQuestion}
       />
-      
+
       <Controls
         recording={recording}
-        recordedChunks={recordedChunks}
         uploadedFile={uploadedFile}
         mode={mode}
         isProcessing={isProcessing}
         isTranscribing={isTranscribing}
-        showTranscription={showTranscription}
         onStartRecording={startRecording}
         onStopRecording={stopRecording}
-        onSaveRecording={saveRecording}
-        onTranscribeRecording={transcribeRecording}
         onFileUpload={handleFileUpload}
         onSwitchMode={switchMode}
         onClearUploadedFile={clearUploadedFile}
@@ -93,22 +92,29 @@ const Recorder: React.FC = () => {
       {mode === "record" && <VideoPreview stream={stream} />}
 
       {/* Video playback section */}
-      {((mode === "record" && recordedPlaybackUrl && !recording) || 
+      {((mode === "record" && recordedPlaybackUrl && !recording) ||
         (mode === "upload" && uploadedPlaybackUrl)) && (
-        <div className="playback-video" style={{ margin: '20px 0' }}>
-          <h4>
-            {mode === "record" ? "Recorded Video" : "Uploaded Video"}
-            {uploadedFile && mode === "upload" && (
-              <span style={{ fontSize: '14px', color: '#666', marginLeft: '10px' }}>
-                ({uploadedFile.name})
-              </span>
-            )}
-          </h4>
-          <video 
-            src={mode === "record" ? recordedPlaybackUrl || undefined : uploadedPlaybackUrl || undefined} 
-            controls 
-            style={{ width: 400, maxWidth: '100%' }} 
-          />
+          <div>
+            <h4>
+              {mode === "record" ? "Recorded Video" : "Uploaded Video"}
+              {uploadedFile && mode === "upload" && (
+                <span style={{ fontSize: '14px', color: '#666', marginLeft: '10px' }}>
+                  ({uploadedFile.name})
+                </span>
+              )}
+            </h4>
+            <video
+              src={mode === "record" ? recordedPlaybackUrl || undefined : uploadedPlaybackUrl || undefined}
+              controls
+              style={{ width: 400, maxWidth: '100%' }}
+            />
+          </div>
+        )}
+
+      {hasVideoContent && !isProcessing && !isTranscribing && !showTranscription && (
+        <div className="controls">
+          {mode === "record" && <button onClick={saveRecording}>Save Recording</button>}
+          <button onClick={transcribeRecording}>Transcribe Recording</button>
         </div>
       )}
 

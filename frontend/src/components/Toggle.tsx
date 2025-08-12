@@ -5,6 +5,7 @@ interface ToggleProps {
   onToggle: (isCustom: boolean) => void;
   leftLabel?: string;
   rightLabel?: string;
+  disabled?: boolean;
 }
 
 export const Toggle: React.FC<ToggleProps> = ({
@@ -12,21 +13,24 @@ export const Toggle: React.FC<ToggleProps> = ({
   onToggle,
   leftLabel = "Default",
   rightLabel = "Custom",
+  disabled
 }) => {
   return (
-    <div className="toggle-container">
-      <div
+    <div className="mode-switcher">
+      <button
         className={`toggle-option ${!isCustomMode ? "active" : ""}`}
         onClick={() => onToggle(false)}
+        disabled={disabled}
       >
         {leftLabel}
-      </div>
-      <div
+      </button>
+      <button
         className={`toggle-option ${isCustomMode ? "active" : ""}`}
         onClick={() => onToggle(true)}
+        disabled={disabled}
       >
         {rightLabel}
-      </div>
+      </button>
     </div>
   );
 };
