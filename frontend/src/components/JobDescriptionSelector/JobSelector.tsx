@@ -1,4 +1,7 @@
 import { type JobDescriptionCategory, jobDescriptionOptions } from "../../types/jobDescriptions";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
 
 interface JobSelectorProps {
   selectedJob: JobDescriptionCategory;
@@ -16,39 +19,42 @@ export const JobSelector: React.FC<JobSelectorProps> = ({
   const selectedOption = jobDescriptionOptions.find(opt => opt.value === selectedJob);
 
   return (
-    <div className="job-selector">
-      <div className="selector-header">
-        <select
-          value={selectedJob}
-          onChange={(e) => onJobChange(e.target.value as JobDescriptionCategory)}
-          className="job-select"
-        >
-          {jobDescriptionOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-
-        <button
+    <Card className="w-full max-w-md">
+      <CardHeader className="flex flex-row items-center gap-2">
+        <Select value={selectedJob} onValueChange={val => onJobChange(val as JobDescriptionCategory)}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select job" />
+          </SelectTrigger>
+          <SelectContent>
+            {jobDescriptionOptions.map(option => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Button
+          variant="outline"
+          size="sm"
           onClick={onToggleDetails}
-          className="details-toggle"
           title={showDetails ? "Hide details" : "Show details"}
+          className="ml-2"
         >
           {showDetails ? '▼' : '▶'} Details
-        </button>
-      </div>
+        </Button>
+      </CardHeader>
 
       {selectedOption && (
-        <p className="job-hint">{selectedOption.description}</p>
+        <CardContent>
+          <p className="text-muted-foreground mb-2">{selectedOption.description}</p>
+          {showDetails && (
+            <div className="job-details mt-2">
+              <h4 className="font-semibold">{selectedOption.label}</h4>
+              <pre className="bg-muted p-2 rounded text-sm">{selectedOption.fullDescription}</pre>
+            </div>
+          )}
+        </CardContent>
       )}
-
-      {showDetails && selectedOption && (
-        <div className="job-details">
-          <h4>{selectedOption.label}</h4>
-          <pre className="job-content">{selectedOption.fullDescription}</pre>
-        </div>
-      )}
-    </div>
+    </Card>
   );
 };

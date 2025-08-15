@@ -1,4 +1,9 @@
 import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 
 interface CustomJobInputProps {
   onSave: (description: string) => void;
@@ -20,46 +25,43 @@ export const CustomJobInput: React.FC<CustomJobInputProps> = ({ onSave, onCancel
   const isValid = title.trim() && description.trim();
 
   return (
-    <div className="custom-job-input">
-      <div className="input-group">
-        <label htmlFor="job-title">Job Title</label>
-        <input
-          id="job-title"
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="e.g., Frontend Developer"
-          className="job-input"
-        />
-      </div>
-
-      <div className="input-group">
-        <label htmlFor="job-description">Job Description</label>
-        <textarea
-          id="job-description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Describe the role, responsibilities, and requirements..."
-          className="job-textarea"
-          rows={5}
-        />
-      </div>
-
-      <div className="custom-actions">
-        <button
+    <Card className="max-w-md mx-auto">
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="job-title">Job Title</Label>
+          <Input
+            id="job-title"
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="e.g., Frontend Developer"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="job-description">Job Description</Label>
+          <Textarea
+            id="job-description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Describe the role, responsibilities, and requirements..."
+            rows={5}
+          />
+        </div>
+      </CardContent>
+      <CardFooter className="flex gap-2 justify-end">
+        <Button
           onClick={handleSave}
           disabled={!isValid}
-          className="save-btn"
         >
           Use Job Description
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="outline"
           onClick={onCancel}
-          className="cancel-btn"
         >
           Cancel
-        </button>
-      </div>
-    </div>
+        </Button>
+      </CardFooter>
+    </Card>
   );
 };

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { type JobDescriptionCategory, jobDescriptionOptions } from "../../types/jobDescriptions";
-import { Toggle } from "../Toggle";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { CustomJobInput } from "./CustomJobInput";
 import { JobSelector } from "./JobSelector";
 
@@ -35,16 +36,16 @@ export const JobDescriptionSelector: React.FC<JobDescriptionSelectorProps> = ({
   };
 
   return (
-    <div className="job-description-selector">
-      <div className="selector-header">
-        <h3>Target Role</h3>
+    <div>
+      <div className="flex items-center gap-2 mb-4">
+        <Label htmlFor="custom-switch">Select Job</Label>
+        <Switch
+          id="custom-switch"
+          checked={isCustomMode}
+          onCheckedChange={handleModeToggle}
+        />
+        <Label htmlFor="custom-switch">Custom Job</Label>
       </div>
-
-      <Toggle
-        isCustomMode={isCustomMode}
-        onToggle={handleModeToggle}
-      />
-
       {isCustomMode ? (
         <CustomJobInput
           onSave={handleCustomSave}

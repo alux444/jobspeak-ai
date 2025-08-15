@@ -11,6 +11,9 @@ import { Separator } from '@/components/ui/separator';
 import { RefreshCw, Video, Upload, Play, Pause, Square } from 'lucide-react';
 import QuestionPrompt from './QuestionPrompt';
 import { getRandomQuestion, type Question } from '@/data/questions';
+import { JobDescriptionSelector } from './JobDescriptionSelector/JobDescriptionSelector';
+import type { JobDescriptionCategory } from '@/types/jobDescriptions';
+import { CustomJobInput } from './JobDescriptionSelector/CustomJobInput';
 
 const PREDEFINED_ROLES = [
   'Software Engineer',
@@ -33,14 +36,22 @@ const ANALYSIS_MODULES = [
 ];
 
 export function InterviewAnalyser() {
-  const [isTargetMode, setIsTargetMode] = useState(true);
+  const [isCustomMode, setIsCustomMode] = useState(true);
   const [selectedRole, setSelectedRole] = useState('');
   const [customRole, setCustomRole] = useState('');
   const [transcription, setTranscription] = useState<string>('');
   const [isRecording, setIsRecording] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  const [selectedJobDescription, setSelectedJobDescription] = useState<JobDescriptionCategory>('java-developer');
+  const [customJobDescription, setCustomJobDescription] = useState<string | undefined>(undefined);
   const [question, setQuestion] = useState<Question | null>(null);
+
+  const handleJobDescriptionChange = (category: JobDescriptionCategory, customDescription?: string) => {
+    setSelectedJobDescription(category);
+    setCustomJobDescription(customDescription);
+  };
+
 
   const refreshQuestion = useCallback(() => {
     setQuestion(getRandomQuestion());
@@ -63,43 +74,16 @@ export function InterviewAnalyser() {
   return (
     <div className="flex h-screen bg-background">
       {/* Left Sidebar */}
-      <div className="w-80 bg-sidebar-bg border-r border-sidebar-border shadow-soft flex flex-col">
+      <div className="w-96 bg-sidebar-bg border-r border-sidebar-border shadow-soft flex flex-col">
         <div className="p-6 space-y-6">
           {/* Target Role Section */}
           <div className="space-y-4">
             <h2 className="text-lg font-semibold text-foreground">Target Role</h2>
 
-            <div className="flex items-center space-x-3">
-              <Label htmlFor="role-mode" className="text-sm font-medium">Target</Label>
-              <Switch
-                id="role-mode"
-                checked={!isTargetMode}
-                onCheckedChange={(checked) => setIsTargetMode(!checked)}
-              />
-              <Label htmlFor="role-mode" className="text-sm font-medium">Custom Input</Label>
-            </div>
-
-            {isTargetMode ? (
-              <Select value={selectedRole} onValueChange={setSelectedRole}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a role" />
-                </SelectTrigger>
-                <SelectContent>
-                  {PREDEFINED_ROLES.map((role) => (
-                    <SelectItem key={role} value={role}>
-                      {role}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            ) : (
-              <Input
-                placeholder="Enter custom role"
-                value={customRole}
-                onChange={(e) => setCustomRole(e.target.value)}
-                className="w-full"
-              />
-            )}
+            <JobDescriptionSelector
+              selectedJobDescription={selectedJobDescription}
+              onJobDescriptionChange={handleJobDescriptionChange}
+            />
           </div>
 
           <Separator />
