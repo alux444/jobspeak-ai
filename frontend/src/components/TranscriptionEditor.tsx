@@ -1,4 +1,7 @@
 import React from "react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 
 interface TranscriptionEditorProps {
   transcription: string;
@@ -16,28 +19,32 @@ const TranscriptionEditor: React.FC<TranscriptionEditorProps> = ({
   onTranscriptionCancel,
 }) => {
   return (
-    <div className="transcription-editor">
-      <h3>Review and Edit Transcription</h3>
-      <p>Please review the transcription below and make any necessary edits before proceeding to analysis:</p>
-      
-      <textarea
-        value={transcription}
-        onChange={onTranscriptionEdit}
-        placeholder="Transcription will appear here..."
-        rows={8}
-        cols={60}
-      />
-      
-      <div className="transcription-actions">
-        <button onClick={onTranscriptionSubmit} disabled={isProcessing}>
+    <Card className="mx-auto">
+      <CardHeader>
+        <h3 className="text-lg font-semibold">Review and Edit Transcription</h3>
+        <p className="text-sm text-muted-foreground">
+          Please review the transcription below and make any necessary edits before proceeding to analysis:
+        </p>
+      </CardHeader>
+      <CardContent>
+        <Textarea
+          value={transcription}
+          onChange={onTranscriptionEdit}
+          placeholder="Transcription will appear here..."
+          rows={8}
+          className="resize-none"
+        />
+      </CardContent>
+      <CardFooter className="flex gap-2 justify-end">
+        <Button onClick={onTranscriptionSubmit} disabled={isProcessing}>
           {isProcessing ? "Analyzing..." : "Proceed to Analysis"}
-        </button>
-        <button onClick={onTranscriptionCancel} disabled={isProcessing}>
+        </Button>
+        <Button variant="outline" onClick={onTranscriptionCancel} disabled={isProcessing}>
           Cancel
-        </button>
-      </div>
-    </div>
+        </Button>
+      </CardFooter>
+    </Card>
   );
 };
 
-export default TranscriptionEditor; 
+export default TranscriptionEditor;

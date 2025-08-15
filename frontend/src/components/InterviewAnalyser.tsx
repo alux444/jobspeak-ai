@@ -56,11 +56,6 @@ export function InterviewAnalyser() {
     refreshQuestion();
   }, [refreshQuestion]);
 
-  const toggleRecording = () => {
-    setIsRecording(!isRecording);
-    setIsPlaying(false);
-  };
-
   return (
     <div className="flex h-screen bg-background">
       {/* Left Sidebar */}
@@ -133,7 +128,6 @@ export function InterviewAnalyser() {
           </div>
 
           {/* Video Preview / Playback / Placeholder */}
-
           <VideoContainer
             stream={mode === "record" && stream && recording ? stream : undefined}
             src={
@@ -147,7 +141,7 @@ export function InterviewAnalyser() {
                 : undefined
             }
             autoPlay={mode === "record"}
-            muted={mode === "record"}
+            muted={mode !== "record"}
             controls={((mode === "record" && recordedChunks.length > 0 && !recording) ||
               (mode === "upload" && uploadedFile)) ? true : false}
           />
@@ -168,14 +162,6 @@ export function InterviewAnalyser() {
               </div>
             )}
 
-          {/* Status / Loading */}
-          <StatusMessages
-            isTranscribing={isTranscribing}
-            isProcessing={isProcessing}
-            error={error}
-            analysisProgress={analysisProgress}
-          />
-
           {/* Transcription Editor */}
           {showTranscription && (
             <TranscriptionEditor
@@ -186,6 +172,14 @@ export function InterviewAnalyser() {
               onTranscriptionCancel={handleTranscriptionCancel}
             />
           )}
+
+          {/* Status / Loading */}
+          <StatusMessages
+            isTranscribing={isTranscribing}
+            isProcessing={isProcessing}
+            error={error}
+            analysisProgress={analysisProgress}
+          />
 
           {/* Analysis Results */}
           <AnalysisResults analysisResults={analysisResults} />
