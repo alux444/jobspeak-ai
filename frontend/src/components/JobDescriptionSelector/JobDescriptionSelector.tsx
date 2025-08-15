@@ -5,34 +5,34 @@ import { Label } from "@/components/ui/label";
 import { CustomJobInput } from "./CustomJobInput";
 import { JobSelector } from "./JobSelector";
 
-interface JobDescriptionSelectorProps {
-  selectedJobDescription: JobDescriptionCategory;
-  onJobDescriptionChange: (category: JobDescriptionCategory, customDescription?: string) => void;
-}
 
-export const JobDescriptionSelector: React.FC<JobDescriptionSelectorProps> = ({
-  selectedJobDescription,
-  onJobDescriptionChange,
-}) => {
+export const JobDescriptionSelector: React.FC = () => {
   const [isCustomMode, setIsCustomMode] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+  const [selectedJobDescription, setSelectedJobDescription] = useState<JobDescriptionCategory>('java-developer');
+  const [customJobDescription, setCustomJobDescription] = useState<string | undefined>(undefined);
+
+  const handleJobDescriptionChange = (category: JobDescriptionCategory, customDescription?: string) => {
+    setSelectedJobDescription(category);
+    setCustomJobDescription(customDescription);
+  };
 
   const handleModeToggle = (isCustom: boolean) => {
     setIsCustomMode(isCustom);
     if (!isCustom) {
       // Reset to first predefined job when switching back
-      onJobDescriptionChange(jobDescriptionOptions[0].value);
+      handleJobDescriptionChange(jobDescriptionOptions[0].value);
     }
   };
 
   const handleCustomSave = (description: string) => {
-    onJobDescriptionChange('custom', description);
+    handleJobDescriptionChange('custom', description);
     setIsCustomMode(false);
   };
 
   const handleCustomCancel = () => {
     setIsCustomMode(false);
-    onJobDescriptionChange(selectedJobDescription); // Keep current selection
+    handleJobDescriptionChange(selectedJobDescription); // Keep current selection
   };
 
   return (
@@ -54,7 +54,7 @@ export const JobDescriptionSelector: React.FC<JobDescriptionSelectorProps> = ({
       ) : (
         <JobSelector
           selectedJob={selectedJobDescription}
-          onJobChange={(job) => onJobDescriptionChange(job)}
+          onJobChange={(job) => handleJobDescriptionChange(job)}
           showDetails={showDetails}
           onToggleDetails={() => setShowDetails(!showDetails)}
         />

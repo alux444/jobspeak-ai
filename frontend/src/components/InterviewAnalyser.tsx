@@ -1,9 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,19 +8,7 @@ import { RefreshCw, Video, Upload, Play, Pause, Square } from 'lucide-react';
 import QuestionPrompt from './QuestionPrompt';
 import { getRandomQuestion, type Question } from '@/data/questions';
 import { JobDescriptionSelector } from './JobDescriptionSelector/JobDescriptionSelector';
-import type { JobDescriptionCategory } from '@/types/jobDescriptions';
-import { CustomJobInput } from './JobDescriptionSelector/CustomJobInput';
-
-const PREDEFINED_ROLES = [
-  'Software Engineer',
-  'Product Manager',
-  'Data Scientist',
-  'UX Designer',
-  'Marketing Manager',
-  'Sales Representative',
-  'Business Analyst',
-  'DevOps Engineer'
-];
+import Title from './Title';
 
 const ANALYSIS_MODULES = [
   { name: 'Content Quality', progress: 85, status: 'completed' },
@@ -36,22 +20,11 @@ const ANALYSIS_MODULES = [
 ];
 
 export function InterviewAnalyser() {
-  const [isCustomMode, setIsCustomMode] = useState(true);
-  const [selectedRole, setSelectedRole] = useState('');
-  const [customRole, setCustomRole] = useState('');
   const [transcription, setTranscription] = useState<string>('');
   const [isRecording, setIsRecording] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const [selectedJobDescription, setSelectedJobDescription] = useState<JobDescriptionCategory>('java-developer');
-  const [customJobDescription, setCustomJobDescription] = useState<string | undefined>(undefined);
   const [question, setQuestion] = useState<Question | null>(null);
-
-  const handleJobDescriptionChange = (category: JobDescriptionCategory, customDescription?: string) => {
-    setSelectedJobDescription(category);
-    setCustomJobDescription(customDescription);
-  };
-
 
   const refreshQuestion = useCallback(() => {
     setQuestion(getRandomQuestion());
@@ -74,16 +47,14 @@ export function InterviewAnalyser() {
   return (
     <div className="flex h-screen bg-background">
       {/* Left Sidebar */}
-      <div className="w-96 bg-sidebar-bg border-r border-sidebar-border shadow-soft flex flex-col">
-        <div className="p-6 space-y-6">
+      <div className="w-lg bg-sidebar-bg border-r border-sidebar-border shadow-soft flex flex-col overflow-hidden h-screen">
+        <Title />
+        <div className="p-6 space-y-6 overflow-y-auto h-full">
           {/* Target Role Section */}
           <div className="space-y-4">
             <h2 className="text-lg font-semibold text-foreground">Target Role</h2>
 
-            <JobDescriptionSelector
-              selectedJobDescription={selectedJobDescription}
-              onJobDescriptionChange={handleJobDescriptionChange}
-            />
+            <JobDescriptionSelector />
           </div>
 
           <Separator />
