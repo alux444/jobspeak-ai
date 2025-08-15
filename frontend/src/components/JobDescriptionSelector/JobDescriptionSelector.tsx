@@ -5,12 +5,20 @@ import { Label } from "@/components/ui/label";
 import { CustomJobInput } from "./CustomJobInput";
 import { JobSelector } from "./JobSelector";
 
+interface JobDescriptionSelectorProps {
+  selectedJobDescription: JobDescriptionCategory;
+  setSelectedJobDescription: (category: JobDescriptionCategory) => void;
+  setCustomJobDescription: (description: string | undefined) => void;
+}
 
-export const JobDescriptionSelector: React.FC = () => {
+export const JobDescriptionSelector: React.FC<JobDescriptionSelectorProps> = ({
+  selectedJobDescription,
+  setSelectedJobDescription,
+  setCustomJobDescription
+}) => {
   const [isCustomMode, setIsCustomMode] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
-  const [selectedJobDescription, setSelectedJobDescription] = useState<JobDescriptionCategory>('java-developer');
-  const [customJobDescription, setCustomJobDescription] = useState<string | undefined>(undefined);
+
 
   const handleJobDescriptionChange = (category: JobDescriptionCategory, customDescription?: string) => {
     setSelectedJobDescription(category);

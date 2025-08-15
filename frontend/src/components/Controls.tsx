@@ -1,5 +1,9 @@
 import React, { useRef } from "react";
 import { Toggle } from "./Toggle";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { X, Upload, Square, Video } from "lucide-react";
 
 interface ControlsProps {
   recording: boolean;
@@ -31,11 +35,10 @@ const Controls: React.FC<ControlsProps> = ({
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Validate file type
-      if (file.type.startsWith('video/')) {
+      if (file.type.startsWith("video/")) {
         onFileUpload(file);
       } else {
-        alert('Please select a video file.');
+        alert("Please select a video file.");
       }
     }
   };
@@ -45,55 +48,80 @@ const Controls: React.FC<ControlsProps> = ({
   };
 
   return (
-    <div>
+    <div className="space-y-4">
       {/* Toggle */}
-      <Toggle
+      {/* <Toggle
         isCustomMode={mode === "upload"}
         onToggle={(isCustom) => onSwitchMode(isCustom ? "upload" : "record")}
         leftLabel="Record Video"
         rightLabel="Upload Video"
         disabled={isProcessing || isTranscribing}
-      />
+      /> */}
 
-      <div className="controls">
-        {/* Recording Controls */}
-        {mode === "record" && (
-          <button
-            onClick={recording ? onStopRecording : onStartRecording}
-            disabled={isProcessing || isTranscribing}
+      <div className="controls space-y-2">
+        <div className="flex space-x-3">
+          {recording && (
+            <div className="flex items-center space-x-2 text-destructive">
+              <div className="w-2 h-2 bg-destructive rounded-full animate-pulse"></div>
+              <span className="text-sm font-medium">Recording</span>
+            </div>
+          )}
+          {/* Upload Button */}
+          <Button
+            variant="outline"
+            className="justify-start"
+            onClick={handleUploadClick}
+            disabled={mode !== "upload" || isProcessing || isTranscribing}
           >
-            {recording ? "Stop Recording" : "Start Recording"}
-          </button>
-        )}
-
-        {/* Upload Controls */}
-        {mode === "upload" && (
-          <div className="upload-controls">
-            <button
-              onClick={handleUploadClick}
-              disabled={isProcessing || isTranscribing}
-            >
-              Choose Video File
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="video/*"
-              onChange={handleFileChange}
-              style={{ display: 'none' }}
-            />
-            {uploadedFile && (
-              <div className="uploaded-file-info">
-                <span>📹 {uploadedFile.name}</span>
-                <button
-                  onClick={onClearUploadedFile}
-                  disabled={isProcessing || isTranscribing}
-                  className="clear-file-btn"
-                >
-                  ✕
-                </button>
-              </div>
+            <Upload className="h-4 w-4 mr-2" />
+            Upload Video
+          </Button>
+          {/* Hidden file input */}
+          <Input
+            ref={fileInputRef}
+            type="file"
+            accept="video/*"
+            onChange={handleFileChange}
+            style={{ display: "none" }}
+          />
+          {/* Record Button */}
+          <Button
+            onClick={recording ? onStopRecording : onStartRecording}
+            variant={recording ? "destructive" : "default"}
+            className="justify-start"
+            disabled={mode !== "record" || isProcessing || isTranscribing}
+          >
+            {recording ? (
+              <>
+                <Square className="h-4 w-4 mr-2" />
+                Stop Recording
+              </>
+            ) : (
+              <>
+                <Video className="h-4 w-4 mr-2" />
+                Record Video
+              </>
             )}
+          </Button>
+        </div>
+
+        {/* Uploaded file info */}
+        {mode === "upload" && uploadedFile && (
+          <div className="uploaded-file-info flex items-center gap-2 bg-muted px-3 py-2 rounded">
+            <Label className="flex items-center gap-1">
+              <span role="img" aria-label="video">📹</span>
+              {uploadedFile.name}
+            </Label>
+            <Button
+              onClick={onClearUploadedFile}
+              disabled={isProcessing || isTranscribing}
+              variant="ghost"
+              size="icon"
+              className="clear-file-btn"
+              aria-label="Clear file"
+            >
+              <X size={16} />
+            </Button>
           </div>
         )}
       </div>
@@ -101,4 +129,4 @@ const Controls: React.FC<ControlsProps> = ({
   );
 };
 
-export default Controls; 
+export default Controls;

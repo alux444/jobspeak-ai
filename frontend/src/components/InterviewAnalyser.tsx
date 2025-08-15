@@ -1,30 +1,52 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Progress } from '@/components/ui/progress';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { RefreshCw, Video, Upload, Play, Pause, Square } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import QuestionPrompt from './QuestionPrompt';
 import { getRandomQuestion, type Question } from '@/data/questions';
 import { JobDescriptionSelector } from './JobDescriptionSelector/JobDescriptionSelector';
 import Title from './Title';
-
-const ANALYSIS_MODULES = [
-  { name: 'Content Quality', progress: 85, status: 'completed' },
-  { name: 'Body Language', progress: 60, status: 'in-progress' },
-  { name: 'Speech Clarity', progress: 92, status: 'completed' },
-  { name: 'Confidence Level', progress: 40, status: 'in-progress' },
-  { name: 'Eye Contact', progress: 0, status: 'pending' },
-  { name: 'Professional Tone', progress: 78, status: 'completed' }
-];
+import type { JobDescriptionCategory } from '@/types/jobDescriptions';
+import { useRecorder } from '@/hooks/useRecorder';
+import Controls from './Controls';
+import AnalysisResults from './AnalysisResults';
+import StatusMessages from './StatusMessages';
+import TranscriptionEditor from './TranscriptionEditor';
+import VideoContainer from './VideoContainer';
 
 export function InterviewAnalyser() {
-  const [transcription, setTranscription] = useState<string>('');
+  const [selectedJobDescription, setSelectedJobDescription] = useState<JobDescriptionCategory>('java-developer');
+  const [customJobDescription, setCustomJobDescription] = useState<string | undefined>(undefined);
   const [isRecording, setIsRecording] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const [question, setQuestion] = useState<Question | null>(null);
+  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
+  const {
+    recording,
+    recordedChunks,
+    uploadedFile,
+    mode,
+    stream,
+    isProcessing,
+    isTranscribing,
+    transcription,
+    showTranscription,
+    analysisResults,
+    error,
+    analysisProgress,
+    startRecording,
+    stopRecording,
+    saveRecording,
+    transcribeRecording,
+    handleTranscriptionEdit,
+    handleTranscriptionSubmit,
+    handleTranscriptionCancel,
+    handleFileUpload,
+    switchMode,
+    clearUploadedFile,
+  } = useRecorder(currentQuestion, selectedJobDescription, customJobDescription);
 
   const refreshQuestion = useCallback(() => {
     setQuestion(getRandomQuestion());
@@ -39,11 +61,6 @@ export function InterviewAnalyser() {
     setIsPlaying(false);
   };
 
-  const togglePlayback = () => {
-    setIsPlaying(!isPlaying);
-    setIsRecording(false);
-  };
-
   return (
     <div className="flex h-screen bg-background">
       {/* Left Sidebar */}
@@ -54,7 +71,11 @@ export function InterviewAnalyser() {
           <div className="space-y-4">
             <h2 className="text-lg font-semibold text-foreground">Target Role</h2>
 
-            <JobDescriptionSelector />
+            <JobDescriptionSelector
+              selectedJobDescription={selectedJobDescription}
+              setSelectedJobDescription={setSelectedJobDescription}
+              setCustomJobDescription={setCustomJobDescription}
+            />
           </div>
 
           <Separator />
@@ -78,38 +99,6 @@ export function InterviewAnalyser() {
 
             <QuestionPrompt question={question} />
           </div>
-
-          <Separator />
-
-          {/* Video Actions Section */}
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-foreground">Video Actions</h2>
-
-            <div className="space-y-3">
-              <Button
-                onClick={toggleRecording}
-                variant={isRecording ? "destructive" : "default"}
-                className="w-full justify-start"
-              >
-                {isRecording ? (
-                  <>
-                    <Square className="h-4 w-4 mr-2" />
-                    Stop Recording
-                  </>
-                ) : (
-                  <>
-                    <Video className="h-4 w-4 mr-2" />
-                    Record Video
-                  </>
-                )}
-              </Button>
-
-              <Button variant="outline" className="w-full justify-start">
-                <Upload className="h-4 w-4 mr-2" />
-                Upload Video
-              </Button>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -117,91 +106,89 @@ export function InterviewAnalyser() {
       <div className="flex-1 flex flex-col">
         <div className="p-6 space-y-6 h-full overflow-auto">
           {/* Video Section */}
-          <Card className="shadow-medium">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>Video Recording</span>
-                <div className="flex items-center space-x-2">
-                  {isRecording && (
-                    <div className="flex items-center space-x-2 text-destructive">
-                      <div className="w-2 h-2 bg-destructive rounded-full animate-pulse"></div>
-                      <span className="text-sm font-medium">Recording</span>
-                    </div>
-                  )}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={togglePlayback}
-                    disabled={isRecording}
-                  >
-                    {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-foreground">
+              Video Recording
+            </h2>
+            <div className="flex items-center space-x-2">
+              {isRecording && (
+                <div className="flex items-center space-x-2 text-destructive">
+                  <div className="w-2 h-2 bg-destructive rounded-full animate-pulse"></div>
+                  <span className="text-sm font-medium">Recording</span>
+                </div>
+              )}
+              <Controls
+                recording={recording}
+                uploadedFile={uploadedFile}
+                mode={mode}
+                isProcessing={isProcessing}
+                isTranscribing={isTranscribing}
+                onStartRecording={startRecording}
+                onStopRecording={stopRecording}
+                onFileUpload={handleFileUpload}
+                onSwitchMode={switchMode}
+                onClearUploadedFile={clearUploadedFile}
+              />
+            </div>
+          </div>
+
+          {/* Video Preview / Playback / Placeholder */}
+
+          <VideoContainer
+            stream={mode === "record" && stream && recording ? stream : undefined}
+            src={
+              ((mode === "record" && recordedChunks.length > 0 && !recording) ||
+                (mode === "upload" && uploadedFile))
+                ? mode === "record"
+                  ? URL.createObjectURL(new Blob(recordedChunks, { type: "video/webm" }))
+                  : uploadedFile
+                    ? URL.createObjectURL(uploadedFile)
+                    : undefined
+                : undefined
+            }
+            autoPlay={mode === "record"}
+            muted={mode === "record"}
+            controls={((mode === "record" && recordedChunks.length > 0 && !recording) ||
+              (mode === "upload" && uploadedFile)) ? true : false}
+          />
+
+          {/* Actions after video is ready */}
+          {((mode === "record" && recordedChunks.length > 0 && !recording) ||
+            (mode === "upload" && uploadedFile)) &&
+            !isProcessing && !isTranscribing && !showTranscription && (
+              <div className="flex gap-2">
+                {mode === "record" && (
+                  <Button variant="outline" onClick={saveRecording}>
+                    Save Recording
                   </Button>
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="aspect-video bg-muted rounded-lg flex items-center justify-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-subtle"></div>
-                <div className="relative z-10 text-center space-y-2">
-                  <Video className="h-12 w-12 mx-auto text-muted-foreground" />
-                  <p className="text-muted-foreground">
-                    {isRecording ? 'Recording in progress...' : 'Video will appear here'}
-                  </p>
-                </div>
+                )}
+                <Button onClick={transcribeRecording}>
+                  Transcribe Recording
+                </Button>
               </div>
-            </CardContent>
-          </Card>
+            )}
+
+          {/* Status / Loading */}
+          <StatusMessages
+            isTranscribing={isTranscribing}
+            isProcessing={isProcessing}
+            error={error}
+            analysisProgress={analysisProgress}
+          />
 
           {/* Transcription Editor */}
-          <Card className="shadow-medium">
-            <CardHeader>
-              <CardTitle>Transcription Editor</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Textarea
-                value={transcription}
-                onChange={(e) => setTranscription(e.target.value)}
-                placeholder="Your interview response transcription will appear here..."
-                className="min-h-32 resize-none"
-              />
-            </CardContent>
-          </Card>
+          {showTranscription && (
+            <TranscriptionEditor
+              transcription={transcription}
+              isProcessing={isProcessing}
+              onTranscriptionEdit={handleTranscriptionEdit}
+              onTranscriptionSubmit={handleTranscriptionSubmit}
+              onTranscriptionCancel={handleTranscriptionCancel}
+            />
+          )}
 
-          {/* Analysis Progress */}
-          <Card className="shadow-medium">
-            <CardHeader>
-              <CardTitle>Analysis Progress</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {ANALYSIS_MODULES.map((module) => (
-                  <div key={module.name} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-foreground">
-                        {module.name}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {module.progress}%
-                      </span>
-                    </div>
-                    <Progress
-                      value={module.progress}
-                      className="h-2"
-                    />
-                    <div className="flex items-center space-x-2">
-                      <div className={`w-2 h-2 rounded-full ${module.status === 'completed' ? 'bg-success' :
-                        module.status === 'in-progress' ? 'bg-warning animate-pulse' :
-                          'bg-muted'
-                        }`}></div>
-                      <span className="text-xs text-muted-foreground capitalize">
-                        {module.status.replace('-', ' ')}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          {/* Analysis Results */}
+          <AnalysisResults analysisResults={analysisResults} />
         </div>
       </div>
     </div>
