@@ -50,12 +50,6 @@ const Controls: React.FC<ControlsProps> = ({
     <div className="space-y-4">
       <div className="controls space-y-2">
         <div className="flex space-x-3">
-          {recording && (
-            <div className="flex items-center space-x-2 text-destructive">
-              <div className="w-2 h-2 bg-destructive rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium">Recording</span>
-            </div>
-          )}
           {/* Upload Button */}
           <Button
             variant="outline"

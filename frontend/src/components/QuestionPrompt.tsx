@@ -23,11 +23,11 @@ const QuestionPrompt: React.FC<QuestionPromptProps> = ({ question }) => {
 
   return (
     <Card
-      className="border-primary/20 bg-gradient-primary text-black animate-fadeIn"
+      className="border-primary/20 bg-gradient-primary"
       aria-label="Interview question"
     >
       <CardContent className="p-4 flex flex-col gap-3">
-        <p className="text-sm leading-relaxed">{question.text}</p>
+        <p className="text-lg md:text-xl leading-relaxed">{question.text}</p>
         <div className="flex gap-2 flex-wrap">
           <Badge>{question.category}</Badge>
           <Badge variant="outline">{question.difficulty}</Badge>
