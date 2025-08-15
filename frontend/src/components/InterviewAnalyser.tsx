@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -9,6 +9,8 @@ import { Progress } from '@/components/ui/progress';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { RefreshCw, Video, Upload, Play, Pause, Square } from 'lucide-react';
+import QuestionPrompt from './QuestionPrompt';
+import { getRandomQuestion, type Question } from '@/data/questions';
 
 const PREDEFINED_ROLES = [
   'Software Engineer',
@@ -19,17 +21,6 @@ const PREDEFINED_ROLES = [
   'Sales Representative',
   'Business Analyst',
   'DevOps Engineer'
-];
-
-const SAMPLE_QUESTIONS = [
-  "Tell me about a challenging project you worked on and how you overcame the obstacles.",
-  "Describe a time when you had to work with a difficult team member. How did you handle it?",
-  "What's your approach to learning new technologies or skills?",
-  "How do you prioritize tasks when you have multiple deadlines?",
-  "Tell me about a mistake you made and what you learned from it.",
-  "Where do you see yourself in 5 years?",
-  "Why are you interested in this role and our company?",
-  "How do you handle stress and pressure in the workplace?"
 ];
 
 const ANALYSIS_MODULES = [
@@ -45,17 +36,19 @@ export function InterviewAnalyser() {
   const [isTargetMode, setIsTargetMode] = useState(true);
   const [selectedRole, setSelectedRole] = useState('');
   const [customRole, setCustomRole] = useState('');
-  const [currentQuestion, setCurrentQuestion] = useState(SAMPLE_QUESTIONS[0]);
-  const [transcription, setTranscription] = useState(
-    "I believe that handling challenging projects requires a structured approach. First, I break down the problem into smaller, manageable tasks..."
-  );
+  const [transcription, setTranscription] = useState<string>('');
   const [isRecording, setIsRecording] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const refreshQuestion = () => {
-    const randomIndex = Math.floor(Math.random() * SAMPLE_QUESTIONS.length);
-    setCurrentQuestion(SAMPLE_QUESTIONS[randomIndex]);
-  };
+  const [question, setQuestion] = useState<Question | null>(null);
+
+  const refreshQuestion = useCallback(() => {
+    setQuestion(getRandomQuestion());
+  }, []);
+
+  useEffect(() => {
+    refreshQuestion();
+  }, [refreshQuestion]);
 
   const toggleRecording = () => {
     setIsRecording(!isRecording);
@@ -75,12 +68,12 @@ export function InterviewAnalyser() {
           {/* Target Role Section */}
           <div className="space-y-4">
             <h2 className="text-lg font-semibold text-foreground">Target Role</h2>
-            
+
             <div className="flex items-center space-x-3">
               <Label htmlFor="role-mode" className="text-sm font-medium">Target</Label>
-              <Switch 
+              <Switch
                 id="role-mode"
-                checked={!isTargetMode} 
+                checked={!isTargetMode}
                 onCheckedChange={(checked) => setIsTargetMode(!checked)}
               />
               <Label htmlFor="role-mode" className="text-sm font-medium">Custom Input</Label>
@@ -114,22 +107,21 @@ export function InterviewAnalyser() {
           {/* Interview Question Section */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-foreground">Interview Question</h2>
+              <h2 className="text-lg font-semibold text-foreground">
+                Interview Question
+              </h2>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={refreshQuestion}
                 className="hover:bg-primary/10"
+                aria-label="Refresh question"
               >
                 <RefreshCw className="h-4 w-4" />
               </Button>
             </div>
-            
-            <Card className="border-primary/20 bg-gradient-primary text-white">
-              <CardContent className="p-4">
-                <p className="text-sm leading-relaxed">{currentQuestion}</p>
-              </CardContent>
-            </Card>
+
+            <QuestionPrompt question={question} />
           </div>
 
           <Separator />
@@ -137,7 +129,7 @@ export function InterviewAnalyser() {
           {/* Video Actions Section */}
           <div className="space-y-4">
             <h2 className="text-lg font-semibold text-foreground">Video Actions</h2>
-            
+
             <div className="space-y-3">
               <Button
                 onClick={toggleRecording}
@@ -156,7 +148,7 @@ export function InterviewAnalyser() {
                   </>
                 )}
               </Button>
-              
+
               <Button variant="outline" className="w-full justify-start">
                 <Upload className="h-4 w-4 mr-2" />
                 Upload Video
@@ -237,16 +229,15 @@ export function InterviewAnalyser() {
                         {module.progress}%
                       </span>
                     </div>
-                    <Progress 
-                      value={module.progress} 
+                    <Progress
+                      value={module.progress}
                       className="h-2"
                     />
                     <div className="flex items-center space-x-2">
-                      <div className={`w-2 h-2 rounded-full ${
-                        module.status === 'completed' ? 'bg-success' :
+                      <div className={`w-2 h-2 rounded-full ${module.status === 'completed' ? 'bg-success' :
                         module.status === 'in-progress' ? 'bg-warning animate-pulse' :
-                        'bg-muted'
-                      }`}></div>
+                          'bg-muted'
+                        }`}></div>
                       <span className="text-xs text-muted-foreground capitalize">
                         {module.status.replace('-', ' ')}
                       </span>

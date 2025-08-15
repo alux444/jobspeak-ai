@@ -1,56 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import { getRandomQuestion } from '../data/questions';
+import React from 'react';
 import type { Question } from '../data/questions';
+import { Card, CardContent } from './ui/card';
+import { Badge } from './ui/badge';
 
 interface QuestionPromptProps {
-  onQuestionChange?: (question: Question) => void;
+  question: Question | null;
 }
 
-const QuestionPrompt: React.FC<QuestionPromptProps> = ({ 
-  onQuestionChange
-}) => {
-  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
-
-  const loadNewQuestion = () => {
-    const newQuestion = getRandomQuestion();
-    setCurrentQuestion(newQuestion);
-    onQuestionChange?.(newQuestion);
-  };
-
-  useEffect(() => {
-    loadNewQuestion();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const handleRefreshQuestion = () => {
-    loadNewQuestion();
-  };
-
-  if (!currentQuestion) {
-    return <div className="question-prompt loading">Loading question...</div>;
+const QuestionPrompt: React.FC<QuestionPromptProps> = ({ question }) => {
+  if (!question) {
+    return (
+      <div
+        className="flex items-center gap-2 text-sm text-muted-foreground animate-fadeIn"
+        role="status"
+        aria-live="polite"
+      >
+        <div className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        Loading question...
+      </div>
+    );
   }
 
   return (
-    <div className="question-prompt">
-      <div className="question-header">
-        <h3>Your Interview Question</h3>
-        <button 
-          onClick={handleRefreshQuestion}
-          className="refresh-button"
-          title="Get a new question"
-        >
-          🔄 New Question
-        </button>
-      </div>
-
-      <div className="question-content">
-        <p className="question-text">{currentQuestion.text}</p>
-        <div className="question-meta">
-          <span className="question-category">{currentQuestion.category}</span>
-          <span className="question-difficulty">{currentQuestion.difficulty}</span>
+    <Card
+      className="border-primary/20 bg-gradient-primary text-black animate-fadeIn"
+      aria-label="Interview question"
+    >
+      <CardContent className="p-4 flex flex-col gap-3">
+        <p className="text-sm leading-relaxed">{question.text}</p>
+        <div className="flex gap-2 flex-wrap">
+          <Badge>{question.category}</Badge>
+          <Badge variant="outline">{question.difficulty}</Badge>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 
-export default QuestionPrompt; 
+export default QuestionPrompt;
