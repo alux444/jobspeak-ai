@@ -14,12 +14,12 @@ import AnalysisResults from './AnalysisResults';
 import StatusMessages from './StatusMessages';
 import TranscriptionEditor from './TranscriptionEditor';
 import VideoContainer from './VideoContainer';
+import AnalysisProgress from './AnalysisProgress';
 
 export function InterviewAnalyser() {
   const [selectedJobDescription, setSelectedJobDescription] = useState<JobDescriptionCategory>('java-developer');
   const [customJobDescription, setCustomJobDescription] = useState<string | undefined>(undefined);
   const [isRecording, setIsRecording] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
 
   const [question, setQuestion] = useState<Question | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
@@ -149,18 +149,25 @@ export function InterviewAnalyser() {
           {/* Actions after video is ready */}
           {((mode === "record" && recordedChunks.length > 0 && !recording) ||
             (mode === "upload" && uploadedFile)) &&
-            !isProcessing && !isTranscribing && !showTranscription && (
+            !isProcessing && !showTranscription && (
               <div className="flex gap-2">
                 {mode === "record" && (
-                  <Button variant="outline" onClick={saveRecording}>
+                  <Button variant="outline" onClick={saveRecording} disabled={isTranscribing}>
                     Save Recording
                   </Button>
                 )}
-                <Button onClick={transcribeRecording}>
+                <Button onClick={transcribeRecording} disabled={isTranscribing}>
                   Transcribe Recording
                 </Button>
               </div>
             )}
+
+          {/* Status */}
+          <StatusMessages
+            isTranscribing={isTranscribing}
+            isProcessing={isProcessing}
+            error={error}
+          />
 
           {/* Transcription Editor */}
           {showTranscription && (
@@ -173,13 +180,8 @@ export function InterviewAnalyser() {
             />
           )}
 
-          {/* Status / Loading */}
-          <StatusMessages
-            isTranscribing={isTranscribing}
-            isProcessing={isProcessing}
-            error={error}
-            analysisProgress={analysisProgress}
-          />
+          {/* Analysis Progress */}
+          <AnalysisProgress analysisProgress={analysisProgress} />
 
           {/* Analysis Results */}
           <AnalysisResults analysisResults={analysisResults} />

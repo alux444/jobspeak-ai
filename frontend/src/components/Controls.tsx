@@ -1,5 +1,4 @@
 import React, { useRef } from "react";
-import { Toggle } from "./Toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -49,15 +48,6 @@ const Controls: React.FC<ControlsProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Toggle */}
-      {/* <Toggle
-        isCustomMode={mode === "upload"}
-        onToggle={(isCustom) => onSwitchMode(isCustom ? "upload" : "record")}
-        leftLabel="Record Video"
-        rightLabel="Upload Video"
-        disabled={isProcessing || isTranscribing}
-      /> */}
-
       <div className="controls space-y-2">
         <div className="flex space-x-3">
           {recording && (
