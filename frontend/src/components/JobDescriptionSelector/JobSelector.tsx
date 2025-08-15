@@ -19,7 +19,7 @@ export const JobSelector: React.FC<JobSelectorProps> = ({
   const selectedOption = jobDescriptionOptions.find(opt => opt.value === selectedJob);
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md transition-colors">
       <CardHeader className="flex flex-row items-center gap-2">
         <Select value={selectedJob} onValueChange={val => onJobChange(val as JobDescriptionCategory)}>
           <SelectTrigger className="w-full">

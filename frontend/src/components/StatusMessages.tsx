@@ -14,7 +14,7 @@ const StatusMessages: React.FC<StatusMessagesProps> = ({
   error,
 }) => {
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 transition-colors">
       {isTranscribing && (
         <Alert variant="default" className="flex items-center gap-2">
           <Loader2 className="animate-spin h-4 w-4 text-blue-500 mr-2" />

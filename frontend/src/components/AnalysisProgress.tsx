@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Loader2, AlertCircle, Circle } from "lucide-react";
 
 interface AnalysisProgressProps {
@@ -51,7 +50,7 @@ const AnalysisProgress: React.FC<AnalysisProgressProps> = ({ analysisProgress })
   };
 
   return (
-    <Card className="shadow-medium">
+    <Card className="shadow-medium transition-colors">
       <CardHeader>
         <CardTitle>Analysis Progress</CardTitle>
       </CardHeader>
@@ -67,21 +66,22 @@ const AnalysisProgress: React.FC<AnalysisProgressProps> = ({ analysisProgress })
           {steps.map((step) => {
             const status = analysisProgress[step];
             return (
-              <div
+              <Card
                 key={step}
-                className={`flex items-center space-x-2 p-3 rounded-md border
-                  ${status === "done" ? "bg-green-50 border-green-200" : ""}
-                  ${status === "in_progress" ? "bg-blue-50 border-blue-200 animate-pulse" : ""}
-                  ${status === "pending" ? "bg-gray-50 border-gray-200" : ""}
-                  ${status === "error" ? "bg-red-50 border-red-200" : ""}
-                `}
+                className={
+                  `flex flex-row items-center space-x-2 p-3 rounded-md border shadow-none transition-colors
+                  ${status === "done" ? "bg-green-50 dark:bg-green-900 border-green-200 dark:border-green-700" : ""}
+                  ${status === "in_progress" ? "bg-blue-50 dark:bg-blue-900 border-blue-200 dark:border-blue-700 animate-pulse" : ""}
+                  ${status === "pending" ? "bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700" : ""}
+                  ${status === "error" ? "bg-red-50 dark:bg-red-900 border-red-200 dark:border-red-700" : ""}`
+                }
               >
-                {getStepIcon(status)}
-                <div className="flex-1 text-sm font-medium">
+                <div>{getStepIcon(status)}</div>
+                <div className="flex-1 text-sm font-medium text-gray-800 dark:text-gray-100">
                   {stepLabels[step]}
                   {status === "in_progress" && <span className="ml-1">{ellipsis}</span>}
                 </div>
-              </div>
+              </Card>
             );
           })}
         </div>

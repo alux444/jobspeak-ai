@@ -25,7 +25,7 @@ const VideoContainer: React.FC<VideoContainerProps> = ({
   }, [stream]);
 
   return (
-    <div className="w-full rounded-md border overflow-hidden bg-muted flex items-center justify-center aspect-video">
+    <div className="w-full rounded-md border overflow-hidden bg-muted flex items-center justify-center aspect-video transition-colors">
       {stream || src ? (
         <video
           ref={videoRef}
