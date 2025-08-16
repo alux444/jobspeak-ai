@@ -125,6 +125,21 @@
   --sidebar-ring: oklch(0.551 0.027 264.364);
 }
 
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+@layer utilities {
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

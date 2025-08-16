@@ -12,7 +12,7 @@ const QuestionPrompt: React.FC<QuestionPromptProps> = ({ question }) => {
   if (!question) {
     return (
       <div
-        className="flex items-center gap-2 text-sm text-muted-foreground animate-fadeIn"
+        className="flex items-center gap-2 text-sm text-muted-foreground"
         role="status"
         aria-live="polite"
       >
@@ -24,14 +24,14 @@ const QuestionPrompt: React.FC<QuestionPromptProps> = ({ question }) => {
 
   return (
     <Card
-      className="border-primary/20"
-      aria-label="Interview question"
       key={question.id}
+      className="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 text-white"
+      aria-label="Interview question"
     >
-      <CardContent className="p-4 flex flex-col gap-3">
+      <CardContent className="p-4 flex flex-col gap-3 animate-fadeIn">
         <p className="text-lg md:text-xl leading-relaxed">{question.text}</p>
         <div className="flex gap-2 flex-wrap">
-          <Badge>{question.category}</Badge>
+          <Badge className="bg-white text-black">{question.category}</Badge>
           <Badge
             variant="outline"
             className={`${getDifficultyColors(question.difficulty)}`}

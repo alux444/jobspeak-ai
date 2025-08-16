@@ -41,7 +41,7 @@ export default function AnalysisResults({ analysisResults }: AnalysisResultsProp
             </div>
             <div className="flex justify-between items-center mt-4 border-t border-primary/30 pt-4">
               <span className="font-semibold text-lg w-44">Overall Score:</span>
-                <span className="font-extrabold text-2xl text-indigo-500 dark:text-indigo-400">
+                <span className="font-extrabold text-2xl text-indigo-600 dark:text-indigo-400">
                 {feedbackSummary.overall_score} / 100
               </span>
             </div>
