@@ -25,7 +25,7 @@ export const CustomJobInput: React.FC<CustomJobInputProps> = ({ onSave, onCancel
   const isValid = title.trim() && description.trim();
 
   return (
-    <Card className="max-w-md mx-auto">
+    <Card className="mx-auto">
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="job-title">Job Title</Label>

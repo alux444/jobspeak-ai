@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { type JobDescriptionCategory, jobDescriptionOptions } from "../../types/jobDescriptions";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { CustomJobInput } from "./CustomJobInput";
 import { JobSelector } from "./JobSelector";
+import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 
 interface JobDescriptionSelectorProps {
   selectedJobDescription: JobDescriptionCategory;
@@ -25,7 +24,8 @@ export const JobDescriptionSelector: React.FC<JobDescriptionSelectorProps> = ({
     setCustomJobDescription(customDescription);
   };
 
-  const handleModeToggle = (isCustom: boolean) => {
+  const handleModeToggle = (value: string) => {
+    const isCustom = value === "custom";
     setIsCustomMode(isCustom);
     if (!isCustom) {
       // Reset to first predefined job when switching back
@@ -45,14 +45,13 @@ export const JobDescriptionSelector: React.FC<JobDescriptionSelectorProps> = ({
 
   return (
     <div>
-      <div className="flex items-center gap-2 mb-4">
-        <Label htmlFor="custom-switch">Select Job</Label>
-        <Switch
-          id="custom-switch"
-          checked={isCustomMode}
-          onCheckedChange={handleModeToggle}
-        />
-        <Label htmlFor="custom-switch">Custom Job</Label>
+      <div className="items-center mb-4">
+        <Tabs defaultValue="select" onValueChange={handleModeToggle}>
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="select">Select Job</TabsTrigger>
+            <TabsTrigger value="custom">Custom Job</TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
       {isCustomMode ? (
         <CustomJobInput

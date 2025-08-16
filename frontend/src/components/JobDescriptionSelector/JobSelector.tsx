@@ -19,7 +19,7 @@ export const JobSelector: React.FC<JobSelectorProps> = ({
   const selectedOption = jobDescriptionOptions.find(opt => opt.value === selectedJob);
 
   return (
-    <Card className="w-full max-w-md transition-colors">
+    <Card className="w-full transition-colors">
       <CardHeader className="flex flex-row items-center gap-2">
         <Select value={selectedJob} onValueChange={val => onJobChange(val as JobDescriptionCategory)}>
           <SelectTrigger className="w-full">
@@ -45,12 +45,11 @@ export const JobSelector: React.FC<JobSelectorProps> = ({
       </CardHeader>
 
       {selectedOption && (
-        <CardContent>
+        <CardContent className="overflow-auto max-h-64">
           <p className="text-muted-foreground mb-2">{selectedOption.description}</p>
           {showDetails && (
             <div className="job-details mt-2">
-              <h4 className="font-semibold">{selectedOption.label}</h4>
-              <pre className="bg-muted p-2 rounded text-sm">{selectedOption.fullDescription}</pre>
+              <pre className="bg-muted p-2 rounded text-sm whitespace-pre-wrap break-words max-w-full overflow-auto">{selectedOption.fullDescription}</pre>
             </div>
           )}
         </CardContent>
