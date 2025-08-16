@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useRecorder } from "../hooks/useRecorder";
-import Controls from "./Controls";
-import VideoPreview from "./VideoContainer";
+import Controls from "./ActionButtons";
+import VideoPreview from "./InterviewRecorder";
 import TranscriptionEditor from "./TranscriptionEditor";
 import AnalysisResults from "./AnalysisResults";
 import StatusMessages from "./StatusMessages";

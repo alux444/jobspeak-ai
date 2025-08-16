@@ -402,17 +402,6 @@ export const useRecorder = (
 
   const switchMode = (newMode: "record" | "upload") => {
     setMode(newMode);
-    // Clear data when switching modes
-    if (newMode === "record") {
-      setUploadedFile(null);
-    } else {
-      setRecordedChunks([]);
-      if (stream) {
-        stream.getTracks().forEach((track) => track.stop());
-        setStream(null);
-      }
-    }
-    // Reset analysis state
     setAnalysisResults(null);
     setError(null);
     setTranscription("");
@@ -443,6 +432,8 @@ export const useRecorder = (
     analysisProgress,
 
     // Actions
+    setRecordedChunks,
+    setUploadedFile,
     startRecording,
     stopRecording,
     saveRecording,
