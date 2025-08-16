@@ -39,7 +39,7 @@ export default function TargetRole({
       </div>
 
       {expanded && (
-        <div className="mt-2 animate-fade-in">
+        <div className="mt-2">
           <JobDescriptionSelector
             selectedJobDescription={selectedJobDescription}
             setSelectedJobDescription={setSelectedJobDescription}
