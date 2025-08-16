@@ -11,14 +11,14 @@ interface QuestionPromptProps {
 const QuestionPrompt: React.FC<QuestionPromptProps> = ({ question }) => {
   if (!question) {
     return (
-      <div
-        className="flex items-center gap-2 text-sm text-muted-foreground"
-        role="status"
-        aria-live="polite"
+      <Card
+        className="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600"
       >
-        <div className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-        Loading question...
-      </div>
+        <CardContent className="p-4 flex flex-row items-center gap-3">
+          <div className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          <p className="text-lg md:text-xl leading-relaxed">Loading Question...</p>
+        </CardContent>
+      </Card>
     );
   }
 

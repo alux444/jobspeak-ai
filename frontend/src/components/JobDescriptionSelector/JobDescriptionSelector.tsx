@@ -45,7 +45,7 @@ export const JobDescriptionSelector: React.FC<JobDescriptionSelectorProps> = ({
 
   return (
     <div>
-      <div className="items-center mb-4">
+      <div className="items-center mb-4 transition-colors">
         <Tabs defaultValue="select" onValueChange={handleModeToggle}>
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="select">Select Job</TabsTrigger>
