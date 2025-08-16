@@ -1,18 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { RefreshCw } from 'lucide-react';
+import { AlertCircle, RefreshCw } from 'lucide-react';
 import QuestionPrompt from './QuestionPrompt';
 import { getRandomQuestion, type Question } from '@/data/questions';
 import type { JobDescriptionCategory } from '@/types/jobDescriptions';
 import { useRecorder } from '@/hooks/useRecorder';
 import AnalysisResults from './AnalysisResults';
-import StatusMessages from './StatusMessages';
 import TranscriptionEditor from './TranscriptionEditor';
 import AnalysisProgress from './AnalysisProgress';
 import Nav from './Nav';
 import InterviewRecorder from './InterviewRecorder';
 import TargetRole from './TargetRole';
+import { Alert, AlertTitle, AlertDescription } from './ui/alert';
 
 export function InterviewAnalyser() {
   const [selectedJobDescription, setSelectedJobDescription] = useState<JobDescriptionCategory>('java-developer');
@@ -111,12 +111,15 @@ export function InterviewAnalyser() {
               />
             </div>
 
-            {/* Status */}
-            <StatusMessages
-              isTranscribing={isTranscribing}
-              isProcessing={isProcessing}
-              error={error}
-            />
+            {/* Error Message */}
+            {error && (
+              <Alert variant="destructive" className="flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-red-500 mr-2" />
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
             {/* Transcription Editor */}
             {showTranscription && (
               <TranscriptionEditor

@@ -24,7 +24,7 @@ const QuestionPrompt: React.FC<QuestionPromptProps> = ({ question }) => {
 
   return (
     <Card
-      className="border-primary/20 bg-gradient-primary"
+      className="border-primary/20"
       aria-label="Interview question"
       key={question.id}
     >

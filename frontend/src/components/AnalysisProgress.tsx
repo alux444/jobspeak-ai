@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { CheckCircle, Loader2, AlertCircle, Circle } from "lucide-react";
+import { Button } from "./ui/button";
 
 interface AnalysisProgressProps {
   analysisProgress?: Record<string, "done" | "in_progress" | "pending" | "error">;
@@ -51,8 +52,23 @@ const AnalysisProgress: React.FC<AnalysisProgressProps> = ({ analysisProgress })
 
   return (
     <Card className="shadow-medium transition-colors">
-      <CardHeader>
-        <CardTitle>Analysis Progress</CardTitle>
+      <CardHeader className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <CardTitle>Analysis Progress</CardTitle>
+          <Loader2 className="animate-spin h-4 w-4" />
+        </div>
+        <Button
+          variant="destructive"
+          className="flex items-center gap-1 px-3 py-1 text-xs font-medium bg-destructive text-destructive-foreground rounded hover:bg-destructive/90 transition-colors"
+          size="sm"
+          type="button"
+          onClick={() => {
+            // Add your cancel logic here
+          }}
+        >
+          <AlertCircle className="w-4 h-4" />
+          Cancel
+        </Button>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Overall Progress */}

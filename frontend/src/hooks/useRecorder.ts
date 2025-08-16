@@ -120,6 +120,8 @@ export const useRecorder = (
                         (mode === "upload" && uploadedFile);
     if (!hasVideoData || !transcription || !currentQuestion) return;
 
+    setShowTranscription(false);
+
     // Get video blob from either recorded chunks or uploaded file
     let videoBlob: Blob;
     if (mode === "upload" && uploadedFile) {
@@ -279,7 +281,7 @@ export const useRecorder = (
         transcription,
         error: undefined,
       });
-      setShowTranscription(false);
+      setShowTranscription(true);
     } catch (err) {
       const errorMsg =
         err instanceof Error ? err.message : "An unknown error occurred";

@@ -1,5 +1,5 @@
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogTitle, AlertDialogDescription, AlertDialogCancel, AlertDialogAction } from "./ui/alert-dialog";
-import { RefreshCcw, VideoIcon, Square, Upload, Trash2, Save, FileText } from "lucide-react";
+import { RefreshCcw, VideoIcon, Square, Upload, Trash2, Save, FileText, Loader2 } from "lucide-react";
 import { AlertDialogHeader, AlertDialogFooter } from "./ui/alert-dialog";
 import { Button } from "./ui/button";
 
@@ -111,9 +111,16 @@ export function ActionButtons({
           <Button variant="outline" onClick={onSave} disabled={isProcessing || isTranscribing} className="cursor-pointer">
             <Save className="w-4 h-4 mr-2" /> Save
           </Button>
-          <Button onClick={onTranscribe} disabled={isProcessing || isTranscribing} className="cursor-pointer">
-            <FileText className="w-4 h-4 mr-2" /> Transcribe
-          </Button>
+
+          {!isTranscribing ? (
+            <Button onClick={onTranscribe} disabled={isProcessing || isTranscribing} className="cursor-pointer">
+              <FileText className="w-4 h-4 mr-2" /> Transcribe
+            </Button>
+          ) : (
+            <Button onClick={onTranscribe} disabled={isProcessing || isTranscribing} className="cursor-pointer">
+              <Loader2 className="animate-spin h-4 w-4 mr-2" /> Transcribing
+            </Button>
+          )}
         </>
       )}
     </div>
