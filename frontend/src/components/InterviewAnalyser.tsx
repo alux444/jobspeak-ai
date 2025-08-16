@@ -4,7 +4,6 @@ import { Separator } from '@/components/ui/separator';
 import { RefreshCw } from 'lucide-react';
 import QuestionPrompt from './QuestionPrompt';
 import { getRandomQuestion, type Question } from '@/data/questions';
-import { JobDescriptionSelector } from './JobDescriptionSelector/JobDescriptionSelector';
 import type { JobDescriptionCategory } from '@/types/jobDescriptions';
 import { useRecorder } from '@/hooks/useRecorder';
 import AnalysisResults from './AnalysisResults';
@@ -13,6 +12,7 @@ import TranscriptionEditor from './TranscriptionEditor';
 import AnalysisProgress from './AnalysisProgress';
 import Nav from './Nav';
 import InterviewRecorder from './InterviewRecorder';
+import TargetRole from './TargetRole';
 
 export function InterviewAnalyser() {
   const [selectedJobDescription, setSelectedJobDescription] = useState<JobDescriptionCategory>('java-developer');
@@ -62,16 +62,6 @@ export function InterviewAnalyser() {
         {/* Left Sidebar */}
         <div className="w-2xl bg-sidebar-bg border-r border-sidebar-border shadow-soft flex flex-col overflow-hidden h-full">
           <div className="p-6 space-y-6 overflow-y-auto h-full">
-            {/* Target Role Section */}
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-foreground">Target Role</h2>
-              <JobDescriptionSelector
-                selectedJobDescription={selectedJobDescription}
-                setSelectedJobDescription={setSelectedJobDescription}
-                setCustomJobDescription={setCustomJobDescription}
-              />
-            </div>
-            <Separator />
             {/* Interview Question Section */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -90,6 +80,15 @@ export function InterviewAnalyser() {
               </div>
               <QuestionPrompt question={question} />
             </div>
+            
+            <Separator />
+
+            {/* Target Role Section */}
+            <TargetRole
+              selectedJobDescription={selectedJobDescription}
+              setSelectedJobDescription={setSelectedJobDescription}
+              setCustomJobDescription={setCustomJobDescription}
+            />
           </div>
         </div>
         {/* Main Content Area */}
