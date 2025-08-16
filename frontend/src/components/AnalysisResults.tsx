@@ -1,231 +1,100 @@
-import React, { useState } from "react";
 import type { AnalysisResponse } from "../api/ApiService";
+import { Card, CardContent } from "./ui/card";
+import RawData from "./RawData";
 
 interface AnalysisResultsProps {
   analysisResults: AnalysisResponse | null;
 }
 
-const AnalysisResults: React.FC<AnalysisResultsProps> = ({ analysisResults }) => {
-  // Expand/collapse state for each agent (must be at the top, before any return)
-  const [showKeyword, setShowKeyword] = useState(false);
-  const [showContent, setShowContent] = useState(false);
-  const [showSentiment, setShowSentiment] = useState(false);
-  const [showAudio, setShowAudio] = useState(false);
-  const [showVideo, setShowVideo] = useState(false);
-  const [showSentimentRaw, setShowSentimentRaw] = useState(false);
-
+export default function AnalysisResults({ analysisResults }: AnalysisResultsProps) {
   if (!analysisResults) return null;
 
-  if (analysisResults.feedbackSummary) {
-    const summary = analysisResults.feedbackSummary;
-    const agentResults = analysisResults.agentResults;
-    return (
-      <div className="analysis-results">
-        <h3>Overall Feedback</h3>
-        <div className="feedback-summary">
-          <div className="feedback-row">
-            <span className="feedback-label">Verdict:</span>
-            <span className="feedback-value verdict">{summary.verdict}</span>
-          </div>
-          <div className="feedback-row">
-            <span className="feedback-label">Strengths:</span>
-            <span className="feedback-value">{summary.strengths}</span>
-          </div>
-          <div className="feedback-row">
-            <span className="feedback-label">Weaknesses:</span>
-            <span className="feedback-value">{summary.weaknesses}</span>
-          </div>
-          <div className="feedback-row">
-            <span className="feedback-label">Improvement Suggestion:</span>
-            <span className="feedback-value">{summary.improvement_suggestion}</span>
-          </div>
-          <div className="feedback-row">
-            <span className="feedback-label">Overall Score:</span>
-            <span className="feedback-value score">{summary.overall_score} / 100</span>
-          </div>
-        </div>
-        {/* Agent Results Expandable Sections */}
-        {agentResults && (
-          <div className="agent-results">
-            <h4>Agent Results (Raw Data)</h4>
-            {/* Sentiment Model Results */}
-            {analysisResults.sentimentModelResponse && (
-              <div className="agent-section">
-                <button className="expand-btn" onClick={() => setShowSentimentRaw((v) => !v)}>
-                  {showSentimentRaw ? "Hide" : "Show"} Emotion Analysis (AI Model)
-                </button>
-                {showSentimentRaw && (
-                  <div className="sentiment-model-results">
-                    <div className="sentiment-model-summary">
-                      <h6>Detected Emotions:</h6>
-                      {analysisResults.sentimentModelResponse.analysis[0]?.map((emotion, index) => (
-                        <div key={index} className="emotion-item">
-                          <span className="emotion-label">{emotion.label}:</span>
-                          <span className="emotion-score">{(emotion.score * 100).toFixed(1)}%</span>
-                          <div className="emotion-bar">
-                            <div className="emotion-fill" style={{ width: `${emotion.score * 100}%` }} />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    <details style={{ marginTop: "15px" }}>
-                      <summary style={{ cursor: "pointer", color: "#a0aec0" }}>View Raw Data</summary>
-                      <pre style={{ marginTop: "10px" }}>{JSON.stringify(analysisResults.sentimentModelResponse, null, 2)}</pre>
-                    </details>
-                  </div>
-                )}
-              </div>
-            )}
-            {/* Existing agent results */}
-            <div className="agent-section">
-              <button className="expand-btn" onClick={() => setShowAudio((v) => !v)}>
-                {showAudio ? "Hide" : "Show"} Audio Analysis
-              </button>
-              {showAudio && <pre>{JSON.stringify(agentResults.audioAnalysis, null, 2)}</pre>}
-            </div>
-            {/* Video Analysis Section */}
-            {agentResults.videoAnalysis && (
-              <div className="agent-section">
-                <button className="expand-btn" onClick={() => setShowVideo((v) => !v)}>
-                  {showVideo ? "Hide" : "Show"} Video Analysis (Facial Emotion Recognition)
-                </button>
-                {showVideo && (
-                  <div className="video-analysis-results">
-                    <div className="video-analysis-summary">
-                      <h6>Assessment:</h6>
-                      {agentResults.videoAnalysis.assessment.map((item, index) => (
-                        <div key={index} className="assessment-item">
-                          • {item}
-                        </div>
-                      ))}
+  const { feedbackSummary, agentResults, sentimentModelResponse } = analysisResults;
 
-                      <h6>Emotion Scores:</h6>
-                      {Object.entries(agentResults.videoAnalysis.scores).map(([emotion, score]) => (
-                        <div key={emotion} className="emotion-score-item">
-                          <span className="emotion-label">{emotion}:</span>
-                          <span className="emotion-score">{score.toFixed(2)}</span>
-                          {emotion.includes("Score") && (
-                            <div className="emotion-bar">
-                              <div className="emotion-fill" style={{ width: `${Math.min(score, 100)}%` }} />
-                            </div>
-                          )}
-                        </div>
-                      ))}
-
-                      <h6>Improvement Suggestions:</h6>
-                      {agentResults.videoAnalysis.improvement.map((item, index) => (
-                        <div key={index} className="improvement-item">
-                          • {item}
-                        </div>
-                      ))}
-                    </div>
-                    <details style={{ marginTop: "15px" }}>
-                      <summary style={{ cursor: "pointer", color: "#a0aec0" }}>View Raw Data</summary>
-                      <pre style={{ marginTop: "10px" }}>{JSON.stringify(agentResults.videoAnalysis, null, 2)}</pre>
-                    </details>
-                  </div>
-                )}
-              </div>
-            )}
-            <div className="agent-section">
-              <button className="expand-btn" onClick={() => setShowKeyword((v) => !v)}>
-                {showKeyword ? "Hide" : "Show"} Keyword Analysis
-              </button>
-              {showKeyword && <pre>{JSON.stringify(agentResults.keywordAnalysis, null, 2)}</pre>}
-            </div>
-            <div className="agent-section">
-              <button className="expand-btn" onClick={() => setShowContent((v) => !v)}>
-                {showContent ? "Hide" : "Show"} Content Analysis
-              </button>
-              {showContent && <pre>{JSON.stringify(agentResults.responseContent, null, 2)}</pre>}
-            </div>
-            <div className="agent-section">
-              <button className="expand-btn" onClick={() => setShowSentiment((v) => !v)}>
-                {showSentiment ? "Hide" : "Show"} Sentiment Analysis
-              </button>
-              {showSentiment && <pre>{JSON.stringify(agentResults.responseSentiment, null, 2)}</pre>}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // TODO: format all the results
   return (
-    <div className="analysis-results">
-      <h3>Analysis Results</h3>
-      {analysisResults?.sentimentModelResponse && (
-        <div className="sentiment-analysis">
-          <h4>Emotion Analysis (AI Model)</h4>
-          <div className="sentiment-model-results">
-            <div className="sentiment-model-summary">
-              <h6>Detected Emotions:</h6>
-              {analysisResults.sentimentModelResponse.analysis[0]?.map((emotion, index) => (
-                <div key={index} className="emotion-item">
-                  <span className="emotion-label">{emotion.label}:</span>
-                  <span className="emotion-score">{(emotion.score * 100).toFixed(1)}%</span>
-                  <div className="emotion-bar">
-                    <div className="emotion-fill" style={{ width: `${emotion.score * 100}%` }} />
-                  </div>
-                </div>
-              ))}
+    <div className="space-y-6">
+      {/* Overall Feedback */}
+      {feedbackSummary && (
+        <Card className="border border-primary/20 bg-primary/5">
+          <CardContent className="space-y-2">
+            <h3 className="text-lg font-semibold">Overall Feedback</h3>
+            <div className="space-y-1">
+              <div className="flex justify-between">
+                <span className="font-medium">Verdict:</span>
+                <span className="text-green-700 font-semibold">{feedbackSummary.verdict}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Strengths:</span>
+                <span>{feedbackSummary.strengths}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Weaknesses:</span>
+                <span>{feedbackSummary.weaknesses}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Improvement Suggestion:</span>
+                <span>{feedbackSummary.improvement_suggestion}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Overall Score:</span>
+                <span className="font-semibold">{feedbackSummary.overall_score} / 100</span>
+              </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       )}
 
-      {analysisResults?.videoAnalysis && (
-        <div className="video-analysis">
-          <h4>Video Analysis (Facial Emotion Recognition)</h4>
-          <div className="video-analysis-results">
-            <div className="video-analysis-summary">
-              <h6>Assessment:</h6>
-              {analysisResults.videoAnalysis.assessment.map((item, index) => (
-                <div key={index} className="assessment-item">
-                  • {item}
-                </div>
-              ))}
+      {/* Agent Results */}
+      {agentResults && (
+        <Card className="border border-primary/20 bg-primary/5">
+          <CardContent className="space-y-4">
+            <h4 className="text-lg font-semibold">Agent Analysis</h4>
 
-              <h6>Emotion Scores:</h6>
-              {Object.entries(analysisResults.videoAnalysis.scores).map(([emotion, score]) => (
-                <div key={emotion} className="emotion-score-item">
-                  <span className="emotion-label">{emotion}:</span>
-                  <span className="emotion-score">{score}</span>
-                  {emotion.includes("Score") && (
-                    <div className="emotion-bar">
-                      <div className="emotion-fill" style={{ width: `${Math.min(score, 100)}%` }} />
-                    </div>
-                  )}
-                </div>
-              ))}
+            {/* Sentiment AI Model */}
+            {sentimentModelResponse && (
+              <RawData
+                title="Emotion Analysis (AI Model)"
+                data={sentimentModelResponse}
+              />
+            )}
 
-              <h6>Improvement Suggestions:</h6>
-              {analysisResults.videoAnalysis.improvement.map((item, index) => (
-                <div key={index} className="improvement-item">
-                  • {item}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+            {/* Audio Analysis */}
+            {agentResults.audioAnalysis && (
+              <RawData title="Audio Analysis" data={agentResults.audioAnalysis} />
+            )}
+
+            {/* Video Analysis */}
+            {agentResults.videoAnalysis && (
+              <RawData title="Video Analysis (Facial Emotion Recognition)" data={agentResults.videoAnalysis} />
+            )}
+
+            {/* Keyword Analysis */}
+            {agentResults.keywordAnalysis && (
+              <RawData title="Keyword Analysis" data={agentResults.keywordAnalysis} />
+            )}
+
+            {/* Content Analysis */}
+            {agentResults.responseContent && (
+              <RawData title="Content Analysis" data={agentResults.responseContent} />
+            )}
+
+            {/* Sentiment Analysis */}
+            {agentResults.responseSentiment && (
+              <RawData title="Sentiment Analysis" data={agentResults.responseSentiment} />
+            )}
+          </CardContent>
+        </Card>
       )}
 
-      {analysisResults?.sentiment && (
-        <div className="sentiment-analysis">
-          <h4>Sentiment Analysis (Agent)</h4>
-          <pre>{JSON.stringify(analysisResults.sentiment, null, 2)}</pre>
-        </div>
-      )}
-
-      {analysisResults?.transcription && (
-        <div className="transcription">
-          <h4>Final Transcription</h4>
-          <p>{analysisResults.transcription}</p>
-        </div>
+      {/* Final Transcription */}
+      {analysisResults.transcription && (
+        <Card className="border border-primary/20 bg-primary/5">
+          <CardContent>
+            <h4 className="text-lg font-semibold">Final Transcription</h4>
+            <p className="whitespace-pre-wrap">{analysisResults.transcription}</p>
+          </CardContent>
+        </Card>
       )}
     </div>
   );
 };
-
-export default AnalysisResults;

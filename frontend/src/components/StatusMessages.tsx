@@ -24,7 +24,7 @@ const StatusMessages: React.FC<StatusMessagesProps> = ({
       )}
       {isProcessing && (
         <Alert variant="destructive" className="flex items-center gap-2">
-          <Mic className="animate-pulse h-4 w-4 text-purple-500 mr-2" />
+          <Loader2 className="animate-spin h-4 w-4 text-purple-500 mr-2" />
           <AlertTitle>Analysing</AlertTitle>
           <AlertDescription>Analysing your recording...</AlertDescription>
         </Alert>

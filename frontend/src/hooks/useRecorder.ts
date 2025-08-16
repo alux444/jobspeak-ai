@@ -40,7 +40,7 @@ function unwrapResult<T>(res: T | { result: T }): T {
 }
 
 export const useRecorder = (
-  currentQuestion: Question | null,
+  currentQuestion: Question | null, 
   jobDescriptionCategory?: JobDescriptionCategory,
   customJobDescription?: string
 ) => {
@@ -116,12 +116,9 @@ export const useRecorder = (
 
   const processAnalysis = async () => {
     // Check if we have video data (either recorded or uploaded) and transcription
-    const hasVideoData =
-      (mode === "record" && recordedChunks.length > 0) ||
-      (mode === "upload" && uploadedFile);
+    const hasVideoData = (mode === "record" && recordedChunks.length > 0) || 
+                        (mode === "upload" && uploadedFile);
     if (!hasVideoData || !transcription || !currentQuestion) return;
-
-    setShowTranscription(false);
 
     // Get video blob from either recorded chunks or uploaded file
     let videoBlob: Blob;
@@ -282,6 +279,7 @@ export const useRecorder = (
         transcription,
         error: undefined,
       });
+      setShowTranscription(false);
     } catch (err) {
       const errorMsg =
         err instanceof Error ? err.message : "An unknown error occurred";

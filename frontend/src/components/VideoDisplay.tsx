@@ -43,7 +43,7 @@ export function VideoDisplay({ mode, recording, stream, recordedChunks, uploaded
       {mode === "record" && recording && stream ? (
         <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover" />
       ) : hasVideo && playbackUrl ? (
-        <video key={playbackUrl} src={playbackUrl} controls autoPlay muted={false} className="w-full h-full object-cover" />
+        <video key={playbackUrl} src={playbackUrl} controls muted={false} className="w-full h-full object-cover" />
       ) : (
         <div className="flex flex-col items-center text-muted-foreground">
           <VideoIcon className="w-12 h-12" />

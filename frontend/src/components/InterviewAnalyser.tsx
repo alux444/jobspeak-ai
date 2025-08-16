@@ -57,10 +57,10 @@ export function InterviewAnalyser() {
       <div className="fixed top-0 left-0 right-0 z-50">
         <Nav />
       </div>
-      <div className="flex w-full h-full pt-[54px]">
+      <div className="flex w-full h-full pt-[42px]">
         {/* Left Sidebar */}
-        <div className="w-2xl bg-sidebar-bg border-r border-sidebar-border shadow-soft flex flex-col overflow-hidden h-full">
-          <div className="p-6 space-y-6 overflow-y-auto h-full">
+        <div className="w-2xl bg-sidebar-bg border-r border-sidebar-border shadow-soft flex flex-col">
+          <div className="p-6 space-y-6 overflow-y-auto flex-1">
             {/* Interview Question Section */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
@@ -92,7 +92,7 @@ export function InterviewAnalyser() {
         </div>
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col">
-          <div className="p-6 space-y-6 h-full overflow-auto">
+          <div className="p-6 space-y-6 overflow-auto flex-1">
             {/* Video Preview / Playback / Placeholder */}
             <div className="space-y-4">
               <InterviewRecorder
@@ -128,7 +128,7 @@ export function InterviewAnalyser() {
               />
             )}
             {/* Analysis Progress */}
-            <AnalysisProgress analysisProgress={analysisProgress} />
+            {isProcessing && <AnalysisProgress analysisProgress={analysisProgress} />}
             {/* Analysis Results */}
             <AnalysisResults analysisResults={analysisResults} />
           </div>
