@@ -130,6 +130,8 @@ export const useRecorder = (
       videoBlob = new Blob(recordedChunks, { type: "video/webm" });
     }
 
+    console.log(videoBlob)
+
     try {
       setIsProcessing(true);
       setError(null);

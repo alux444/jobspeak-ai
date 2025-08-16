@@ -121,7 +121,7 @@ export function InterviewAnalyser() {
             )}
 
             {/* Transcription Editor */}
-            {showTranscription && (
+            {!showTranscription && (
               <TranscriptionEditor
                 transcription={transcription}
                 isProcessing={isProcessing}
