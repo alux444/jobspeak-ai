@@ -72,7 +72,7 @@ export function InterviewAnalyser() {
                   variant="ghost"
                   size="sm"
                   onClick={refreshQuestion}
-                  className="hover:bg-primary/10"
+                  className="hover:bg-primary/10 cursor-pointer"
                   aria-label="Refresh question"
                 >
                   <RefreshCw className="h-4 w-4" />

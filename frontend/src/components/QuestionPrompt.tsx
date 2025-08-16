@@ -2,6 +2,7 @@ import React from 'react';
 import type { Question } from '../data/questions';
 import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
+import { getDifficultyColors } from '@/utils/getDifficultyColours';
 
 interface QuestionPromptProps {
   question: Question | null;
@@ -30,7 +31,12 @@ const QuestionPrompt: React.FC<QuestionPromptProps> = ({ question }) => {
         <p className="text-lg md:text-xl leading-relaxed">{question.text}</p>
         <div className="flex gap-2 flex-wrap">
           <Badge>{question.category}</Badge>
-          <Badge variant="outline">{question.difficulty}</Badge>
+          <Badge
+            variant="outline"
+            className={`${getDifficultyColors(question.difficulty)}`}
+          >
+            {question.difficulty}
+          </Badge>
         </div>
       </CardContent>
     </Card>
