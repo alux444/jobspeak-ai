@@ -40,7 +40,7 @@ function unwrapResult<T>(res: T | { result: T }): T {
 }
 
 export const useRecorder = (
-  currentQuestion: Question | null, 
+  currentQuestion: Question | null,
   jobDescriptionCategory?: JobDescriptionCategory,
   customJobDescription?: string
 ) => {
@@ -116,8 +116,9 @@ export const useRecorder = (
 
   const processAnalysis = async () => {
     // Check if we have video data (either recorded or uploaded) and transcription
-    const hasVideoData = (mode === "record" && recordedChunks.length > 0) || 
-                        (mode === "upload" && uploadedFile);
+    const hasVideoData =
+      (mode === "record" && recordedChunks.length > 0) ||
+      (mode === "upload" && uploadedFile);
     if (!hasVideoData || !transcription || !currentQuestion) return;
 
     setShowTranscription(false);
@@ -129,8 +130,6 @@ export const useRecorder = (
     } else {
       videoBlob = new Blob(recordedChunks, { type: "video/webm" });
     }
-
-    console.log(videoBlob)
 
     try {
       setIsProcessing(true);
@@ -369,6 +368,8 @@ export const useRecorder = (
       });
       setStream(stream);
       mediaRecorderRef.current = new MediaRecorder(stream);
+
+      setRecordedChunks([]);
 
       mediaRecorderRef.current.ondataavailable = (event) => {
         if (event.data.size > 0) {

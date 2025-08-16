@@ -48,7 +48,7 @@ export default function AnalysisResults({ analysisResults }: AnalysisResultsProp
       {agentResults && (
         <Card className="border border-primary/20 bg-primary/5">
           <CardContent className="space-y-4">
-            <h4 className="text-lg font-semibold">Agent Analysis</h4>
+            <h4 className="text-lg font-semibold">Raw Agent Data</h4>
 
             {/* Sentiment AI Model */}
             {sentimentModelResponse && (
@@ -82,16 +82,6 @@ export default function AnalysisResults({ analysisResults }: AnalysisResultsProp
             {agentResults.responseSentiment && (
               <RawData title="Sentiment Analysis" data={agentResults.responseSentiment} />
             )}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Final Transcription */}
-      {analysisResults.transcription && (
-        <Card className="border border-primary/20 bg-primary/5">
-          <CardContent>
-            <h4 className="text-lg font-semibold">Final Transcription</h4>
-            <p className="whitespace-pre-wrap">{analysisResults.transcription}</p>
           </CardContent>
         </Card>
       )}
