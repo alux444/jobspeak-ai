@@ -42,8 +42,10 @@ export function ActionButtons({
       {mode === "record" && !recording && hasVideo ? (
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button variant="outline">
-              <RefreshCcw className="w-4 h-4 mr-2" /> Record Again
+            <Button variant="outline" disabled={isProcessing || isTranscribing}>
+              <label className="flex items-center gap-2 cursor-pointer m-0">
+                <RefreshCcw className="w-4 h-4 mr-2" /> Record Again
+              </label>
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
@@ -60,18 +62,18 @@ export function ActionButtons({
           </AlertDialogContent>
         </AlertDialog>
       ) : mode === "record" && !recording ? (
-        <Button onClick={onStartRecording} disabled={isProcessing || isTranscribing}>
+        <Button onClick={onStartRecording} disabled={isProcessing || isTranscribing} className="cursor-pointer">
           <VideoIcon className="w-4 h-4 mr-2" /> Start Recording
         </Button>
       ) : mode === "record" && recording ? (
-        <Button variant="destructive" onClick={onStopRecording} disabled={isProcessing || isTranscribing}>
+        <Button variant="destructive" onClick={onStopRecording} disabled={isProcessing || isTranscribing} className="cursor-pointer">
           <Square className="w-4 h-4 mr-2" /> Stop Recording
         </Button>
       ) : null}
 
       {/* Upload */}
       {mode === "upload" && !uploadedFile && (
-        <Button asChild>
+        <Button disabled={isProcessing || isTranscribing}>
           <label className="flex items-center gap-2 cursor-pointer m-0">
             <Upload className="w-4 h-4 mr-2" />
             <span className="text-sm">Upload Video</span>
@@ -84,7 +86,7 @@ export function ActionButtons({
       {mode === "upload" && uploadedFile && (
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button variant="outline">
+            <Button variant="outline" disabled={isProcessing || isTranscribing} className="cursor-pointer">
               <Trash2 className="w-4 h-4 mr-2" /> Remove
             </Button>
           </AlertDialogTrigger>
@@ -104,12 +106,12 @@ export function ActionButtons({
       )}
 
       {/* Extra Actions */}
-      {hasVideo && !recording && !isProcessing && !isTranscribing && (
+      {hasVideo && !recording && (
         <>
-          <Button onClick={onSave} disabled={isProcessing}>
+          <Button variant="outline" onClick={onSave} disabled={isProcessing || isTranscribing} className="cursor-pointer">
             <Save className="w-4 h-4 mr-2" /> Save
           </Button>
-          <Button onClick={onTranscribe} disabled={isProcessing || isTranscribing}>
+          <Button onClick={onTranscribe} disabled={isProcessing || isTranscribing} className="cursor-pointer">
             <FileText className="w-4 h-4 mr-2" /> Transcribe
           </Button>
         </>
