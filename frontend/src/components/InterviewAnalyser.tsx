@@ -19,7 +19,6 @@ export function InterviewAnalyser() {
   const [customJobDescription, setCustomJobDescription] = useState<string | undefined>(undefined);
 
   const [question, setQuestion] = useState<Question | null>(null);
-  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const {
     recording,
     recordedChunks,
@@ -43,7 +42,7 @@ export function InterviewAnalyser() {
     handleFileUpload,
     switchMode,
     clearUploadedFile,
-  } = useRecorder(currentQuestion, selectedJobDescription, customJobDescription);
+  } = useRecorder(question, selectedJobDescription, customJobDescription);
 
   const refreshQuestion = useCallback(() => {
     setQuestion(getRandomQuestion());
@@ -119,7 +118,7 @@ export function InterviewAnalyser() {
               error={error}
             />
             {/* Transcription Editor */}
-            {showTranscription && (
+            {!showTranscription && (
               <TranscriptionEditor
                 transcription={transcription}
                 isProcessing={isProcessing}

@@ -118,7 +118,6 @@ export const useRecorder = (
     // Check if we have video data (either recorded or uploaded) and transcription
     const hasVideoData = (mode === "record" && recordedChunks.length > 0) || 
                         (mode === "upload" && uploadedFile);
-    
     if (!hasVideoData || !transcription || !currentQuestion) return;
 
     // Get video blob from either recorded chunks or uploaded file
@@ -128,6 +127,8 @@ export const useRecorder = (
     } else {
       videoBlob = new Blob(recordedChunks, { type: "video/webm" });
     }
+
+    console.log(videoBlob)
 
     try {
       setIsProcessing(true);
