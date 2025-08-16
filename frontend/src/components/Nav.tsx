@@ -6,7 +6,7 @@ export default function Nav() {
   const { isDark, toggleTheme } = useTheme();
 
   return (
-    <header className="sticky top-0 z-10 border-b border-border px-6 py-3 flex items-center space-x-4 justify-between transition-colors bg-background">
+    <header className="sticky top-0 z-10 border-b border-border px-6 py-3 flex items-center space-x-4 justify-between transition-colors">
       <div className="flex items-center space-x-3">
         <a href="/">
           <img

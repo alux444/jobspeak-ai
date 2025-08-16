@@ -4,13 +4,13 @@ import Nav from "./Nav";
 
 export default function Landing() {
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors">
+    <div className="min-h-screen flex flex-col relative overflow-hidden content-container">
       <div className="fixed top-0 left-0 right-0 z-50">
         <Nav />
       </div>
-      
+
       {/* Hero Section */}
-      <header className="min-h-screen flex flex-col justify-center items-center text-center flex-1 px-6 animate-fade-in">
+      <header className="min-h-screen flex flex-col justify-center items-center text-center flex-1 px-6 animate-fadeIn-delay opacity-0">
         <div className="max-w-5xl">
           <h1 className="text-6xl md:text-7xl font-bold mb-6 text-gray-900 dark:text-gray-100">
             Interview Response Analyser
@@ -20,7 +20,7 @@ export default function Landing() {
           </p>
           <a
             href="/interview-analyser"
-            className="bg-blue-500 text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:bg-primary/90 transition cursor-pointer"
+            className="bg-indigo-500 text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:bg-indigo-600 transition cursor-pointer"
           >
             Get Started
           </a>
@@ -35,7 +35,7 @@ export default function Landing() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto">
           {/* Feature 1 */}
-          <div className="bg-card p-8 rounded-2xl shadow-lg hover:shadow-xl transition flex flex-col items-center text-center animate-fade-in">
+          <div className="bg-card p-8 rounded-2xl shadow-lg hover:shadow-xl transition flex flex-col items-center text-center">
             <div className="bg-blue-100 dark:bg-blue-900 p-4 rounded-full mb-4">
               <Mic className="text-blue-600 dark:text-blue-300 w-8 h-8" />
             </div>
@@ -46,7 +46,7 @@ export default function Landing() {
           </div>
 
           {/* Feature 2 */}
-          <div className="bg-card p-8 rounded-2xl shadow-lg hover:shadow-xl transition flex flex-col items-center text-center animate-fade-in animation-delay-100">
+          <div className="bg-card p-8 rounded-2xl shadow-lg hover:shadow-xl transition flex flex-col items-center text-center">
             <div className="bg-green-100 dark:bg-green-900 p-4 rounded-full mb-4">
               <Video className="text-green-600 dark:text-green-300 w-8 h-8" />
             </div>
@@ -57,7 +57,7 @@ export default function Landing() {
           </div>
 
           {/* Feature 3 */}
-          <div className="bg-card p-8 rounded-2xl shadow-lg hover:shadow-xl transition flex flex-col items-center text-center animate-fade-in animation-delay-200">
+          <div className="bg-card p-8 rounded-2xl shadow-lg hover:shadow-xl transition flex flex-col items-center text-center">
             <div className="bg-yellow-100 dark:bg-yellow-900 p-4 rounded-full mb-4">
               <Text className="text-yellow-600 dark:text-yellow-300 w-8 h-8" />
             </div>
