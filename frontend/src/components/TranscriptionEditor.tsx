@@ -37,7 +37,7 @@ const TranscriptionEditor: React.FC<TranscriptionEditorProps> = ({
       </CardContent>
       <CardFooter className="flex gap-2 justify-end">
         <Button onClick={onTranscriptionSubmit} disabled={isProcessing}>
-          {isProcessing ? "Analyzing..." : "Proceed to Analysis"}
+          {isProcessing ? "Analysing..." : "Proceed to Analysis"}
         </Button>
         <Button variant="outline" onClick={onTranscriptionCancel} disabled={isProcessing}>
           Cancel
