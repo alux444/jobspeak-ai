@@ -7,7 +7,7 @@ export default function Footer() {
           href="https://alux444.github.io/"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-600 dark:text-blue-500 hover:underline"
+          className="text-blue-500 hover:underline"
         >
           Alex Liang
         </a>
@@ -16,7 +16,7 @@ export default function Footer() {
           href="https://tonylxm.com/"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-600 dark:text-blue-500 hover:underline"
+          className="text-blue-500 hover:underline"
         >
           Tony Lim
         </a>

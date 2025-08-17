@@ -3,6 +3,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 interface ThemeContextType {
   isDark: boolean;
   toggleTheme: () => void;
+  setIsDark: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -26,7 +27,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const toggleTheme = () => setIsDark((prev) => !prev);
 
-  return <ThemeContext.Provider value={{ isDark, toggleTheme }}>{children}</ThemeContext.Provider>;
+  return <ThemeContext.Provider value={{ isDark, toggleTheme, setIsDark }}>{children}</ThemeContext.Provider>;
 };
 
 export const useTheme = () => {
