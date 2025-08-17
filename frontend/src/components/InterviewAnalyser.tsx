@@ -56,7 +56,7 @@ export function InterviewAnalyser() {
       <div className="fixed top-0 left-0 right-0 z-50">
         <Nav />
       </div>
-      <div className="flex w-full h-full pt-[42px]">
+      <div className="flex w-full h-full pt-[56px]">
         {/* Left Sidebar */}
         <div className="w-2xl bg-sidebar-bg border-r border-sidebar-border shadow-soft flex flex-col">
           <div className="p-6 space-y-6 overflow-y-auto flex-1">

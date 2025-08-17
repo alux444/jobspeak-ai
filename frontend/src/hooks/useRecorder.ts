@@ -176,7 +176,6 @@ export const useRecorder = (
 
   const switchMode = (newMode: "record" | "upload") => {
     setMode(newMode);
-    resetState();
   };
 
   const clearUploadedFile = () => {
@@ -355,8 +354,6 @@ export const useRecorder = (
         transcription,
         error: undefined,
       });
-
-      setShowTranscription(true);
     } catch (err) {
       if ((err as any)?.name === "AbortError") {
         setError("Analysis cancelled");

@@ -23,7 +23,7 @@ export default function AnalysisResults({ analysisResults }: AnalysisResultsProp
             {/* Verdict */}
             <div className="flex justify-between items-center">
               <span className="font-medium mb-1 sm:mb-0 w-44">Verdict:</span>
-              <span className="font-extrabold text-xl text-yellow-500 dark:text-yellow-400">
+              <span className="font-extrabold text-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
                 {feedbackSummary.verdict}
               </span>
             </div>
@@ -41,7 +41,7 @@ export default function AnalysisResults({ analysisResults }: AnalysisResultsProp
             </div>
             <div className="flex justify-between items-center mt-4 border-t border-primary/30 pt-4">
               <span className="font-semibold text-lg w-44">Overall Score:</span>
-                <span className="font-extrabold text-2xl text-indigo-600 dark:text-indigo-400">
+              <span className="font-extrabold text-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
                 {feedbackSummary.overall_score} / 100
               </span>
             </div>
