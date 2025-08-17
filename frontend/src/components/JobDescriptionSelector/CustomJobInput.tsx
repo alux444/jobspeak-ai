@@ -7,10 +7,9 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 
 interface CustomJobInputProps {
   onSave: (description: string) => void;
-  onCancel: () => void;
 }
 
-export const CustomJobInput: React.FC<CustomJobInputProps> = ({ onSave, onCancel }) => {
+export const CustomJobInput: React.FC<CustomJobInputProps> = ({ onSave }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
@@ -20,6 +19,11 @@ export const CustomJobInput: React.FC<CustomJobInputProps> = ({ onSave, onCancel
       setTitle('');
       setDescription('');
     }
+  };
+
+  const handleCancel = () => {
+    setTitle('');
+    setDescription('');
   };
 
   const isValid = title.trim() && description.trim();
@@ -35,6 +39,7 @@ export const CustomJobInput: React.FC<CustomJobInputProps> = ({ onSave, onCancel
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g., Frontend Developer"
+            className="w-full text-sm"
           />
         </div>
         <div className="space-y-2">
@@ -45,19 +50,22 @@ export const CustomJobInput: React.FC<CustomJobInputProps> = ({ onSave, onCancel
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Describe the role, responsibilities, and requirements..."
             rows={5}
+            className="w-full text-sm"
           />
         </div>
       </CardContent>
-      <CardFooter className="flex gap-2 justify-end">
+      <CardFooter className="flex flex-col gap-2 sm:flex-row justify-end px-4 pb-4 sm:px-8">
         <Button
           onClick={handleSave}
           disabled={!isValid}
+          className="w-full sm:w-auto cursor-pointer"
         >
           Use Job Description
         </Button>
         <Button
           variant="outline"
-          onClick={onCancel}
+          onClick={handleCancel}
+          className="w-full sm:w-auto cursor-pointer"
         >
           Cancel
         </Button>

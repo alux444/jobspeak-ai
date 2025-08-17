@@ -37,7 +37,7 @@ export function ActionButtons({
   };
 
   return (
-    <div className="flex flex-wrap justify-center gap-3 border-t pt-4">
+    <div className="flex flex-wrap justify-center gap-3">
       {/* Record / Stop / Record Again */}
       {mode === "record" && !recording && hasVideo ? (
         <AlertDialog>

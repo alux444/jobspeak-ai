@@ -9,7 +9,7 @@ interface AnalysisProgressProps {
 
 const stepLabels: Record<string, string> = {
   audio: "Audio Analysis",
-  video: "Video Analysis (Facial Emotions)",
+  video: "Video Analysis",
   keyword: "Keyword Analysis",
   content: "Content Analysis",
   sentiment_model: "Sentiment Model",
@@ -37,47 +37,49 @@ const AnalysisProgress: React.FC<AnalysisProgressProps> = ({ analysisProgress })
   const getStepIcon = (status: string) => {
     switch (status) {
       case "done":
-        return <CheckCircle className="text-green-500" />;
+        return <CheckCircle className="text-green-500 w-5 h-5" />;
       case "in_progress":
-        return <Loader2 className="text-blue-500 animate-spin" />;
+        return <Loader2 className="text-blue-500 w-5 h-5 animate-spin" />;
       case "pending":
-        return <Circle className="text-gray-400" />;
+        return <Circle className="text-gray-400 w-5 h-5" />;
       case "error":
-        return <AlertCircle className="text-red-500" />;
+        return <AlertCircle className="text-red-500 w-5 h-5" />;
       default:
         return null;
     }
   };
 
   return (
-    <Card className="shadow-medium transition-colors">
+    <Card className="shadow-medium transition-colors w-full">
       <CardHeader className="flex items-center justify-between">
         <CardTitle>Analysis Progress</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Overall Progress */}
         <div className="space-y-1">
-          <Progress value={progressPercent} className="h-2 rounded-full" />
-          <div className="text-xs text-muted-foreground">{doneCount} / {steps.length} complete</div>
+          <Progress value={progressPercent} className="h-2 rounded-full w-full" />
+          <div className="text-xs text-muted-foreground">
+            {doneCount} / {steps.length} complete
+          </div>
         </div>
 
         {/* Step Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {steps.map((step) => {
             const status = analysisProgress[step];
             return (
               <Card
                 key={step}
-                className={
-                  `flex flex-row items-center space-x-2 p-3 rounded-md border shadow-none transition-colors
+                className={`
+                  flex flex-row items-center space-x-3 p-3 rounded-md border shadow-none transition-colors
                   ${status === "done" ? "bg-green-50 dark:bg-green-900 border-green-200 dark:border-green-700" : ""}
                   ${status === "in_progress" ? "bg-blue-50 dark:bg-blue-900 border-blue-200 dark:border-blue-700 animate-pulse" : ""}
                   ${status === "pending" ? "bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700" : ""}
-                  ${status === "error" ? "bg-red-50 dark:bg-red-900 border-red-200 dark:border-red-700" : ""}`
-                }
+                  ${status === "error" ? "bg-red-50 dark:bg-red-900 border-red-200 dark:border-red-700" : ""}
+                `}
               >
                 <div>{getStepIcon(status)}</div>
-                <div className="flex-1 text-sm font-medium text-gray-800 dark:text-gray-100">
+                <div className="flex-1 text-sm font-medium text-gray-800 dark:text-gray-100 break-words">
                   {stepLabels[step]}
                   {status === "in_progress" && <span className="ml-1">{ellipsis}</span>}
                 </div>

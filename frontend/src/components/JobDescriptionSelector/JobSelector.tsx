@@ -20,7 +20,7 @@ export const JobSelector: React.FC<JobSelectorProps> = ({
 
   return (
     <Card className="w-full transition-colors">
-      <CardHeader className="flex flex-row items-center gap-2">
+      <CardHeader className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
         <Select value={selectedJob} onValueChange={val => onJobChange(val as JobDescriptionCategory)}>
           <SelectTrigger className="w-full cursor-pointer">
             <SelectValue placeholder="Select job" />
@@ -38,18 +38,18 @@ export const JobSelector: React.FC<JobSelectorProps> = ({
           size="sm"
           onClick={onToggleDetails}
           title={showDetails ? "Hide details" : "Show details"}
-          className="ml-2 cursor-pointer"
+          className="ml-0 sm:ml-2 mt-2 sm:mt-0 cursor-pointer"
         >
           {showDetails ? '▼' : '▶'} Details
         </Button>
       </CardHeader>
 
       {selectedOption && (
-        <CardContent className="overflow-auto max-h-64">
-          <p className="text-muted-foreground mb-2">{selectedOption.description}</p>
+        <CardContent>
+          <p className="text-muted-foreground mb-2 text-md">{selectedOption.description}</p>
           {showDetails && (
             <div className="job-details mt-2">
-              <pre className="bg-muted p-2 rounded text-sm whitespace-pre-wrap break-words max-w-full overflow-auto">{selectedOption.fullDescription}</pre>
+              <pre className="bg-muted p-2 rounded text-xs whitespace-pre-wrap break-words max-w-full max-h-80 overflow-auto">{selectedOption.fullDescription}</pre>
             </div>
           )}
         </CardContent>

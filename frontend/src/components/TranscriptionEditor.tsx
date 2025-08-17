@@ -30,11 +30,15 @@ const TranscriptionEditor: React.FC<TranscriptionEditorProps> = ({
           onChange={onTranscriptionEdit}
           placeholder="Transcription will appear here..."
           rows={8}
-          className="resize-none"
+          className="resize-none w-full text-sm"
         />
       </CardContent>
-      <CardFooter className="flex gap-2 justify-end">
-        <Button onClick={onTranscriptionSubmit} disabled={isProcessing} className="cursor-pointer">
+      <CardFooter className="flex flex-col sm:flex-row gap-2 justify-end">
+        <Button
+          onClick={onTranscriptionSubmit}
+          disabled={isProcessing}
+          className="cursor-pointer w-full sm:w-auto"
+        >
           {isProcessing ? "Analysing..." : "Proceed to Analysis"}
         </Button>
       </CardFooter>

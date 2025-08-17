@@ -12,36 +12,38 @@ export default function AnalysisResults({ analysisResults }: AnalysisResultsProp
   const { feedbackSummary, agentResults, sentimentModelResponse } = analysisResults;
 
   return (
-    <div className="space-y-6">
-      {/* Overall Feedback */}
+    <div className="space-y-6 w-full">
       {/* Overall Feedback */}
       {feedbackSummary && (
-        <Card>
+        <Card className="w-full">
           <CardContent className="space-y-5">
             <h3 className="text-lg font-semibold">Overall Feedback</h3>
 
-            {/* Verdict */}
-            <div className="flex justify-between items-center">
-              <span className="font-medium mb-1 sm:mb-0 w-44">Verdict:</span>
-              <span className="font-extrabold text-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+            <div className="flex flex-col sm:flex-row sm:items-center">
+              <span className="font-medium mb-1 sm:mb-0 w-full sm:w-44">Verdict:</span>
+              <span className="sm:ml-4 font-extrabold text-xl sm:text-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
                 {feedbackSummary.verdict}
               </span>
             </div>
-            <div className="flex flex-col sm:flex-row items-start">
-              <span className="font-medium mb-1 sm:mb-0 w-44">Strengths:</span>
-              <span className="sm:ml-4 flex-1">{feedbackSummary.strengths}</span>
+
+            <div className="flex flex-col sm:flex-row sm:items-start">
+              <span className="font-medium mb-1 sm:mb-0 w-full sm:w-44">Strengths:</span>
+              <span className="sm:ml-4 flex-1 text-green-600 dark:text-green-300 ">{feedbackSummary.strengths}</span>
             </div>
-            <div className="flex flex-col sm:flex-row items-start">
-              <span className="font-medium mb-1 sm:mb-0 w-44">Weaknesses:</span>
-              <span className="sm:ml-4 flex-1">{feedbackSummary.weaknesses}</span>
+
+            <div className="flex flex-col sm:flex-row sm:items-start">
+              <span className="font-medium mb-1 sm:mb-0 w-full sm:w-44">Weaknesses:</span>
+              <span className="sm:ml-4 flex-1 text-red-600 dark:text-red-300">{feedbackSummary.weaknesses}</span>
             </div>
-            <div className="flex flex-col sm:flex-row items-start">
-              <span className="font-medium mb-1 sm:mb-0 w-44">Improvement Suggestion:</span>
+
+            <div className="flex flex-col sm:flex-row sm:items-start">
+              <span className="font-medium mb-1 sm:mb-0 w-full sm:w-44">Improvement Suggestion:</span>
               <span className="sm:ml-4 flex-1">{feedbackSummary.improvement_suggestion}</span>
             </div>
-            <div className="flex justify-between items-center mt-4 border-t border-primary/30 pt-4">
-              <span className="font-semibold text-lg w-44">Overall Score:</span>
-              <span className="font-extrabold text-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+
+            <div className="flex flex-col sm:flex-row sm:items-center mt-4 border-t border-primary/30 pt-4">
+              <span className="font-medium mb-1 sm:mb-0 w-full sm:w-44">Overall Score:</span>
+              <span className="sm:ml-4 font-extrabold text-xl sm:text-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
                 {feedbackSummary.overall_score} / 100
               </span>
             </div>
@@ -51,16 +53,13 @@ export default function AnalysisResults({ analysisResults }: AnalysisResultsProp
 
       {/* Agent Results */}
       {agentResults && (
-        <Card>
+        <Card className="w-full">
           <CardContent className="space-y-4">
             <h4 className="text-lg font-semibold">Raw Agent Data</h4>
 
             {/* Sentiment AI Model */}
             {sentimentModelResponse && (
-              <RawData
-                title="Emotion Analysis (AI Model)"
-                data={sentimentModelResponse}
-              />
+              <RawData title="Emotion Analysis (AI Model)" data={sentimentModelResponse} />
             )}
 
             {/* Audio Analysis */}
@@ -92,4 +91,4 @@ export default function AnalysisResults({ analysisResults }: AnalysisResultsProp
       )}
     </div>
   );
-};
+}

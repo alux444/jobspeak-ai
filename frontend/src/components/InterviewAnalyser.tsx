@@ -52,13 +52,16 @@ export function InterviewAnalyser() {
   }, [refreshQuestion]);
 
   return (
-    <div className="flex h-screen bg-background transition-colors">
+    <div className="flex flex-col h-screen bg-background transition-colors">
+      {/* Navbar */}
       <div className="fixed top-0 left-0 right-0 z-50">
         <Nav />
       </div>
-      <div className="flex w-full h-full pt-[56px]">
-        {/* Left Sidebar */}
-        <div className="w-2xl bg-sidebar-bg border-r border-sidebar-border shadow-soft flex flex-col">
+
+      {/* Main Content */}
+      <div className="flex flex-col md:flex-row pt-[56px] h-full overflow-hidden">
+        {/* Left Panel */}
+        <div className="w-full md:w-5/12 bg-sidebar-bg border-b md:border-b-0 md:border-r border-sidebar-border shadow-soft flex flex-col">
           <div className="p-6 space-y-6 overflow-y-auto flex-1">
             {/* Interview Question Section */}
             <div className="space-y-4">
@@ -89,28 +92,27 @@ export function InterviewAnalyser() {
             />
           </div>
         </div>
+
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col">
-          <div className="p-6 space-y-6 overflow-auto flex-1">
-            {/* Video Preview / Playback / Placeholder */}
-            <div className="space-y-4">
-              <InterviewRecorder
-                mode={mode}
-                stream={stream}
-                recordedChunks={recordedChunks}
-                uploadedFile={uploadedFile}
-                recording={recording}
-                isProcessing={isProcessing}
-                isTranscribing={isTranscribing}
-                onSwitchMode={switchMode}
-                onStartRecording={startRecording}
-                onStopRecording={stopRecording}
-                onFileUpload={handleFileUpload}
-                onClearUploadedFile={clearUploadedFile}
-                onTranscribe={transcribeRecording}
-                onSave={saveRecording}
-              />
-            </div>
+        <div className="w-full md:flex-1 flex flex-col overflow-auto">
+          <div className="p-4 sm:p-6 space-y-6 flex-1">
+            {/* Video Preview / Recorder */}
+            <InterviewRecorder
+              mode={mode}
+              stream={stream}
+              recordedChunks={recordedChunks}
+              uploadedFile={uploadedFile}
+              recording={recording}
+              isProcessing={isProcessing}
+              isTranscribing={isTranscribing}
+              onSwitchMode={switchMode}
+              onStartRecording={startRecording}
+              onStopRecording={stopRecording}
+              onFileUpload={handleFileUpload}
+              onClearUploadedFile={clearUploadedFile}
+              onTranscribe={transcribeRecording}
+              onSave={saveRecording}
+            />
 
             {/* Error Message */}
             {error && (
@@ -130,13 +132,16 @@ export function InterviewAnalyser() {
                 onTranscriptionSubmit={handleTranscriptionSubmit}
               />
             )}
+
             {/* Analysis Progress */}
             {isProcessing && <AnalysisProgress analysisProgress={analysisProgress} />}
+
             {/* Analysis Results */}
             <AnalysisResults analysisResults={analysisResults} />
           </div>
         </div>
       </div>
     </div>
+
   );
 }

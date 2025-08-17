@@ -38,11 +38,6 @@ export const JobDescriptionSelector: React.FC<JobDescriptionSelectorProps> = ({
     setIsCustomMode(false);
   };
 
-  const handleCustomCancel = () => {
-    setIsCustomMode(false);
-    handleJobDescriptionChange(selectedJobDescription); // Keep current selection
-  };
-
   return (
     <div>
       <div className="items-center mb-4 transition-colors">
@@ -56,7 +51,6 @@ export const JobDescriptionSelector: React.FC<JobDescriptionSelectorProps> = ({
       {isCustomMode ? (
         <CustomJobInput
           onSave={handleCustomSave}
-          onCancel={handleCustomCancel}
         />
       ) : (
         <JobSelector
