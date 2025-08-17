@@ -17,7 +17,7 @@ Before starting the services, ensure you're authenticated with Azure CLI:
 
 >Note: For Windows users, you may need to run the Azure CLI commands to login within the Docker container to ensure the backend can access Azure services.
 ```bash
-docker exec -it p4p-backend-1 /bin/sh
+docker exec -it p4p-backend-1 //bin/sh
 # Then sign in to Azure with the commands below
 ```
 
