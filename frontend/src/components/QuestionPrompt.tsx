@@ -25,7 +25,7 @@ const QuestionPrompt: React.FC<QuestionPromptProps> = ({ question }) => {
   return (
     <Card
       key={question.id}
-      className="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 text-white"
+      className="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 text-white select-none border-none"
       aria-label="Interview question"
     >
       <CardContent className="p-4 flex flex-col gap-3 animate-fadeIn">

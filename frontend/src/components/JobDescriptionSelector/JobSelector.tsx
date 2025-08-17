@@ -22,12 +22,12 @@ export const JobSelector: React.FC<JobSelectorProps> = ({
     <Card className="w-full transition-colors">
       <CardHeader className="flex flex-row items-center gap-2">
         <Select value={selectedJob} onValueChange={val => onJobChange(val as JobDescriptionCategory)}>
-          <SelectTrigger className="w-full">
+          <SelectTrigger className="w-full cursor-pointer">
             <SelectValue placeholder="Select job" />
           </SelectTrigger>
           <SelectContent>
             {jobDescriptionOptions.map(option => (
-              <SelectItem key={option.value} value={option.value}>
+              <SelectItem key={option.value} value={option.value} className="cursor-pointer">
                 {option.label}
               </SelectItem>
             ))}
@@ -38,7 +38,7 @@ export const JobSelector: React.FC<JobSelectorProps> = ({
           size="sm"
           onClick={onToggleDetails}
           title={showDetails ? "Hide details" : "Show details"}
-          className="ml-2"
+          className="ml-2 cursor-pointer"
         >
           {showDetails ? '▼' : '▶'} Details
         </Button>
