@@ -176,6 +176,7 @@ export const useRecorder = (
 
   const switchMode = (newMode: "record" | "upload") => {
     setMode(newMode);
+    setShowTranscription(false);
   };
 
   const clearUploadedFile = () => {
@@ -192,9 +193,10 @@ export const useRecorder = (
     const controller = new AbortController();
     transcriptionAbortControllerRef.current = controller;
 
+    resetState();
+
     try {
       setIsTranscribing(true);
-      setError(null);
       const transcriptionText = await transcribeRecordingApi(videoBlob);
       if (controller.signal.aborted) return;
       setTranscription(transcriptionText);
@@ -236,7 +238,6 @@ export const useRecorder = (
 
     setShowTranscription(false);
     setIsProcessing(true);
-    setError(null);
 
     try {
       // Audio & Video
