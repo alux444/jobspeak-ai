@@ -38,7 +38,6 @@ export function InterviewAnalyser() {
     transcribeRecording,
     handleTranscriptionEdit,
     handleTranscriptionSubmit,
-    handleTranscriptionCancel,
     handleFileUpload,
     switchMode,
     clearUploadedFile,
@@ -96,12 +95,14 @@ export function InterviewAnalyser() {
             {/* Video Preview / Playback / Placeholder */}
             <div className="space-y-4">
               <InterviewRecorder
+                mode={mode}
                 stream={stream}
                 recordedChunks={recordedChunks}
                 uploadedFile={uploadedFile}
                 recording={recording}
                 isProcessing={isProcessing}
                 isTranscribing={isTranscribing}
+                onSwitchMode={switchMode}
                 onStartRecording={startRecording}
                 onStopRecording={stopRecording}
                 onFileUpload={handleFileUpload}
@@ -127,7 +128,6 @@ export function InterviewAnalyser() {
                 isProcessing={isProcessing}
                 onTranscriptionEdit={handleTranscriptionEdit}
                 onTranscriptionSubmit={handleTranscriptionSubmit}
-                onTranscriptionCancel={handleTranscriptionCancel}
               />
             )}
             {/* Analysis Progress */}

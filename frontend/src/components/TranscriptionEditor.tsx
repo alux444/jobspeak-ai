@@ -8,7 +8,6 @@ interface TranscriptionEditorProps {
   isProcessing: boolean;
   onTranscriptionEdit: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onTranscriptionSubmit: () => void;
-  onTranscriptionCancel: () => void;
 }
 
 const TranscriptionEditor: React.FC<TranscriptionEditorProps> = ({
@@ -16,7 +15,6 @@ const TranscriptionEditor: React.FC<TranscriptionEditorProps> = ({
   isProcessing,
   onTranscriptionEdit,
   onTranscriptionSubmit,
-  onTranscriptionCancel,
 }) => {
   return (
     <Card className="mx-auto transition-colors">
@@ -36,11 +34,8 @@ const TranscriptionEditor: React.FC<TranscriptionEditorProps> = ({
         />
       </CardContent>
       <CardFooter className="flex gap-2 justify-end">
-        <Button onClick={onTranscriptionSubmit} disabled={isProcessing}>
+        <Button onClick={onTranscriptionSubmit} disabled={isProcessing} className="cursor-pointer">
           {isProcessing ? "Analysing..." : "Proceed to Analysis"}
-        </Button>
-        <Button variant="outline" onClick={onTranscriptionCancel} disabled={isProcessing}>
-          Cancel
         </Button>
       </CardFooter>
     </Card>

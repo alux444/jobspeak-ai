@@ -1,15 +1,16 @@
 import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
-import { useState } from "react";
 import { ActionButtons } from "./ActionButtons";
 import { VideoDisplay } from "./VideoDisplay";
 
 interface InterviewRecorderProps {
+  mode: "record" | "upload";
   stream?: MediaStream | null;
   recordedChunks: Blob[];
   uploadedFile: File | null;
   recording: boolean;
   isProcessing: boolean;
   isTranscribing: boolean;
+  onSwitchMode: (mode: "record" | "upload") => void;
   onStartRecording: () => void;
   onStopRecording: () => void;
   onFileUpload: (file: File) => void;
@@ -19,15 +20,12 @@ interface InterviewRecorderProps {
 }
 
 export default function InterviewRecorder(props: InterviewRecorderProps) {
-  const [mode, setMode] = useState<"record" | "upload">("record");
-  const { recordedChunks, uploadedFile, recording } = props;
-
-  const hasVideo = (mode === "record" && recordedChunks.length > 0 && !recording) || (mode === "upload" && !!uploadedFile);
+  const hasVideo = (props.mode === "record" && props.recordedChunks.length > 0 && !props.recording) || (props.mode === "upload" && !!props.uploadedFile);
 
   return (
     <div className="space-y-4 transition-colors">
       {/* Mode Tabs */}
-      <Tabs value={mode} onValueChange={(val: string) => setMode(val as "record" | "upload")}>
+      <Tabs value={props.mode} onValueChange={value => props.onSwitchMode(value as "record" | "upload")}>
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="record">Record</TabsTrigger>
           <TabsTrigger value="upload">Upload</TabsTrigger>
@@ -36,19 +34,19 @@ export default function InterviewRecorder(props: InterviewRecorderProps) {
 
       {/* Video Display */}
       <VideoDisplay
-        mode={mode}
-        recording={recording}
+        mode={props.mode}
+        recording={props.recording}
         stream={props.stream}
-        recordedChunks={recordedChunks}
-        uploadedFile={uploadedFile}
+        recordedChunks={props.recordedChunks}
+        uploadedFile={props.uploadedFile}
       />
 
       {/* Buttons */}
       <ActionButtons
-        mode={mode}
-        recording={recording}
+        mode={props.mode}
+        recording={props.recording}
         hasVideo={hasVideo}
-        uploadedFile={uploadedFile}
+        uploadedFile={props.uploadedFile}
         isProcessing={props.isProcessing}
         isTranscribing={props.isTranscribing}
         onStartRecording={props.onStartRecording}
