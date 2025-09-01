@@ -6,6 +6,7 @@ import { responseSentimentRouter } from "./routes/response-sentiment";
 import { keywordAnalysisRouter } from "./routes/keyword-analysis";
 import { feedbackSummariserRouter } from "./routes/feedback-summariser";
 import { videoAnalysisRouter } from "./routes/video-analysis";
+import { jobSummaryConversionRouter } from "./routes/job-summary-conversion";
 
 const app = express();
 const port = 3000;
@@ -20,6 +21,7 @@ app.use("/response-sentiment", responseSentimentRouter);
 app.use("/keyword-analysis", keywordAnalysisRouter);
 app.use("/video-analysis", videoAnalysisRouter);
 app.use("/feedback-summariser", feedbackSummariserRouter);
+app.use("/job-summary-conversion", jobSummaryConversionRouter);
 
 app.get("/", (_req, res) => {
   res.send("Hello, Worlds!");
