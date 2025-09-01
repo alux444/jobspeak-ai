@@ -17,6 +17,21 @@ const getKeywords = async (jobDescription: JobDescription): Promise<string> => {
   return response;
 };
 
+const convertCustomJobDescription = async (customJobDescription: string): Promise<JobDescription> => {
+  const agentId: AgentId = "job-summary-conversion";
+  console.log("Converting custom job description:", customJobDescription);
+  const response = await callAgent(agentId, customJobDescription);
+  console.log("Job summary conversion response:", response);
+  
+  try {
+    const parsedJobDescription: JobDescription = JSON.parse(response);
+    return parsedJobDescription;
+  } catch (error) {
+    console.error("Failed to parse job description from agent response:", error);
+    throw new Error("Job summary conversion agent did not return valid JSON");
+  }
+};
+
 const callKeywordAnalysisAgent = async (keywords: string, qAndA: QuestionAndAnswer): Promise<string> => {
   const agentId: AgentId = "keyword-analysis";
   const inputString = getKeywordAnalysisString(keywords + getBehaviouralKeywords(), qAndA);
@@ -43,13 +58,24 @@ keywordAnalysisRouter.post("/", express.json(), async (req, res) => {
       return;
     }
 
+    // Validate custom job description if using custom category
+    if (jobDescriptionCategory === "custom" && (!customJobDescription || customJobDescription.trim() === "")) {
+      res.status(400).send("Custom job description is required when using 'custom' job category");
+      return;
+    }
+
     let jobDescription: JobDescription;
     
     if (jobDescriptionCategory === "custom" && customJobDescription) {
-      // TODO: Implement custom job description processing
-      // For now, fall back to default intern job description
-      console.log("Custom job description received but not yet implemented:", customJobDescription);
-      jobDescription = getJobDescriptionByCategory("intern");
+      // Convert custom job description using the job-summary-conversion agent
+      try {
+        jobDescription = await convertCustomJobDescription(customJobDescription);
+        console.log("Successfully converted custom job description:", jobDescription);
+      } catch (error) {
+        console.error("Error converting custom job description:", error);
+        res.status(500).send("Failed to process custom job description");
+        return;
+      }
     } else {
       // Handle predefined job descriptions
       jobDescription = getJobDescriptionByCategory(jobDescriptionCategory);
