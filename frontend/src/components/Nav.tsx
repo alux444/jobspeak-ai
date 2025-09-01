@@ -12,7 +12,7 @@ export default function Nav() {
           />
         </a>
         <h1 className="text-xl font-bold">
-          Interview Response Analyser
+          JobSpeak AI
         </h1>
       </div>
       <DarkModeToggle />

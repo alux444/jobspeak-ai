@@ -1,6 +1,6 @@
-# Engineering Honours Research Project
+# JobSpeak AI
 
-## AI-driven Job Interview Feedback System
+## Engineering Honours Research Project - AI-driven Job Interview Feedback System
 
 This project is designed to give users personalised detailed feedback on their behavioural interview performance. It uses a combination of multimodal AI models to analyse user responses, including audio, video, and text transcription analysis.
 
