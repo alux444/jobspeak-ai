@@ -35,7 +35,8 @@ export const JobDescriptionSelector: React.FC<JobDescriptionSelectorProps> = ({
 
   const handleCustomSave = (description: string) => {
     handleJobDescriptionChange('custom', description);
-    setIsCustomMode(false);
+    // Don't switch back to select mode after saving
+    // setIsCustomMode(false);
   };
 
   return (

@@ -145,6 +145,32 @@ export async function analyseKeyword(
   return json;
 }
 
+export interface JobDescriptionResult {
+  title: string;
+  description: string;
+  responsibilities: string[];
+  qualifications: string[];
+}
+
+export async function convertJobSummary(
+  customJobDescription: string
+): Promise<{ result: JobDescriptionResult }> {
+  const response = await fetch(`${API_BASE_URLS.backend}/job-summary-conversion`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ customJobDescription }),
+  });
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(
+      `Job summary conversion failed: ${response.status} ${response.statusText} - ${errorText}`
+    );
+  }
+  const json = await response.json();
+  console.log("Job Summary Conversion Result:", json);
+  return json;
+}
+
 export async function analyseContent(
   question: string,
   answer: string

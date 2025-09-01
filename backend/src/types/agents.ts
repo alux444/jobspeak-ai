@@ -8,6 +8,7 @@ const agentIds = {
   "keyword-analysis": process.env.AZURE_AI_FOUNDRY_KEYWORD_ANALYSIS_AGENT_ID || "",
   "video-analysis": process.env.AZURE_AI_FOUNDRY_VIDEO_ANALYSIS_AGENT_ID || "",
   "feedback-summariser": process.env.AZURE_AI_FOUNDRY_FEEDBACK_SUMMARISER_AGENT_ID || "",
+  "job-summary-conversion": process.env.AZURE_AI_FOUNDRY_JOB_SUMMARY_CONVERSION_AGENT_ID || "",
 };
 
 export type AgentId = keyof typeof agentIds;

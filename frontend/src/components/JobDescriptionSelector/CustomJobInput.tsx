@@ -1,47 +1,47 @@
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { CheckCircle } from "lucide-react";
 
 interface CustomJobInputProps {
   onSave: (description: string) => void;
 }
 
 export const CustomJobInput: React.FC<CustomJobInputProps> = ({ onSave }) => {
-  const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleSave = () => {
-    if (title.trim() && description.trim()) {
+    if (description.trim()) {
       onSave(description.trim());
-      setTitle('');
       setDescription('');
+      setShowSuccess(true);
+      // Hide success message after 3 seconds
+      setTimeout(() => setShowSuccess(false), 3000);
     }
   };
 
   const handleCancel = () => {
-    setTitle('');
     setDescription('');
+    setShowSuccess(false);
   };
 
-  const isValid = title.trim() && description.trim();
+  const isValid = description.trim().length > 0;
 
   return (
     <Card className="mx-auto transition-colors">
       <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="job-title">Job Title</Label>
-          <Input
-            id="job-title"
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="e.g., Frontend Developer"
-            className="w-full text-sm"
-          />
-        </div>
+        {showSuccess && (
+          <Alert className="border-green-200 bg-green-50 text-green-800">
+            <CheckCircle className="h-4 w-4" />
+            <AlertDescription>
+              Job description saved successfully! You can now proceed with your interview.
+            </AlertDescription>
+          </Alert>
+        )}
         <div className="space-y-2">
           <Label htmlFor="job-description">Job Description</Label>
           <Textarea
@@ -49,7 +49,7 @@ export const CustomJobInput: React.FC<CustomJobInputProps> = ({ onSave }) => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Describe the role, responsibilities, and requirements..."
-            rows={5}
+            rows={6}
             className="w-full text-sm"
           />
         </div>
