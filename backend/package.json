@@ -1,7 +1,7 @@
 {
-  "name": "backend",
+  "name": "jobspeak-ai-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "JobSpeak AI - Backend API for interview feedback analysis",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
