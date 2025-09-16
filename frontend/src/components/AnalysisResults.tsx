@@ -1,6 +1,9 @@
 import type { AnalysisResponse } from "../api/ApiService";
 import { Card, CardContent } from "./ui/card";
+import { Button } from "./ui/button";
+import { Download } from "lucide-react";
 import RawData from "./RawData";
+import { downloadAnalysisAsText } from "../utils/downloadAnalysis";
 
 interface AnalysisResultsProps {
   analysisResults: AnalysisResponse | null;
@@ -11,8 +14,25 @@ export default function AnalysisResults({ analysisResults }: AnalysisResultsProp
 
   const { feedbackSummary, agentResults, sentimentModelResponse } = analysisResults;
 
+  const handleDownload = () => {
+    downloadAnalysisAsText(analysisResults);
+  };
+
   return (
     <div className="space-y-6 w-full">
+      {/* Download Button */}
+      <div className="flex justify-end">
+        <Button
+          onClick={handleDownload}
+          variant="outline"
+          size="sm"
+          className="flex items-center gap-2"
+        >
+          <Download className="h-4 w-4" />
+          Download Analysis Report
+        </Button>
+      </div>
+
       {/* Overall Feedback */}
       {feedbackSummary && (
         <Card className="w-full">
