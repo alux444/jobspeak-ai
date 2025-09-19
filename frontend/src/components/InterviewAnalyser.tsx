@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { AlertCircle, RefreshCw } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import QuestionPrompt from './QuestionPrompt';
 import { getRandomQuestion, type Question } from '@/data/questions';
 import type { JobDescriptionCategory } from '@/types/jobDescriptions';
@@ -19,6 +20,7 @@ export function InterviewAnalyser() {
   const [customJobDescription, setCustomJobDescription] = useState<string | undefined>(undefined);
 
   const [question, setQuestion] = useState<Question | null>(null);
+  const [showQuestion, setShowQuestion] = useState(false);
   const {
     recording,
     recordedChunks,
@@ -45,6 +47,7 @@ export function InterviewAnalyser() {
 
   const refreshQuestion = useCallback(() => {
     setQuestion(getRandomQuestion());
+    setShowQuestion(false);
   }, []);
 
   useEffect(() => {
@@ -52,7 +55,7 @@ export function InterviewAnalyser() {
   }, [refreshQuestion]);
 
   return (
-    <div className="flex flex-col h-screen bg-background">
+  <div className="flex flex-col h-screen bg-background">
       {/* Navbar */}
       <div className="fixed top-0 left-0 right-0 z-50">
         <Nav />
@@ -69,17 +72,30 @@ export function InterviewAnalyser() {
                 <h2 className="text-lg font-semibold text-foreground select-none">
                   Interview Question
                 </h2>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={refreshQuestion}
-                  className="hover:bg-primary/10 cursor-pointer"
-                  aria-label="Refresh question"
-                >
-                  <RefreshCw className="h-4 w-4" />
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowQuestion((prev) => !prev)}
+                    className="hover:bg-primary/10 cursor-pointer"
+                    aria-label={showQuestion ? "Hide question" : "Show question"}
+                    disabled={showQuestion}
+                  >
+                    {showQuestion ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
+                  </Button>
+                    <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={refreshQuestion}
+                    className="hover:bg-primary/10 cursor-pointer"
+                    aria-label="Refresh question"
+                    disabled={!showQuestion}
+                    >
+                    <RefreshCw className="h-4 w-4" />
+                    </Button>
+                </div>
               </div>
-              <QuestionPrompt question={question} />
+              <QuestionPrompt question={showQuestion ? question : null} />
             </div>
 
             <Separator />
