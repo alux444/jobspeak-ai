@@ -16,7 +16,7 @@ import TargetRole from './TargetRole';
 import { Alert, AlertTitle, AlertDescription } from './ui/alert';
 
 export function InterviewAnalyser() {
-  const [selectedJobDescription, setSelectedJobDescription] = useState<JobDescriptionCategory>('java-developer');
+  const [selectedJobDescription, setSelectedJobDescription] = useState<JobDescriptionCategory>('intern');
   const [customJobDescription, setCustomJobDescription] = useState<string | undefined>(undefined);
 
   const [question, setQuestion] = useState<Question | null>(null);
