@@ -13,6 +13,13 @@
   --primary-color: #646cff;
   --primary-color-hover: #4851f6;
 
+html, body, #root {
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+* {
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
   --border-radius: 8px;
 
   font-synthesis: none;

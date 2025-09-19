@@ -41,7 +41,7 @@ export function VideoDisplay({ mode, recording, stream, recordedChunks, uploaded
   const hasVideo = (mode === "record" && recordedChunks.length > 0 && !recording) || (mode === "upload" && uploadedFile);
 
   return (
-    <div className="w-full aspect-video bg-muted rounded-lg overflow-hidden flex items-center justify-center relative transition-colors">
+    <div className="w-full aspect-video bg-muted rounded-lg overflow-hidden flex items-center justify-center relative">
       {mode === "record" && recording && stream ? (
         <video
           ref={videoRef}

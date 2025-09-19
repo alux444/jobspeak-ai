@@ -4,7 +4,7 @@ import AnimatedBackground from "./AnimatedBackground";
 
 export default function Landing() {
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden transition-colors text-gray-100">
+    <div className="min-h-screen flex flex-col relative overflow-hidden text-gray-100">
       <div>
         <AnimatedBackground />
         <div className="absolute inset-0 bg-black/30 -z-10 pointer-events-none" />
@@ -13,10 +13,10 @@ export default function Landing() {
       {/* Hero Section */}
       <header className="min-h-screen flex flex-col justify-center items-center text-center flex-1 px-6 animate-fadeIn-delay opacity-0">
         <div className="max-w-5xl">
-          <h1 className="text-6xl md:text-7xl font-bold mb-6 transition-colors drop-shadow-md">
+          <h1 className="text-6xl md:text-7xl font-bold mb-6 drop-shadow-md">
             JobSpeak AI
           </h1>
-          <p className="text-gray-300 text-xl md:text-2xl mb-12 transition-colors">
+          <p className="text-gray-300 text-xl md:text-2xl mb-12">
             Personalised AI-powered feedback on your behavioral interview responses
           </p>
           <a

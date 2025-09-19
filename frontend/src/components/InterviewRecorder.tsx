@@ -23,7 +23,7 @@ export default function InterviewRecorder(props: InterviewRecorderProps) {
   const hasVideo = (props.mode === "record" && props.recordedChunks.length > 0 && !props.recording) || (props.mode === "upload" && !!props.uploadedFile);
 
   return (
-    <div className="space-y-4 transition-colors">
+    <div className="space-y-4">
       {/* Mode Tabs */}
       <Tabs value={props.mode} onValueChange={value => props.onSwitchMode(value as "record" | "upload")}>
         <TabsList className="grid w-full grid-cols-2">

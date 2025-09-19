@@ -17,7 +17,7 @@ const TranscriptionEditor: React.FC<TranscriptionEditorProps> = ({
   onTranscriptionSubmit,
 }) => {
   return (
-    <Card className="mx-auto transition-colors">
+    <Card className="mx-auto">
       <CardHeader>
         <h3 className="text-lg font-semibold">Review and Edit Transcription</h3>
         <p className="text-sm text-muted-foreground">

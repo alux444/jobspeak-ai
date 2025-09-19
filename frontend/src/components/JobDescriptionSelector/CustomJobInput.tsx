@@ -32,7 +32,7 @@ export const CustomJobInput: React.FC<CustomJobInputProps> = ({ onSave }) => {
   const isValid = description.trim().length > 0;
 
   return (
-    <Card className="mx-auto transition-colors">
+    <Card className="mx-auto">
       <CardContent className="space-y-4">
         {showSuccess && (
           <Alert className="border-green-200 bg-green-50 text-green-800">

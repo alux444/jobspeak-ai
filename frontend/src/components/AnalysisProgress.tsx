@@ -50,7 +50,7 @@ const AnalysisProgress: React.FC<AnalysisProgressProps> = ({ analysisProgress })
   };
 
   return (
-    <Card className="shadow-medium transition-colors w-full">
+    <Card className="shadow-medium w-full">
       <CardHeader className="flex items-center justify-between">
         <CardTitle>Analysis Progress</CardTitle>
       </CardHeader>
@@ -71,7 +71,7 @@ const AnalysisProgress: React.FC<AnalysisProgressProps> = ({ analysisProgress })
               <Card
                 key={step}
                 className={`
-                  flex flex-row items-center space-x-3 p-3 rounded-md border shadow-none transition-colors
+                  flex flex-row items-center space-x-3 p-3 rounded-md border shadow-none 
                   ${status === "done" ? "bg-green-50 dark:bg-green-900 border-green-200 dark:border-green-700" : ""}
                   ${status === "in_progress" ? "bg-blue-50 dark:bg-blue-900 border-blue-200 dark:border-blue-700 animate-pulse" : ""}
                   ${status === "pending" ? "bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700" : ""}
