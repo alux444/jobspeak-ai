@@ -4,12 +4,12 @@
 
 This project is designed to give users personalised and actionable feedback on their video interview performance. It uses a combination of multimodal AI and ML models to analyse user responses, including audio, video, and text transcription analysis.
 
-More information can be found in the [project proposal](https://part4project.foe.auckland.ac.nz/home/project/detail/5673/) (scoped down to focus on video interviews).
-
 <img width="1920" height="869" alt="JobSpeak AI - Google Chrome 10_09_2025 10_12_24 am" src="https://github.com/user-attachments/assets/83b6cf29-d50d-47fe-8dc6-becce6780736" />
 
 ## System Design & Architecture
 <img width="1089" height="465" alt="system-design-june" src="https://github.com/user-attachments/assets/9c13d927-2ee4-4a7c-860e-aaad2ca411f8" />
+
+More information can be found in the [project proposal](https://part4project.foe.auckland.ac.nz/home/project/detail/5673/) (scoped down to focus on video interviews).
 
 ## Developers
 
