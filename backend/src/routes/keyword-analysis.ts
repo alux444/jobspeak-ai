@@ -45,7 +45,7 @@ keywordAnalysisRouter.post("/", express.json(), async (req, res) => {
   try {
     const { 
       questionAndAnswer, 
-      jobDescriptionCategory = "intern",
+      jobDescriptionCategory = "general",
       customJobDescription
     }: { 
       questionAndAnswer: QuestionAndAnswer;
