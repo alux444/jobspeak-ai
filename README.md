@@ -1,10 +1,10 @@
 # JobSpeak AI
 
-## AI-driven Job Interview Feedback System
+## AI-Driven Job Interview Feedback System
 
-This project is designed to give users personalised detailed feedback on their behavioural interview performance. It uses a combination of multimodal AI models to analyse user responses, including audio, video, and text transcription analysis.
+This project is designed to give users personalised and actionable feedback on their video interview performance. It uses a combination of multimodal AI and ML models to analyse user responses, including audio, video, and text transcription analysis.
 
-More information can be found in the [project proposal](https://part4project.foe.auckland.ac.nz/home/project/detail/5673/).
+More information can be found in the [project proposal](https://part4project.foe.auckland.ac.nz/home/project/detail/5673/) (scoped down to focus on video interviews).
 
 <img width="1920" height="869" alt="JobSpeak AI - Google Chrome 10_09_2025 10_12_24 am" src="https://github.com/user-attachments/assets/83b6cf29-d50d-47fe-8dc6-becce6780736" />
 
