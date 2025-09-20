@@ -3,6 +3,16 @@ import { internJobDescriptions } from "./intern";
 import { javaJobDescriptions } from "./java-developer";
 import { businessAnalystJobDescriptions } from "./business-analyst";
 import { dataAnalystJobDescriptions } from "./data-analyst";
+import { softwareEngineerJobDescriptions } from "./software-engineer";
+import { civilEngineerJobDescriptions } from "./civil-engineer";
+import { mechatronicsEngineerJobDescriptions } from "./mechatronics-engineer";
+import { cybersecurityAnalystJobDescriptions } from "./cybersecurity-analyst";
+import { mlEngineerJobDescriptions } from "./ml-engineer";
+import { cloudArchitectJobDescriptions } from "./cloud-architect";
+import { structuralEngineerJobDescriptions } from "./structural-engineer";
+import { electricalEngineerJobDescriptions } from "./electrical-engineer";
+import { aiResearcherJobDescriptions } from "./ai-researcher";
+import { firmwareEngineerJobDescriptions } from "./firmware-engineer";
 
 export type JobDescriptionCategory =
   | "custom"
@@ -36,7 +46,7 @@ const jobDescriptionCategories: Record<
   },
   "software-engineer": {
     label: "Full-Stack Software Engineer",
-    descriptions: [],
+    descriptions: softwareEngineerJobDescriptions,
   },
   "java-developer": {
     label: "Java Developer",
@@ -52,39 +62,39 @@ const jobDescriptionCategories: Record<
   },
   "civil-engineer": {
     label: "Civil Engineer",
-    descriptions: [],
+    descriptions: civilEngineerJobDescriptions,
   },
   "mechatronics-engineer": {
     label: "Mechatronics Engineer",
-    descriptions: [],
+    descriptions: mechatronicsEngineerJobDescriptions,
   },
   "cybersecurity-analyst": {
     label: "Cybersecurity Analyst",
-    descriptions: [],
+    descriptions: cybersecurityAnalystJobDescriptions,
   },
   "ml-engineer": {
     label: "Machine Learning Engineer",
-    descriptions: [],
+    descriptions: mlEngineerJobDescriptions,
   },
   "cloud-architect": {
     label: "Cloud Architect",
-    descriptions: [],
+    descriptions: cloudArchitectJobDescriptions,
   },
   "structural-engineer": {
     label: "Structural Engineer",
-    descriptions: [],
+    descriptions: structuralEngineerJobDescriptions,
   },
   "electrical-engineer": {
     label: "Electrical Engineer",
-    descriptions: [],
+    descriptions: electricalEngineerJobDescriptions,
   },
   "ai-researcher": {
     label: "AI Researcher",
-    descriptions: [],
+    descriptions: aiResearcherJobDescriptions,
   },
   "firmware-engineer": {
     label: "Firmware Engineer",
-    descriptions: [],
+    descriptions: firmwareEngineerJobDescriptions,
   },
 };
 
