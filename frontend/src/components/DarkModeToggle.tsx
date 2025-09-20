@@ -6,7 +6,7 @@ export default function DarkModeToggle() {
   const { isDark, toggleTheme } = useTheme();
 
   return (
-    <Button variant="outline" size="sm" onClick={toggleTheme}>
+    <Button variant="outline" size="sm" className="cursor-pointer" onClick={toggleTheme}>
       {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
     </Button>
   );

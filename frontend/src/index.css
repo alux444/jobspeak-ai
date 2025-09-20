@@ -13,13 +13,15 @@
   --primary-color: #646cff;
   --primary-color-hover: #4851f6;
 
-html, body, #root {
-  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-}
+  html,
+  body,
+  #root {
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  }
 
-* {
-  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-}
+  * {
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  }
   --border-radius: 8px;
 
   font-synthesis: none;
@@ -58,6 +60,41 @@ html, body, #root {
   --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border, #e0e0e0);
+  border-radius: var(--border-radius, 8px);
+  transition: background 0.3s;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color-hover, #4851f6);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Firefox scrollbar styles */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border, #e0e0e0) transparent;
+}
+
+/* Dark mode scrollbar styles */
+.dark ::-webkit-scrollbar-thumb {
+  background: var(--border, #333);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: var(--primary, #646cff);
+}
+.dark * {
+  scrollbar-color: var(--border, #333) transparent;
 }
 
 @theme inline {

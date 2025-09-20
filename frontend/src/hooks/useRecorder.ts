@@ -202,7 +202,7 @@ export const useRecorder = (
       setTranscription(transcriptionText);
       setShowTranscription(true);
     } catch (err) {
-      if ((err as any)?.name === "AbortError") {
+      if ((err as Error)?.name === "AbortError") {
         setError("Transcription cancelled");
       } else {
         setError(
@@ -356,7 +356,7 @@ export const useRecorder = (
         error: undefined,
       });
     } catch (err) {
-      if ((err as any)?.name === "AbortError") {
+      if ((err as Error)?.name === "AbortError") {
         setError("Analysis cancelled");
       } else {
         const errorMsg =

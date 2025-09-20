@@ -27,8 +27,8 @@ export default function InterviewRecorder(props: InterviewRecorderProps) {
       {/* Mode Tabs */}
       <Tabs value={props.mode} onValueChange={value => props.onSwitchMode(value as "record" | "upload")}>
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="record">Record</TabsTrigger>
-          <TabsTrigger value="upload">Upload</TabsTrigger>
+          <TabsTrigger value="record" className="cursor-pointer">Record</TabsTrigger>
+          <TabsTrigger value="upload" className="cursor-pointer">Upload</TabsTrigger>
         </TabsList>
       </Tabs>
 
