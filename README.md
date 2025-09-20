@@ -1,6 +1,6 @@
 # JobSpeak AI
 
-## AI-driven Job Interview Feedback System (Engineering Honours Research Project)
+## AI-driven Job Interview Feedback System
 
 This project is designed to give users personalised detailed feedback on their behavioural interview performance. It uses a combination of multimodal AI models to analyse user responses, including audio, video, and text transcription analysis.
 
@@ -15,12 +15,6 @@ More information can be found in the [project proposal](https://part4project.foe
 
 - [Alex Liang](https://github.com/alux444)
 - [Tony Lim](https://github.com/tonylxm)
-
-### Supervisors
-
-- [Dr. David Huang](https://profiles.auckland.ac.nz/david-huang)
-- [Dr. Andrew Meads](https://profiles.auckland.ac.nz/andrew-meads)
-- [Dr. Yu-Cheng Tu](https://profiles.auckland.ac.nz/yu-cheng-tu)
 
 ## Getting Started
 
