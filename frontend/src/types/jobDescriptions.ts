@@ -1,4 +1,5 @@
 export type JobDescriptionCategory =
+  | "general"
   | "custom"
   | "intern"
   | "software-engineer"
@@ -23,6 +24,21 @@ interface JobDescriptionOption {
 }
 
 export const jobDescriptionOptions: JobDescriptionOption[] = [
+  {
+    value: "general",
+    label: "General Position",
+    description: "A broad job description suitable for any industry or role.",
+    fullDescription: `This general job description applies to a wide range of industries and positions. It typically includes:
+    • Performing assigned tasks efficiently and responsibly
+    • Collaborating with team members and stakeholders
+    • Communicating effectively in written and verbal formats
+    • Adhering to company policies, procedures, and ethical standards
+    • Demonstrating adaptability and willingness to learn new skills
+    • Managing time and priorities to meet deadlines
+    • Contributing to a positive and inclusive workplace culture
+
+  This description is suitable for roles where specific technical or industry requirements are not defined, and emphasizes professionalism, teamwork, and continuous improvement.`,
+  },
   {
     value: "intern",
     label: "Intern/Entry Level",

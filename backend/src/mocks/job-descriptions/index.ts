@@ -13,8 +13,10 @@ import { structuralEngineerJobDescriptions } from "./structural-engineer";
 import { electricalEngineerJobDescriptions } from "./electrical-engineer";
 import { aiResearcherJobDescriptions } from "./ai-researcher";
 import { firmwareEngineerJobDescriptions } from "./firmware-engineer";
+import { generalJobDescriptions } from "./general";
 
 export type JobDescriptionCategory =
+  | "general"
   | "custom"
   | "intern"
   | "software-engineer"
@@ -40,7 +42,11 @@ const jobDescriptionCategories: Record<
   PredefinedJobDescriptionCategory,
   { label: string; descriptions: JobDescription[] }
 > = {
-  intern: {
+  "general": {
+    label: "General Position",
+    descriptions: generalJobDescriptions,
+  },
+  "intern": {
     label: "Intern/Entry Level",
     descriptions: internJobDescriptions,
   },
