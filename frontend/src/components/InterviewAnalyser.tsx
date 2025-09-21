@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useTimer } from '@/hooks/useTimer';
+import { Timer } from './Timer';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { AlertCircle, RefreshCw } from 'lucide-react';
@@ -21,6 +23,25 @@ export function InterviewAnalyser() {
 
   const [question, setQuestion] = useState<Question | null>(null);
   const [showQuestion, setShowQuestion] = useState(false);
+  const [thinkingTime] = useState(() => Number(window.localStorage.getItem('thinkingTime')) || 60);
+  const [responseTime] = useState(() => Number(window.localStorage.getItem('responseTime')) || 120);
+
+  const thinkingTimer = useTimer({
+    duration: thinkingTime,
+    autoStart: false,
+    onComplete: () => {
+      startRecording();
+      responseTimer.start();
+    },
+  });
+  const responseTimer = useTimer({
+    duration: responseTime,
+    autoStart: false,
+    onComplete: () => {
+      stopRecording();
+    },
+  });
+
   const {
     recording,
     recordedChunks,
@@ -48,14 +69,46 @@ export function InterviewAnalyser() {
   const refreshQuestion = useCallback(() => {
     setQuestion(getRandomQuestion());
     setShowQuestion(false);
-  }, []);
+    thinkingTimer.reset();
+    responseTimer.reset();
+  }, [thinkingTimer, responseTimer]);
 
   useEffect(() => {
-    refreshQuestion();
-  }, [refreshQuestion]);
+    if (!question) {
+      setQuestion(getRandomQuestion());
+    }
+  }, [question]);
+
+  useEffect(() => {
+    if (showQuestion && !recording) {
+      thinkingTimer.start();
+    } else if (!showQuestion) {
+      thinkingTimer.stop();
+      thinkingTimer.reset();
+      responseTimer.reset();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showQuestion]);
+
+  // Manual start recording (skips thinking timer)
+  const handleManualStartRecording = () => {
+    if (thinkingTimer.active) {
+      thinkingTimer.stop();
+      thinkingTimer.reset();
+    }
+    setShowQuestion(true);
+    startRecording();
+    responseTimer.start();
+  };
+
+  // Manual stop recording
+  const handleManualStopRecording = () => {
+    responseTimer.stop();
+    stopRecording();
+  };
 
   return (
-  <div className="flex flex-col h-screen bg-background">
+    <div className="flex flex-col h-screen bg-background">
       {/* Navbar */}
       <div className="fixed top-0 left-0 right-0 z-50">
         <Nav />
@@ -76,26 +129,37 @@ export function InterviewAnalyser() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setShowQuestion((prev) => !prev)}
+                    onClick={() => {
+                      if (!showQuestion && question) setShowQuestion(true);
+                    }}
                     className="hover:bg-primary/10 cursor-pointer"
                     aria-label={showQuestion ? "Hide question" : "Show question"}
                     disabled={showQuestion}
                   >
                     {showQuestion ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
                   </Button>
-                    <Button
+                  <Button
                     variant="ghost"
                     size="sm"
                     onClick={refreshQuestion}
                     className="hover:bg-primary/10 cursor-pointer"
                     aria-label="Refresh question"
                     disabled={!showQuestion}
-                    >
+                  >
                     <RefreshCw className="h-4 w-4" />
-                    </Button>
+                  </Button>
                 </div>
               </div>
               <QuestionPrompt question={showQuestion ? question : null} />
+              {/* Thinking Timer */}
+              {showQuestion && thinkingTimer.active && !recording && (
+                <div className="mt-4">
+                  <Timer
+                    duration={thinkingTime}
+                    running={thinkingTimer.active}
+                  />
+                </div>
+              )}
             </div>
 
             <Separator />
@@ -122,13 +186,22 @@ export function InterviewAnalyser() {
               isProcessing={isProcessing}
               isTranscribing={isTranscribing}
               onSwitchMode={switchMode}
-              onStartRecording={startRecording}
-              onStopRecording={stopRecording}
+              onStartRecording={handleManualStartRecording}
+              onStopRecording={handleManualStopRecording}
               onFileUpload={handleFileUpload}
               onClearUploadedFile={clearUploadedFile}
               onTranscribe={transcribeRecording}
               onSave={saveRecording}
             />
+            {/* Response Timer */}
+            {responseTimer.active && recording && (
+              <div className="mt-4">
+                <Timer
+                  duration={responseTime}
+                  running={responseTimer.active}
+                />
+              </div>
+            )}
 
             {/* Error Message */}
             {error && (
