@@ -240,7 +240,7 @@ export const useRecorder = (
     setIsProcessing(true);
 
     try {
-      // Audio & Video
+      // Start all agent promises in parallel
       const audioPromise =
         analysisProgress.audio !== "done"
           ? runStep<AudioAnalysis>("audio", async () =>
@@ -261,12 +261,6 @@ export const useRecorder = (
               analysisResults?.agentResults.videoAnalysis || null
             );
 
-      const [audioResults, videoResults] = await Promise.all([
-        audioPromise,
-        videoPromise,
-      ]);
-
-      // Keyword, Content, Sentiment Model, Sentiment
       const keywordPromise =
         analysisProgress.keyword !== "done"
           ? runStep<KeywordAnalysis>("keyword", async () => {
@@ -316,11 +310,15 @@ export const useRecorder = (
             );
 
       const [
+        audioResults,
+        videoResults,
         keywordResults,
         contentResults,
         sentimentModelResults,
         sentimentResults,
       ] = await Promise.all([
+        audioPromise,
+        videoPromise,
         keywordPromise,
         contentPromise,
         sentimentModelPromise,
