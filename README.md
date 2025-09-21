@@ -4,7 +4,7 @@
 
 This project is designed to give users personalised and actionable feedback on their video interview performance. It uses a combination of multimodal AI and ML models to analyse user responses, including audio, video, and text transcription analysis.
 
-<img width="1920" height="869" alt="JobSpeak AI - Google Chrome 10_09_2025 10_12_24 am" src="https://github.com/user-attachments/assets/83b6cf29-d50d-47fe-8dc6-becce6780736" />
+https://github.com/user-attachments/assets/b83d08d3-4838-4b8f-9ca4-91912de178e4
 
 ## System Design & Architecture
 <img width="1089" height="465" alt="system-design-june" src="https://github.com/user-attachments/assets/9c13d927-2ee4-4a7c-860e-aaad2ca411f8" />
