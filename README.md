@@ -11,6 +11,25 @@ https://github.com/user-attachments/assets/b83d08d3-4838-4b8f-9ca4-91912de178e4
 
 More information can be found in the [project proposal](https://part4project.foe.auckland.ac.nz/home/project/detail/5673/) (we have scoped down to focus on video interviews).
 
+## AI Agents /ML Models
+| Category                           | Model / Library                                                                                    | Purpose                                                              |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| **Audio Analysis**                 | [HuBERT (superb/hubert-base-superb-er)](https://huggingface.co/superb/hubert-base-superb-er)       | Emotion recognition from audio                                       |
+|                                    | [Wav2Vec2 Feature Extractor](https://huggingface.co/superb/hubert-base-superb-er)                  | Audio preprocessing                                                  |
+|                                    | [librosa](https://librosa.org/)                                                                    | Audio signal processing (fluency, confidence scoring)                |
+| **Sentiment Analysis**             | [DistilBERT Emotion Model](https://huggingface.co/bhadresh-savani/distilbert-base-uncased-emotion) | Sentiment model for classifying emotions from text                   |
+| **Speech-to-Text / Transcription** | [OpenAI Whisper (base)](https://huggingface.co/openai/whisper-base)                                | Speech-to-text transcription model                                   |
+| **Video / Expression Recognition** | [FER (Facial Expression Recognition)](https://github.com/justinshenk/fer)                          | Real-time emotion detection from video                               |
+| **Keyword / Job Context Analysis** | [Azure AI Foundry](https://azure.microsoft.com/en-us/products/ai-foundry)                          | Keyword generation from prompts, job descriptions, or company values |
+|                                    | [Azure AI Foundry](https://azure.microsoft.com/en-us/products/ai-foundry)                          | Response keyword analysis service                                    |
+| **Response / Content Analysis**    | [Azure AI Foundry](https://azure.microsoft.com/en-us/products/ai-foundry)                          | Sentiment analysis service                                           |
+| **Scoring / Feedback Generation**  | [Azure AI Foundry](https://azure.microsoft.com/en-us/products/ai-foundry)                          | Transforms aggregated scores into personalised, actionable feedback  |
+| **NLP / Text Processing**          | [Transformers Pipeline](https://huggingface.co/docs/transformers/main/en/pipeline_tutorial)        | Running sentiment models                                             |
+|                                    | [PyTorch](https://pytorch.org/)                                                                    | Backend for neural networks                                          |
+| **Supporting Libraries**           | [NumPy](https://numpy.org/)                                                                        | Numerical computations                                               |
+|                                    | [FastAPI](https://fastapi.tiangolo.com/)                                                           | API framework for serving AI/ML models                               |
+
+
 ## Developers
 
 - [Alex Liang](https://github.com/alux444)
