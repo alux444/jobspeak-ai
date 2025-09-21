@@ -144,7 +144,7 @@ export function InterviewAnalyser() {
                     onClick={refreshQuestion}
                     className="hover:bg-primary/10 cursor-pointer"
                     aria-label="Refresh question"
-                    disabled={!showQuestion}
+                    disabled={!showQuestion || recording || isTranscribing || isProcessing}
                   >
                     <RefreshCw className="h-4 w-4" />
                   </Button>
