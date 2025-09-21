@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useTimer } from '@/hooks/useTimer';
+import { Timer } from './Timer';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { AlertCircle, RefreshCw } from 'lucide-react';
@@ -14,6 +16,8 @@ import Nav from './Nav';
 import InterviewRecorder from './InterviewRecorder';
 import TargetRole from './TargetRole';
 import { Alert, AlertTitle, AlertDescription } from './ui/alert';
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogTitle, AlertDialogDescription, AlertDialogCancel, AlertDialogAction } from './ui/alert-dialog';
+import { AlertDialogHeader, AlertDialogFooter } from './ui/alert-dialog';
 
 export function InterviewAnalyser() {
   const [selectedJobDescription, setSelectedJobDescription] = useState<JobDescriptionCategory>('general');
@@ -21,6 +25,25 @@ export function InterviewAnalyser() {
 
   const [question, setQuestion] = useState<Question | null>(null);
   const [showQuestion, setShowQuestion] = useState(false);
+  const [thinkingTime] = useState(() => Number(window.localStorage.getItem('thinkingTime')) || 60);
+  const [responseTime] = useState(() => Number(window.localStorage.getItem('responseTime')) || 120);
+
+  const thinkingTimer = useTimer({
+    duration: thinkingTime,
+    autoStart: false,
+    onComplete: () => {
+      startRecording();
+      responseTimer.start();
+    },
+  });
+  const responseTimer = useTimer({
+    duration: responseTime,
+    autoStart: false,
+    onComplete: () => {
+      stopRecording();
+    },
+  });
+
   const {
     recording,
     recordedChunks,
@@ -43,19 +66,59 @@ export function InterviewAnalyser() {
     handleFileUpload,
     switchMode,
     clearUploadedFile,
+    resetRecorder,
   } = useRecorder(question, selectedJobDescription, customJobDescription);
 
-  const refreshQuestion = useCallback(() => {
+  const [showConfirmRefresh, setShowConfirmRefresh] = useState(false);
+
+  const refreshQuestionAndRecorder = useCallback(() => {
     setQuestion(getRandomQuestion());
     setShowQuestion(false);
-  }, []);
+    thinkingTimer.reset();
+    responseTimer.reset();
+    resetRecorder();
+  }, [thinkingTimer, responseTimer, resetRecorder]);
+
+  const handleRefreshClick = () => {
+    setShowConfirmRefresh(true);
+  };
 
   useEffect(() => {
-    refreshQuestion();
-  }, [refreshQuestion]);
+    if (!question) {
+      setQuestion(getRandomQuestion());
+    }
+  }, [question]);
+
+  useEffect(() => {
+    if (showQuestion && !recording) {
+      thinkingTimer.start();
+    } else if (!showQuestion) {
+      thinkingTimer.stop();
+      thinkingTimer.reset();
+      responseTimer.reset();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showQuestion]);
+
+  // Manual start recording (skips thinking timer)
+  const handleManualStartRecording = () => {
+    if (thinkingTimer.active) {
+      thinkingTimer.stop();
+      thinkingTimer.reset();
+    }
+    setShowQuestion(true);
+    startRecording();
+    responseTimer.start();
+  };
+
+  // Manual stop recording
+  const handleManualStopRecording = () => {
+    responseTimer.stop();
+    stopRecording();
+  };
 
   return (
-  <div className="flex flex-col h-screen bg-background">
+    <div className="flex flex-col h-screen bg-background">
       {/* Navbar */}
       <div className="fixed top-0 left-0 right-0 z-50">
         <Nav />
@@ -76,26 +139,54 @@ export function InterviewAnalyser() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setShowQuestion((prev) => !prev)}
+                    onClick={() => {
+                      if (!showQuestion && question) setShowQuestion(true);
+                    }}
                     className="hover:bg-primary/10 cursor-pointer"
                     aria-label={showQuestion ? "Hide question" : "Show question"}
                     disabled={showQuestion}
                   >
                     {showQuestion ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
                   </Button>
-                    <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={refreshQuestion}
-                    className="hover:bg-primary/10 cursor-pointer"
-                    aria-label="Refresh question"
-                    disabled={!showQuestion}
-                    >
-                    <RefreshCw className="h-4 w-4" />
-                    </Button>
+                  <AlertDialog open={showConfirmRefresh} onOpenChange={setShowConfirmRefresh}>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleRefreshClick}
+                        className="hover:bg-primary/10 cursor-pointer"
+                        aria-label="Refresh question"
+                        disabled={!showQuestion || recording || isTranscribing || isProcessing}
+                      >
+                        <RefreshCw className="h-4 w-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Discard current video?</AlertDialogTitle>
+                        <AlertDialogDescription>Refreshing the question will remove the current recording and uploaded video. This cannot be undone.</AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => {
+                          refreshQuestionAndRecorder();
+                          setShowConfirmRefresh(false);
+                        }} className="cursor-pointer">Discard & Refresh</AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
               <QuestionPrompt question={showQuestion ? question : null} />
+              {/* Thinking Timer (only for record mode) */}
+              {mode === "record" && showQuestion && thinkingTimer.active && !recording && (
+                <div className="mt-4">
+                  <Timer
+                    duration={thinkingTime}
+                    running={thinkingTimer.active}
+                  />
+                </div>
+              )}
             </div>
 
             <Separator />
@@ -122,13 +213,23 @@ export function InterviewAnalyser() {
               isProcessing={isProcessing}
               isTranscribing={isTranscribing}
               onSwitchMode={switchMode}
-              onStartRecording={startRecording}
-              onStopRecording={stopRecording}
+              onStartRecording={handleManualStartRecording}
+              onStopRecording={handleManualStopRecording}
               onFileUpload={handleFileUpload}
               onClearUploadedFile={clearUploadedFile}
               onTranscribe={transcribeRecording}
               onSave={saveRecording}
+              showQuestion={showQuestion}
             />
+            {/* Response Timer (only for record mode) */}
+            {mode === "record" && responseTimer.active && recording && (
+              <div className="mt-4">
+                <Timer
+                  duration={responseTime}
+                  running={responseTimer.active}
+                />
+              </div>
+            )}
 
             {/* Error Message */}
             {error && (

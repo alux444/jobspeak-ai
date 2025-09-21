@@ -1,8 +1,19 @@
+import { useState } from "react";
 import { Mic, Video, Text } from "lucide-react";
 import Footer from "./Footer";
 import AnimatedBackground from "./AnimatedBackground";
+import { TimelineModal } from "./TimelineModal";
 
 export default function Landing() {
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleConfirm = (thinking: number, response: number) => {
+    setModalOpen(false);
+    window.localStorage.setItem("thinkingTime", thinking.toString());
+    window.localStorage.setItem("responseTime", response.toString());
+    window.location.href = "/interview-analyser";
+  };
+
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden text-gray-100">
       <div>
@@ -19,12 +30,12 @@ export default function Landing() {
           <p className="text-gray-300 text-xl md:text-2xl mb-12">
             Personalised AI-powered feedback on your behavioral interview responses
           </p>
-          <a
-            href="/interview-analyser"
+          <button
+            onClick={() => setModalOpen(true)}
             className="bg-indigo-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-indigo-600 transition cursor-pointer"
           >
-            Get Started
-          </a>
+            Start Interviewing
+          </button>
         </div>
       </header>
 
@@ -71,6 +82,12 @@ export default function Landing() {
       </main>
 
       <Footer />
+      {/* Timeline Modal */}
+      <TimelineModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onConfirm={handleConfirm}
+      />
     </div>
   );
 }

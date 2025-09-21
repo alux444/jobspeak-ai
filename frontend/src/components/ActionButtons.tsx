@@ -7,6 +7,7 @@ interface ActionButtonsProps {
   mode: "record" | "upload";
   recording: boolean;
   hasVideo: boolean;
+  showQuestion: boolean;
   uploadedFile: File | null;
   isProcessing: boolean;
   isTranscribing: boolean;
@@ -22,6 +23,7 @@ export function ActionButtons({
   mode,
   recording,
   hasVideo,
+  showQuestion,
   uploadedFile,
   isProcessing,
   isTranscribing,
@@ -62,7 +64,7 @@ export function ActionButtons({
           </AlertDialogContent>
         </AlertDialog>
       ) : mode === "record" && !recording ? (
-        <Button onClick={onStartRecording} disabled={isProcessing || isTranscribing} className="cursor-pointer">
+          <Button onClick={onStartRecording} disabled={isProcessing || isTranscribing || !showQuestion} className="cursor-pointer">
           <VideoIcon className="w-4 h-4 mr-2" /> Start Recording
         </Button>
       ) : mode === "record" && recording ? (
@@ -73,7 +75,7 @@ export function ActionButtons({
 
       {/* Upload */}
       {mode === "upload" && !uploadedFile && (
-        <Button disabled={isProcessing || isTranscribing}>
+          <Button disabled={isProcessing || isTranscribing || !showQuestion}>
           <label className="flex items-center gap-2 cursor-pointer m-0">
             <Upload className="w-4 h-4 mr-2" />
             <span className="text-sm">Upload Video</span>

@@ -368,13 +368,23 @@ export const useRecorder = (
     }
   };
 
-  const cancelAnalysis = () => {
-    analysisAbortControllerRef.current?.abort();
-    transcriptionAbortControllerRef.current?.abort();
-    setIsProcessing(false);
-    setIsTranscribing(false);
-    setError("Operation cancelled");
+  const resetRecorder = () => {
+    resetState();
+    setRecordedChunks([]);
+    setUploadedFile(null);
+    setTranscription("");
+    setShowTranscription(false);
+    setStream(null);
+    setRecording(false);
   };
+
+  // const cancelAnalysis = () => {
+  //   analysisAbortControllerRef.current?.abort();
+  //   transcriptionAbortControllerRef.current?.abort();
+  //   setIsProcessing(false);
+  //   setIsTranscribing(false);
+  //   setError("Operation cancelled");
+  // };
 
   return {
     recording,
@@ -399,5 +409,6 @@ export const useRecorder = (
     handleFileUpload,
     switchMode,
     clearUploadedFile,
+    resetRecorder,
   };
 };
