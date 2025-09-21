@@ -16,6 +16,8 @@ import Nav from './Nav';
 import InterviewRecorder from './InterviewRecorder';
 import TargetRole from './TargetRole';
 import { Alert, AlertTitle, AlertDescription } from './ui/alert';
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogTitle, AlertDialogDescription, AlertDialogCancel, AlertDialogAction } from './ui/alert-dialog';
+import { AlertDialogHeader, AlertDialogFooter } from './ui/alert-dialog';
 
 export function InterviewAnalyser() {
   const [selectedJobDescription, setSelectedJobDescription] = useState<JobDescriptionCategory>('general');
@@ -64,14 +66,22 @@ export function InterviewAnalyser() {
     handleFileUpload,
     switchMode,
     clearUploadedFile,
+    resetRecorder,
   } = useRecorder(question, selectedJobDescription, customJobDescription);
 
-  const refreshQuestion = useCallback(() => {
+  const [showConfirmRefresh, setShowConfirmRefresh] = useState(false);
+
+  const refreshQuestionAndRecorder = useCallback(() => {
     setQuestion(getRandomQuestion());
     setShowQuestion(false);
     thinkingTimer.reset();
     responseTimer.reset();
-  }, [thinkingTimer, responseTimer]);
+    resetRecorder();
+  }, [thinkingTimer, responseTimer, resetRecorder]);
+
+  const handleRefreshClick = () => {
+    setShowConfirmRefresh(true);
+  };
 
   useEffect(() => {
     if (!question) {
@@ -138,21 +148,38 @@ export function InterviewAnalyser() {
                   >
                     {showQuestion ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={refreshQuestion}
-                    className="hover:bg-primary/10 cursor-pointer"
-                    aria-label="Refresh question"
-                    disabled={!showQuestion || recording || isTranscribing || isProcessing}
-                  >
-                    <RefreshCw className="h-4 w-4" />
-                  </Button>
+                  <AlertDialog open={showConfirmRefresh} onOpenChange={setShowConfirmRefresh}>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleRefreshClick}
+                        className="hover:bg-primary/10 cursor-pointer"
+                        aria-label="Refresh question"
+                        disabled={!showQuestion || recording || isTranscribing || isProcessing}
+                      >
+                        <RefreshCw className="h-4 w-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Discard current video?</AlertDialogTitle>
+                        <AlertDialogDescription>Refreshing the question will remove the current recording or uploaded video. This cannot be undone.</AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => {
+                          refreshQuestionAndRecorder();
+                          setShowConfirmRefresh(false);
+                        }} className="cursor-pointer">Discard & Refresh</AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
               <QuestionPrompt question={showQuestion ? question : null} />
-              {/* Thinking Timer */}
-              {showQuestion && thinkingTimer.active && !recording && (
+              {/* Thinking Timer (only for record mode) */}
+              {mode === "record" && showQuestion && thinkingTimer.active && !recording && (
                 <div className="mt-4">
                   <Timer
                     duration={thinkingTime}
@@ -192,9 +219,10 @@ export function InterviewAnalyser() {
               onClearUploadedFile={clearUploadedFile}
               onTranscribe={transcribeRecording}
               onSave={saveRecording}
+              showQuestion={showQuestion}
             />
-            {/* Response Timer */}
-            {responseTimer.active && recording && (
+            {/* Response Timer (only for record mode) */}
+            {mode === "record" && responseTimer.active && recording && (
               <div className="mt-4">
                 <Timer
                   duration={responseTime}

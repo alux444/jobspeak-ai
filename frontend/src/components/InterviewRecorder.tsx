@@ -10,6 +10,7 @@ interface InterviewRecorderProps {
   recording: boolean;
   isProcessing: boolean;
   isTranscribing: boolean;
+  showQuestion: boolean;
   onSwitchMode: (mode: "record" | "upload") => void;
   onStartRecording: () => void;
   onStopRecording: () => void;
@@ -22,13 +23,20 @@ interface InterviewRecorderProps {
 export default function InterviewRecorder(props: InterviewRecorderProps) {
   const hasVideo = (props.mode === "record" && props.recordedChunks.length > 0 && !props.recording) || (props.mode === "upload" && !!props.uploadedFile);
 
+  // Prevent switching modes if question is visible
+  const disableModeSwitch = props.showQuestion;
+
   return (
     <div className="space-y-4">
       {/* Mode Tabs */}
-      <Tabs value={props.mode} onValueChange={value => props.onSwitchMode(value as "record" | "upload")}>
+      <Tabs value={props.mode} onValueChange={value => {
+        if (!disableModeSwitch) {
+          props.onSwitchMode(value as "record" | "upload");
+        }
+      }}>
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="record" className="cursor-pointer">Record</TabsTrigger>
-          <TabsTrigger value="upload" className="cursor-pointer">Upload</TabsTrigger>
+          <TabsTrigger value="record" className="cursor-pointer" disabled={disableModeSwitch}>Record</TabsTrigger>
+          <TabsTrigger value="upload" className="cursor-pointer" disabled={disableModeSwitch}>Upload</TabsTrigger>
         </TabsList>
       </Tabs>
 
@@ -46,6 +54,7 @@ export default function InterviewRecorder(props: InterviewRecorderProps) {
         mode={props.mode}
         recording={props.recording}
         hasVideo={hasVideo}
+        showQuestion={props.showQuestion}
         uploadedFile={props.uploadedFile}
         isProcessing={props.isProcessing}
         isTranscribing={props.isTranscribing}
