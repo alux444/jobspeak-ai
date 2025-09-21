@@ -164,7 +164,7 @@ export function InterviewAnalyser() {
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle>Discard current video?</AlertDialogTitle>
-                        <AlertDialogDescription>Refreshing the question will remove the current recording or uploaded video. This cannot be undone.</AlertDialogDescription>
+                        <AlertDialogDescription>Refreshing the question will remove the current recording and uploaded video. This cannot be undone.</AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>

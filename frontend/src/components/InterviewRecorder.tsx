@@ -29,7 +29,7 @@ export default function InterviewRecorder(props: InterviewRecorderProps) {
   return (
     <div className="space-y-4">
       {/* Mode Tabs */}
-      <Tabs value={props.mode} onValueChange={value => {
+      <Tabs className="mb-3" value={props.mode} onValueChange={value => {
         if (!disableModeSwitch) {
           props.onSwitchMode(value as "record" | "upload");
         }
