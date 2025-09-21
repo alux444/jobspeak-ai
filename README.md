@@ -11,7 +11,7 @@ https://github.com/user-attachments/assets/b83d08d3-4838-4b8f-9ca4-91912de178e4
 
 More information can be found in the [project proposal](https://part4project.foe.auckland.ac.nz/home/project/detail/5673/) (we have scoped down to focus on video interviews).
 
-## AI Agents /ML Models
+## AI Agents & ML Models
 | Category                           | Model / Library                                                                                    | Purpose                                                              |
 | ---------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
 | **Audio Analysis**                 | [HuBERT (superb/hubert-base-superb-er)](https://huggingface.co/superb/hubert-base-superb-er)       | Emotion recognition from audio                                       |
