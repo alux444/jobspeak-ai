@@ -10,7 +10,7 @@ interface TimelineModalProps {
 
 export const TimelineModal: React.FC<TimelineModalProps> = ({ open, onClose, onConfirm }) => {
   const [thinkingTime, setThinkingTime] = useState(60); // 1 minute default
-  const [responseTime, setResponseTime] = useState(60); // 1 minute default
+  const [responseTime, setResponseTime] = useState(90); // 1 minute 1/2 default
 
   return (
     <Dialog open={open} onOpenChange={v => !v && onClose()}>
